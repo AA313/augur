@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUGUR · The Instrument</title>
+<style>
+  :root{
+    --paper:#eeecf4;
+    --panel:#f6f5fa;
+    --panel-alt:#eae7f1;
+    --bar:#655d84;          /* muted dusty indigo */
+    --bar-ink:#efecf6;
+    --ink:#2f2a44;          /* readable body ink */
+    --ink-strong:#26213a;
+    --muted:#5f5878;
+    --faint:#948dae;
+    --line:#d1cbe0;
+    --line-soft:#e1dcec;
+    --link:#443a7a;
+    --hit:#5c7a54;          /* faded sage — proof holds */
+    --miss:#9a6d7c;         /* faded mauve — honest miss */
+    --sans:Verdana, Geneva, Tahoma, sans-serif;
+    --serif:Georgia, "Times New Roman", serif;
+    --mono:"Courier New", Courier, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(1px 1px at 18% 24%, rgba(110,100,150,.18), transparent 60%),
+      radial-gradient(1px 1px at 72% 16%, rgba(110,100,150,.14), transparent 60%),
+      radial-gradient(1px 1px at 40% 70%, rgba(110,100,150,.12), transparent 60%),
+      radial-gradient(1px 1px at 86% 64%, rgba(110,100,150,.14), transparent 60%),
+      radial-gradient(1px 1px at 10% 82%, rgba(110,100,150,.10), transparent 60%);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:12.5px;
+    line-height:1.6;
+  }
+  .wrap{max-width:800px;margin:0 auto;padding:22px 16px 64px}
+  a{color:var(--link)}
+
+  /* masthead */
+  .mast{text-align:center;padding:16px 0 8px}
+  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
+  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
+  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
+  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);
+    display:flex;flex-wrap:wrap;justify-content:center}
+  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
+  nav a:hover{text-decoration:underline}
+  nav a.on{color:#3a2f70;background:var(--panel-alt)}
+
+  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
+  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
+  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
+  .in{padding:16px 18px}
+  h2{font-family:var(--serif);font-weight:normal;color:var(--ink-strong);font-size:22px;line-height:1.25;margin:0 0 10px}
+  p{margin:0 0 10px}
+  p:last-child{margin:0}
+  .lead{font-family:var(--serif);font-size:15.5px;line-height:1.6;color:#39335199}
+  .lead{color:#3a3352}
+  .em{color:#4c3f8e;font-style:italic}
+  .quietrule{border:none;border-top:1px solid var(--line-soft);margin:14px 0}
+
+  /* mechanism steps */
+  ol.steps{list-style:none;margin:6px 0 0;padding:0;counter-reset:s}
+  ol.steps > li{counter-increment:s;position:relative;padding:12px 0 12px 46px;border-top:1px solid var(--line-soft)}
+  ol.steps > li:first-child{border-top:none}
+  ol.steps > li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:12px;
+    font-family:var(--mono);font-size:15px;color:var(--faint);letter-spacing:.02em}
+  ol.steps h3{font-family:var(--serif);font-size:16px;color:var(--ink-strong);margin:0 0 4px;font-weight:normal}
+  ol.steps p{color:var(--muted);font-size:12px;margin:0}
+  ol.steps .key{color:#4c3f8e}
+
+  /* proof / evidence cards */
+  .proofgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+  @media(max-width:620px){.proofgrid{grid-template-columns:1fr}}
+  .proof{border:1px solid var(--line);background:#fbfafd}
+  .proof .ph{font-family:var(--mono);font-size:11px;color:var(--muted);padding:7px 11px;
+    border-bottom:1px solid var(--line-soft);background:var(--panel-alt);letter-spacing:.02em}
+  .proof .pin{padding:11px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink);line-height:1.85}
+  .proof .k{color:var(--faint)}
+  .proof .hidden{color:var(--faint);letter-spacing:.12em}
+  .proof .cond{color:#3a3352;font-family:var(--serif);font-style:italic;font-size:12.5px}
+  .proof .hash{color:#5a4b9c;word-break:break-all}
+  .proof .status{padding:9px 12px;border-top:1px solid var(--line-soft);font-family:var(--sans);font-size:11.5px;line-height:1.6}
+  .proof .status .dot{font-size:13px;vertical-align:-1px}
+  .proof.h .status{background:#eef2ea}
+  .proof.h .status .lab{color:var(--hit);font-weight:bold;letter-spacing:.04em}
+  .proof.h .status .dot{color:var(--hit)}
+  .proof.m .status{background:#f2ecef}
+  .proof.m .status .lab{color:var(--miss);font-weight:bold;letter-spacing:.04em}
+  .proof.m .status .dot{color:var(--miss)}
+  .proof .status .why{color:var(--muted);display:block;margin-top:2px}
+
+  /* not-a-psychic points */
+  ul.points{list-style:none;margin:6px 0 0;padding:0}
+  ul.points li{padding:9px 0 9px 22px;border-top:1px solid var(--line-soft);position:relative;color:var(--muted);font-size:12px}
+  ul.points li:first-child{border-top:none}
+  ul.points li::before{content:"\203A";position:absolute;left:4px;top:8px;color:var(--faint);font-size:14px}
+  ul.points li b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:13px}
+
+  /* two rooms */
+  .rooms{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:620px){.rooms{grid-template-columns:1fr}}
+  .room{border:1px solid var(--line);padding:13px 14px;background:#fbfafd}
+  .room .rk{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .room h4{font-family:var(--serif);font-weight:normal;font-size:16px;color:var(--ink-strong);margin:0 0 6px}
+  .room p{font-size:11.5px;color:var(--muted);margin:0 0 9px}
+  .room a{font-size:11.5px}
+
+  .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
+  .oldbtn{font-family:var(--sans);font-size:12px;color:#39306b;text-decoration:none;
+    border:1px solid var(--line);border-top-color:#fff;border-left-color:#fff;background:#e7e2f1;padding:8px 16px}
+  .oldbtn:hover{background:#efeaf8;color:#2b2258}
+  .oldbtn.q{background:#f2f0f7}
+
+  .epigraph{font-family:var(--serif);font-style:italic;color:var(--faint);text-align:center;font-size:13px;margin:24px auto 8px;max-width:54ch;line-height:1.7}
+  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
+  .sitefoot a{color:var(--muted)}
+  .mast .word a{color:inherit;text-decoration:none}
+  .mast .emblem{line-height:0;margin-bottom:4px}
+  .intro{margin:2px 0 20px;padding:0 2px}
+  .intro p{font-family:var(--serif);font-size:16px;line-height:1.62;color:#3a3352;max-width:68ch;margin:0}
+  .intro p + p{margin-top:12px}
+  .intro b{color:var(--ink-strong)}
+
+  /* the record so far (mirrors the Registry's published figures) */
+  .record{border:1px solid var(--line);background:var(--panel);margin:0 0 18px}
+  .record .rlab{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
+  .record .rlab .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
+  .record .rnums{display:flex;flex-wrap:wrap;gap:9px 26px;padding:13px 16px 11px}
+  .record .rnums span{font-size:12px;color:var(--muted)}
+  .record .rnums b{font-family:var(--mono);font-size:16px;color:var(--ink-strong);font-weight:bold;letter-spacing:.01em}
+  .record .rnums b.hit{color:var(--hit)}
+  .record .rnums b.miss{color:var(--miss)}
+  .record .rnums .sep{color:var(--faint);margin:0 3px}
+  .record .rmore{padding:0 16px 12px;font-size:11.5px}
+  @media(min-width:900px){ .mast{padding-top:26px} .mast .emblem svg{width:56px;height:56px} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="mast">
+      <div class="emblem" aria-hidden="true"><svg viewBox="0 0 60 60" width="48" height="48"><circle cx="30" cy="30" r="24" fill="none" stroke="#948dae" stroke-width="1.2"/><circle cx="30" cy="30" r="18" fill="none" stroke="#cbc5db" stroke-width="1"/><path d="M30 11 L33.2 26.8 L49 30 L33.2 33.2 L30 49 L26.8 33.2 L11 30 L26.8 26.8 Z" fill="#8078a6"/><circle cx="42.7" cy="17.3" r="1.3" fill="#948dae"/><circle cx="42.7" cy="42.7" r="1.3" fill="#948dae"/><circle cx="17.3" cy="42.7" r="1.3" fill="#948dae"/><circle cx="17.3" cy="17.3" r="1.3" fill="#948dae"/></svg></div>
+      <div class="word"><a href="index.html">AUGUR</a></div>
+      <div class="tag">an instrument for dreams that arrive early</div>
+      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+    </div>
+
+    <nav>
+      <a class="on" href="index.html">The instrument</a>
+      <a href="about.html">About</a>
+      <a href="augur-registry.html">The Registry</a>
+      <a href="augur-commons.html">The Commons</a>
+      <a href="augur-vault.html">The Vault</a>
+      <a href="augur-verifier.html">Verify a proof</a>
+      <a href="augur-seal-prototype.html">Seal a dream</a>
+    </nav>
+
+    <div class="intro">
+      <p><b>AUGUR is a place to record a dream and prove you wrote it down before the event it seemed to foretell.</b> You write the dream, say in advance what would count as it coming true, and seal it: its exact words are locked to this moment in time. If the event later happens, the proof is already waiting, and anyone can check it themselves.</p>
+      <p>AUGUR takes no side on whether dreams can see ahead. It simply keeps an honest record, with the misses shown next to the hits. But for the first time it turns a question people have only ever believed or dismissed into one that can actually be tested, and if a large enough honest record ever showed these dreams landing more often than chance can explain, the implications for how we understand the mind, memory, and time would be profound.</p>
+    </div>
+
+    <!-- THE RECORD SO FAR -->
+    <div class="record">
+      <div class="rlab">The record so far<span class="rt">the same figures the Registry publishes</span></div>
+      <div class="rnums">
+        <span><b id="recSealed">9</b> dreams sealed</span>
+        <span><b class="hit" id="recHits">5</b> hits <span class="sep">&middot;</span> <b class="miss" id="recMiss">2</b> misses, among those resolved</span>
+        <span><b id="recRate">71%</b> hit rate on resolved</span>
+        <span><b id="recOpen">2</b> still sealed, awaiting the event</span>
+      </div>
+      <div class="rmore"><a href="augur-registry.html">Read the full ledger, hits and misses alike &rarr;</a></div>
+    </div>
+
+    <!-- THESIS -->
+    <section>
+      <div class="cap">The question<span class="rt">what are we actually trying to find out</span></div>
+      <div class="in">
+        <h2>A premonition only counts if it was written down first.</h2>
+        <p class="lead">Everyone has felt it: a dream that seems to land days before the event it described. But by the time the event arrives, memory has softened, and no one can tell whether the dream truly came first or whether the mind quietly rewrote it after. That gap is where every claim of foresight collapses.</p>
+        <p>AUGUR is built to close that gap and to answer one narrow, testable question: <span class="em">did the words of this dream provably exist, unchanged, before the event it seemed to foretell?</span> Nothing more mystical than that, and nothing less rigorous. We take no position on why a dream might arrive early. We only make sure that when one does, it can be proven, and when it does not, that is on the record too.</p>
+      </div>
+    </section>
+
+    <!-- MECHANISM -->
+    <section>
+      <div class="cap">How the seal works<span class="rt">the mechanism, in four movements</span></div>
+      <div class="in">
+        <ol class="steps">
+          <li>
+            <h3>Write the dream, and declare the target</h3>
+            <p>You record the dream and, <span class="key">in advance</span>, state plainly what would count as it coming true. The condition is sealed alongside the dream. You are calling the shot before you take it, the same discipline a scientist uses registering a hypothesis before the experiment.</p>
+          </li>
+          <li>
+            <h3>Seal it</h3>
+            <p>The exact text and its condition are run through <span class="key">SHA&#8209;256</span>, a standard, one-way method that turns any text into a short, unique fingerprint (the same technique that secures passwords and banking). Change a single character and the fingerprint changes completely. That fingerprint is stamped to a public timeline, so the words are now locked to this moment and cannot be moved.</p>
+          </li>
+          <li>
+            <h3>Wait</h3>
+            <p>The dream stays private and unread while the world turns. Nothing about it can be edited, and its sealing time is fixed for good.</p>
+          </li>
+          <li>
+            <h3>Reveal, and let a stranger verify</h3>
+            <p>When the event arrives, you unseal the dream. Anyone can recompute the fingerprint themselves and confirm the words existed, untouched, before the event. Not on our word. On the arithmetic.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- WORKED EXAMPLE: HIT + MISS -->
+    <section>
+      <div class="cap">A worked example<span class="rt">how a dream is adjudicated</span></div>
+      <div class="in">
+        <p style="color:var(--muted);margin-bottom:13px">Two sealed dreams. One resolved as a hit, one as a miss. Both are proven, and both are permanent. The instrument does not decide whether a dream is meaningful, only whether the call was made in advance and whether the declared condition was met.</p>
+        <div class="proofgrid">
+
+          <div class="proof h">
+            <div class="ph">DREAM #0412 &middot; sealed</div>
+            <div class="pin">
+              <div><span class="k">text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="hidden">&#9679;&#9679;&#9679;&#9679; sealed until reveal</span></div>
+              <div><span class="k">counts if</span> <span class="cond">&ldquo;a passenger plane makes an emergency landing, no deaths, within 30 days&rdquo;</span></div>
+              <div><span class="k">sealed&nbsp;&nbsp;</span> 2026-06-02 04:17:09 UTC</div>
+              <div><span class="k">sha-256&nbsp;</span> <span class="hash">fa936c62ac2062&hellip;c6a5fa43</span></div>
+            </div>
+            <div class="status">
+              <span class="dot">&#9679;</span> <span class="lab">RESOLVED &middot; HIT</span>
+              <span class="why">The condition was met on day 19. The fingerprint still matches: the words existed, unchanged, before the event. Verifiable by anyone.</span>
+            </div>
+          </div>
+
+          <div class="proof m">
+            <div class="ph">DREAM #0389 &middot; sealed</div>
+            <div class="pin">
+              <div><span class="k">text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> <span class="hidden">&#9679;&#9679;&#9679;&#9679; revealed</span></div>
+              <div><span class="k">counts if</span> <span class="cond">&ldquo;my brother is in a crash, and walks away, within 14 days&rdquo;</span></div>
+              <div><span class="k">sealed&nbsp;&nbsp;</span> 2026-05-11 06:40:55 UTC</div>
+              <div><span class="k">sha-256&nbsp;</span> <span class="hash">7b1c0e94a3d5&hellip;20fe8841</span></div>
+            </div>
+            <div class="status">
+              <span class="dot">&#9675;</span> <span class="lab">RESOLVED &middot; MISS</span>
+              <span class="why">The 14 days passed and the condition was not met. Recorded as a miss, in public, beside the hits. That honesty is the whole point.</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- NOT A PSYCHIC APP -->
+    <section>
+      <div class="cap">Why this is an instrument, not a psychic app</div>
+      <div class="in">
+        <ul class="points">
+          <li><b>You declare the target before the shot.</b> The oldest trick in prophecy is the vague dream stretched afterwards to fit whatever happened. AUGUR forbids it: the success condition is committed up front and sealed.</li>
+          <li><b>The misses are public.</b> A ledger that only shows hits is advertising. The Registry shows the failures next to the successes, because the failures are what make the successes mean anything.</li>
+          <li><b>A stranger can check it.</b> Every proof stands on a recomputable hash and a fixed timestamp. You never have to trust AUGUR, or the dreamer. You can verify it yourself, offline.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RESEARCH -->
+    <section>
+      <div class="cap">What a record like this could be worth<span class="rt">the case for keeping it honest</span></div>
+      <div class="in">
+        <p class="lead">Scattered anecdotes have never been able to settle whether dreams can reach into what is coming. The evidence was always unprovable: a story retold after the fact, with no way to date it and no way to count the times it failed.</p>
+        <p>A sealed registry changes what is possible to study. Every entry is a <span class="em">pre-registered prediction</span> with a declared condition, a fixed timestamp, and a recorded outcome, hit or miss. Kept at scale, that stops being a pile of stories and becomes a dataset: falsifiable, time-anchored, and open to anyone who wants to measure it.</p>
+        <p>For researchers of dreams, memory, and cognition, that opens real questions. How often do pre-registered dream predictions actually resolve as hits, against what chance alone would give? Do certain kinds of dream, or certain dreamers, resolve more often than others? How much of memory&rsquo;s certainty about a dream is built only after the event? AUGUR cannot answer these on its own, but it can supply the one thing this question has always lacked: honest, dated, verifiable data. Anonymised submissions may be used in research and cited in scholarly work.</p>
+      </div>
+    </section>
+
+    <!-- TWO ROOMS -->
+    <section>
+      <div class="cap">Two rooms, one house</div>
+      <div class="in">
+        <div class="rooms">
+          <div class="room">
+            <div class="rk">The Registry</div>
+            <h4>Verified predictions, in public</h4>
+            <p>The rigorous, evidentiary ledger. Sealed dreams that resolved, each with a proof anyone can check, and the honest misses alongside. This is the credibility of the whole project, out in the open.</p>
+            <a href="augur-registry.html">Enter the Registry &rarr;</a>
+          </div>
+          <div class="room">
+            <div class="rk">The Commons</div>
+            <h4>Anonymous, for the everyday</h4>
+            <p>The welcoming, no-signup board for the small premonitions that never make the news. A looser room, still honest: post a dream and it is sealed the moment you do.</p>
+            <a href="augur-commons.html">Enter the Commons &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section>
+      <div class="in" style="text-align:center">
+        <h2 style="margin-bottom:6px">Seal one tonight.</h2>
+        <p style="color:var(--muted);max-width:48ch;margin:0 auto 14px">The next dream you cannot shake might be worth proving. It takes a minute, and the proof lasts as long as you keep it.</p>
+        <div class="actions" style="justify-content:center">
+          <a class="oldbtn" href="augur-seal-prototype.html">Seal a dream</a>
+          <a class="oldbtn q" href="augur-verifier.html">Check a proof yourself</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="epigraph">&ldquo;The instrument does not tell you what a dream means. It only refuses to let the question of whether it came true stay unanswerable.&rdquo;</div>
+
+    <div class="sitefoot">
+      AUGUR &middot; the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps (confirms over hours)<br>
+      <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="terms.html#copyright">Copyright</a> &middot; contact@augur.app
+    </div>
+
+  </div>
+  <script>
+  /* keep "the record so far" in step with the live Registry when served from the backend.
+     Falls back to the static seed figures if the API is not reachable (e.g. opened as a plain file). */
+  (function(){
+    fetch("/api/registry/stats").then(function(r){return r.ok?r.json():null;}).then(function(s){
+      if(!s) return;
+      var set=function(id,v){var el=document.getElementById(id);if(el&&v!=null)el.textContent=v;};
+      set("recSealed", s.sealed);
+      set("recHits", s.hits);
+      set("recMiss", s.misses);
+      set("recRate", s.hit_rate!=null? s.hit_rate+"%" : "–");
+      set("recOpen", s.pending);
+    }).catch(function(){});
+  })();
+  </script>
+</body>
+</html>

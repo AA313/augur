@@ -1,0 +1,14 @@
+{
+  "name": "augur",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AUGUR — a registry for dreams and the moments they seem to arrive early. Static front end + a zero-dependency Node backend (node:http + node:sqlite).",
+  "type": "module",
+  "scripts": {
+    "start": "node server/server.mjs",
+    "dev": "node server/server.mjs"
+  },
+  "engines": {
+    "node": ">=23.4.0"
+  }
+}

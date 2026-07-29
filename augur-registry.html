@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUGUR · The Registry</title>
+<style>
+  :root{
+    --paper:#efedf5;        /* faded page */
+    --panel:#f6f5fa;        /* board panels */
+    --panel-alt:#eeecf4;    /* alt row */
+    --bar:#6f6790;          /* muted dusty indigo header */
+    --bar-ink:#eeeaf6;
+    --ink:#332e49;          /* soft-dark body ink (kept readable) */
+    --muted:#605c80;        /* secondary */
+    --faint:#9a93b3;        /* very quiet */
+    --line:#d3cee1;         /* faded hairline */
+    --line-soft:#e2ddec;
+    --link:#493c82;         /* muted violet */
+    --link-visited:#84739f;
+    --sans:Verdana, Geneva, Tahoma, sans-serif;
+    --serif:Georgia, "Times New Roman", serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    /* faint drifting starfield over dusk, very low contrast — no glossy gradients */
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(120,110,160,.20), transparent 60%),
+      radial-gradient(1px 1px at 70% 18%, rgba(120,110,160,.16), transparent 60%),
+      radial-gradient(1px 1px at 42% 72%, rgba(120,110,160,.14), transparent 60%),
+      radial-gradient(1px 1px at 88% 60%, rgba(120,110,160,.16), transparent 60%),
+      radial-gradient(1px 1px at 12% 84%, rgba(120,110,160,.12), transparent 60%);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:12.5px;
+    line-height:1.55;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:22px 16px 60px}
+
+  /* masthead */
+  .mast{text-align:center;padding:14px 0 10px}
+  .mast .word{font-family:var(--serif);font-size:34px;letter-spacing:.42em;color:#4a4368;
+    text-indent:.42em;font-weight:400}
+  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:14px;margin-top:2px}
+  .mast .sub{color:var(--faint);font-size:11px;margin-top:6px;letter-spacing:.02em}
+
+  /* nav strip */
+  nav{margin:12px 0 16px;border:1px solid var(--line);background:var(--panel);
+    display:flex;flex-wrap:wrap;justify-content:center;gap:2px 0}
+  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 14px;letter-spacing:.03em}
+  nav a:hover{text-decoration:underline;color:#4a3d86}
+  nav span.dot{color:var(--line);align-self:center}
+
+  a{color:var(--link)}
+  a:visited{color:var(--link-visited)}
+
+  /* welcome announcement */
+  .note{border:1px solid var(--line);background:var(--panel);margin-bottom:16px}
+  .note .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;padding:5px 12px;border-bottom:1px solid #5b5479}
+  .note .body{padding:14px 16px}
+  .note .body p{margin:0 0 9px}
+  .note .body p:last-child{margin:0}
+  .note .lead{font-family:var(--serif);font-size:15px;color:#41395c;line-height:1.5}
+  .note .em{color:#5a4d94;font-style:italic}
+  .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .oldbtn{font-family:var(--sans);font-size:11.5px;color:#40356f;text-decoration:none;
+    border:1px solid var(--line);border-top-color:#fff;border-left-color:#fff;
+    background:#e9e5f2;padding:6px 13px}
+  .oldbtn:hover{background:#efeaf8;color:#2f2658}
+
+  /* board index */
+  .cat{margin-bottom:16px;border:1px solid var(--line)}
+  .cat > .head{background:var(--bar);color:var(--bar-ink);font-size:11.5px;font-weight:bold;
+    letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-bottom:1px solid #5b5479;
+    display:flex;justify-content:space-between}
+  .cat > .head .rt{font-weight:normal;letter-spacing:.04em;text-transform:none;color:#d7d1e8;font-size:10.5px}
+  table{width:100%;border-collapse:collapse;background:var(--panel)}
+  col.c-mark{width:34px}col.c-stat{width:74px}col.c-last{width:180px}
+  th{background:var(--panel-alt);color:var(--faint);font-weight:normal;font-size:10px;
+    text-transform:uppercase;letter-spacing:.08em;text-align:left;padding:5px 10px;border-bottom:1px solid var(--line-soft)}
+  th.n{text-align:center}
+  td{padding:11px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.alt td{background:var(--panel-alt)}
+  .mark{text-align:center;font-size:15px;color:var(--faint);opacity:.75}
+  .fname{font-size:13px;color:var(--link);text-decoration:none;font-weight:bold}
+  .fname:hover{text-decoration:underline}
+  .fdesc{color:var(--muted);font-size:11.5px;margin-top:3px;line-height:1.5}
+  .stat{text-align:center;color:var(--muted);font-size:11px}
+  .stat b{color:var(--ink);font-weight:normal}
+  .last{color:var(--muted);font-size:11px;line-height:1.5}
+  .last .q{font-family:var(--serif);font-style:italic;color:#544a76}
+  .last .by{color:var(--faint)}
+
+  /* footer stats */
+  .board-foot{border:1px solid var(--line);background:var(--panel);padding:10px 14px;
+    display:flex;flex-wrap:wrap;gap:6px 22px;color:var(--muted);font-size:11px;margin-bottom:14px}
+  .board-foot .k{color:var(--faint)}
+  .board-foot b{font-weight:normal;color:var(--ink)}
+
+  .epigraph{font-family:var(--serif);font-style:italic;color:var(--faint);text-align:center;
+    font-size:13px;margin:26px auto 10px;max-width:52ch;line-height:1.7}
+  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:16px;line-height:1.8}
+  .sitefoot a{color:var(--muted)}
+  .mast .word a{color:inherit;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="mast">
+      <div class="word"><a href="index.html">AUGUR</a></div>
+      <div class="tag">a registry for dreams that arrive early</div>
+      <div class="sub">est. in the small hours &middot; an instrument, not an oracle</div>
+    </div>
+
+    <nav>
+      <a href="index.html">The instrument</a><span class="dot">&middot;</span>
+      <a href="about.html">About</a><span class="dot">&middot;</span>
+      <a href="augur-registry.html">The Registry</a><span class="dot">&middot;</span>
+      <a href="augur-commons.html">The Commons</a><span class="dot">&middot;</span>
+      <a href="augur-vault.html">The Vault</a><span class="dot">&middot;</span>
+      <a href="augur-verifier.html">Verify a proof</a>
+    </nav>
+
+    <div class="note">
+      <div class="cap">The Registry</div>
+      <div class="body">
+        <p class="lead">Calls made before the world caught up.</p>
+        <p>Every entry below was <span class="em">sealed</span> before its outcome was known, and unsealed only after. The proofs are real: open any one and your own browser recomputes its fingerprint. The honest misses sit next to the hits, because a ledger that only shows its wins is advertising.</p>
+        <div class="actions">
+          <a class="oldbtn" href="augur-verifier.html">Verify a proof yourself</a>
+          <a class="oldbtn" href="augur-seal-prototype.html">Seal a dream</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat">
+      <div class="head"><span>The record</span><span class="rt">resolved, hits and honest misses</span></div>
+      <table>
+        <colgroup><col class="c-mark"><col><col class="c-stat"><col class="c-last"></colgroup>
+        <thead><tr><th></th><th>Sealed dream, and the condition declared in advance</th><th class="n">Sealed</th><th>Outcome</th></tr></thead>
+        <tbody id="recordBody"><tr><td></td><td class="rload">loading the record&hellip;</td><td></td><td></td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="cat">
+      <div class="head"><span>Still sealed</span><span class="rt">awaiting the event</span></div>
+      <table>
+        <colgroup><col class="c-mark"><col><col class="c-stat"><col class="c-last"></colgroup>
+        <thead><tr><th></th><th>Sealed dream, and the condition declared in advance</th><th class="n">Sealed</th><th>Clock</th></tr></thead>
+        <tbody id="sealedBody"></tbody>
+      </table>
+    </div>
+
+    <div class="board-foot">
+      <span><span class="k">Dreams sealed:</span> <b id="stSealed">&middot;</b></span>
+      <span><span class="k">Verified hits:</span> <b id="stHits">&middot;</b></span>
+      <span><span class="k">Hit rate, resolved only:</span> <b id="stRate">&middot;</b></span>
+      <span><span class="k">Still open:</span> <b id="stOpen">&middot;</b></span>
+    </div>
+
+    <div class="epigraph">&ldquo;We are such stuff as dreams are made on&hellip; and only a record can tell us which of them saw ahead.&rdquo;</div>
+
+    <div class="sitefoot">
+      AUGUR &middot; the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps (confirms over hours)<br>
+      <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="terms.html#copyright">Copyright</a> &middot; contact@augur.app
+    </div>
+
+  </div>
+  <style>
+    .rload{color:var(--faint,#948dae);font-style:italic}
+    .dreamline{color:#5f5878;font-size:11.5px;margin-top:3px;font-style:italic;font-family:Georgia,serif}
+    .dreamline span{color:#3a3352}
+    .votes{white-space:nowrap}
+    .votes .v{cursor:pointer;text-decoration:none;font-size:10px;padding:0 1px}
+    .votes .v[data-v="hit"]{color:#5c7a54}
+    .votes .v[data-v="miss"]{color:#9a6d7c}
+    .votes b{font-family:"Courier New",monospace;font-size:11px}
+    .anchored{color:#5c7a54;font-family:"Courier New",monospace}
+  </style>
+  <script>
+  /* ---- Registry, wired to the AUGUR API (public ledger + real stats + community votes) ---- */
+  (function(){
+    var recordBody=document.getElementById("recordBody");
+    var sealedBody=document.getElementById("sealedBody");
+    function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+    function pad(n){return ("0"+n).slice(-2);}
+    function fmtDate(iso){var d=new Date(iso);return d.getFullYear()+"<br>"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+    function shortHash(h){return h?h.slice(0,6)+"…"+h.slice(-8):"";}
+    function anchorTag(x){return x.anchor_time?' &middot; <span class="anchored" title="RFC-3161 timestamp by '+esc(x.tsa_name||"a TSA")+' at '+esc(x.anchor_time)+', verifiable independently">timestamp-anchored</span>':"";}
+    function setText(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+    async function api(path,opts){
+      var r=await fetch(path,Object.assign({headers:{"content-type":"application/json"}},opts||{}));
+      var body=await r.json().catch(function(){return null;});
+      if(!r.ok)throw new Error((body&&body.error&&body.error.message)||("HTTP "+r.status));
+      return body;
+    }
+    function votesHTML(x){
+      var v=x.votes||{hit:0,miss:0};
+      return '<span class="votes" data-id="'+x.id+'" title="community judgement: does the record hold?">'+
+        '<a class="v" data-v="hit">&#9650;</a> <b class="vh">'+v.hit+'</b> '+
+        '<a class="v" data-v="miss">&#9660;</a> <b class="vm">'+v.miss+'</b></span>';
+    }
+    function recordRow(x, alt){
+      var hit=(x.outcome==="hit"); var c=hit?"#5c7a54":"#9a6d7c"; var mark=hit?"&#9679;":"&#9675;";
+      var dream=x.content?'<div class="dreamline">the dream: <span>'+esc(x.content)+'</span></div>':"";
+      return '<tr class="'+(alt?"alt":"")+'">'+
+        '<td class="mark" style="color:'+c+';opacity:1">'+mark+'</td>'+
+        '<td><span class="q" style="font-size:13px">&ldquo;'+esc(x.claim&&x.claim.specificity||"(no condition set)")+'&rdquo;</span>'+dream+
+        '<div class="fdesc">by @'+esc(x.handle||"anonymous")+' &middot; sha-256 <span class="hash" title="'+esc(x.hash)+'">'+shortHash(x.hash)+'</span>'+anchorTag(x)+' &middot; '+votesHTML(x)+'</div></td>'+
+        '<td class="stat">'+fmtDate(x.sealed_at)+'</td>'+
+        '<td class="last"><b style="color:'+c+'">'+(hit?"HIT":"MISS")+'</b><br><span class="by">'+(hit?"met":"unmet")+' &middot; <a href="augur-verifier.html">verify</a></span></td></tr>';
+    }
+    function sealedRow(x, alt){
+      var revealed=!!x.content;
+      var dream=revealed?'<div class="dreamline">the dream: <span>'+esc(x.content)+'</span></div>':"";
+      var note=revealed?"revealed, outcome not yet declared":"content sealed until reveal";
+      var clock=revealed?"awaiting outcome":"awaiting the event";
+      return '<tr class="'+(alt?"alt":"")+'">'+
+        '<td class="mark" style="color:#5f5896;opacity:1">&#9679;</td>'+
+        '<td><span class="q" style="font-size:13px">&ldquo;'+esc(x.claim&&x.claim.specificity||"(no condition set)")+'&rdquo;</span>'+dream+
+        '<div class="fdesc">by @'+esc(x.handle||"anonymous")+' &middot; sha-256 <span class="hash" title="'+esc(x.hash)+'">'+shortHash(x.hash)+'</span>'+anchorTag(x)+' &middot; '+note+'</div></td>'+
+        '<td class="stat">'+fmtDate(x.sealed_at)+'</td>'+
+        '<td class="last"><b style="color:#5f5896">SEALED</b><br><span class="by">'+clock+'</span></td></tr>';
+    }
+
+    // community voting
+    recordBody.addEventListener("click", async function(e){
+      var a=e.target.closest?e.target.closest(".v"):null; if(!a) return;
+      var wrap=a.closest(".votes"); var id=wrap.getAttribute("data-id"); var v=a.getAttribute("data-v");
+      try{ var r=await api("/api/registry/"+id+"/vote",{method:"POST",body:JSON.stringify({vote:v})});
+        wrap.querySelector(".vh").textContent=r.votes.hit; wrap.querySelector(".vm").textContent=r.votes.miss;
+      }catch(err){}
+    });
+
+    (async function load(){
+      var reg, stats;
+      try{ reg=(await api("/api/registry")).items; stats=await api("/api/registry/stats").catch(function(){return null;}); }
+      catch(e){
+        recordBody.innerHTML='<tr><td></td><td class="rload">The registry could not be reached. Start the AUGUR server (<code>npm start</code>) and open this page from http://127.0.0.1:8787.</td><td></td><td></td></tr>';
+        return;
+      }
+      var resolved=reg.filter(function(x){return x.outcome==="hit"||x.outcome==="miss";});
+      var pending=reg.filter(function(x){return x.outcome!=="hit"&&x.outcome!=="miss";});
+      recordBody.innerHTML=resolved.length?resolved.map(function(x,i){return recordRow(x,i%2===1);}).join(""):'<tr><td></td><td class="rload">No resolved entries yet.</td><td></td><td></td></tr>';
+      sealedBody.innerHTML=pending.length?pending.map(function(x,i){return sealedRow(x,i%2===1);}).join(""):'<tr><td></td><td class="rload">Nothing awaiting just now.</td><td></td><td></td></tr>';
+      if(stats){ setText("stSealed",stats.sealed); setText("stHits",stats.hits); setText("stRate",stats.hit_rate!=null?stats.hit_rate+"%":"—"); setText("stOpen",stats.pending); }
+    })();
+  })();
+  </script>
+</body>
+</html>

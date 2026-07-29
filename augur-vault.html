@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUGUR · The Vault</title>
+<style>
+  :root{
+    --paper:#eeecf4;--panel:#f6f5fa;--panel-alt:#eae7f1;--bar:#655d84;--bar-ink:#efecf6;
+    --ink:#2f2a44;--ink-strong:#26213a;--muted:#5f5878;--faint:#948dae;
+    --line:#d1cbe0;--line-soft:#e1dcec;--link:#443a7a;--hit:#5c7a54;--miss:#9a6d7c;--seal:#5f5896;
+    --sans:Verdana, Geneva, Tahoma, sans-serif;--serif:Georgia,"Times New Roman",serif;--mono:"Courier New",Courier,monospace;
+  }
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--paper);
+    background-image:radial-gradient(1px 1px at 18% 24%,rgba(110,100,150,.18),transparent 60%),radial-gradient(1px 1px at 72% 16%,rgba(110,100,150,.14),transparent 60%),radial-gradient(1px 1px at 40% 70%,rgba(110,100,150,.12),transparent 60%),radial-gradient(1px 1px at 86% 64%,rgba(110,100,150,.14),transparent 60%);
+    color:var(--ink);font-family:var(--sans);font-size:12.5px;line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:22px 16px 64px}
+  a{color:var(--link)}
+  .mast{text-align:center;padding:16px 0 8px}
+  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
+  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
+  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
+  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);display:flex;flex-wrap:wrap;justify-content:center}
+  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
+  nav a:hover{text-decoration:underline}nav a.on{color:#3a2f70;background:var(--panel-alt)}
+  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
+  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
+  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
+  .in{padding:16px 18px}
+  .lead{font-family:var(--serif);font-size:15px;color:#3a3352;margin:0 0 4px}
+  .priv{color:var(--faint);font-size:11.5px;margin:0}
+
+  .who{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  .who .id{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .newbtn{font-family:var(--sans);font-size:12px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:8px 16px;cursor:pointer;text-decoration:none}
+  .newbtn:hover{background:#5a5279}
+
+  /* ledger */
+  table{width:100%;border-collapse:collapse;background:var(--panel)}
+  th{background:var(--panel-alt);color:var(--faint);font-weight:normal;font-size:10px;text-transform:uppercase;letter-spacing:.08em;text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+  td{padding:10px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .date{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+  .subj{color:var(--ink-strong);font-size:12.5px}
+  .subj a{color:var(--ink-strong);text-decoration:none}
+  .subj a:hover{color:var(--link);text-decoration:underline}
+  .motif{margin-top:4px}
+  .tag{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--muted);border:1px solid var(--line);padding:1px 6px;margin:2px 4px 0 0;border-radius:2px}
+  .state{font-family:var(--mono);font-size:10.5px;white-space:nowrap;letter-spacing:.02em}
+  .state .d{font-size:11px;vertical-align:-1px;margin-right:3px}
+  .s-seal{color:var(--seal)}.s-hit{color:var(--hit)}.s-miss{color:var(--miss)}.s-draft{color:var(--faint)}
+
+  .motifbox{border:1px solid var(--line);background:#fbfafd;padding:12px 14px;margin-top:2px}
+  .motifbox .mh{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .motifbox p{margin:0;color:var(--muted);font-size:12px}
+  .motifbox .big{color:#4c3f8e;font-family:var(--serif);font-style:italic}
+
+  /* auth bar */
+  .authbar{min-width:230px;max-width:280px}
+  .authbar .signedout .al{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .authbar input{width:100%;font-family:var(--sans);font-size:12.5px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 9px;margin-bottom:7px}
+  .authbar .signin{font-family:var(--sans);font-size:12px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:8px 15px;cursor:pointer;width:100%}
+  .authbar .signin:hover{background:#5a5279}
+  .authbar .anote{color:var(--faint);font-size:10.5px;font-style:italic;font-family:var(--serif);margin-top:6px;line-height:1.5}
+  .authbar .signedin{border:1px solid var(--line);background:#fbfafd;padding:9px 11px;font-size:11.5px;color:var(--muted)}
+  .authbar .signedin .em{color:var(--ink-strong);font-style:normal;font-family:var(--mono);font-size:11px;word-break:break-all}
+  .authbar .signout{font-size:11px;color:var(--link);cursor:pointer;margin-top:5px;display:inline-block}
+  .capbox.locked{opacity:.55;pointer-events:none}
+  .gate{color:var(--muted);font-style:italic;font-family:var(--serif);font-size:13px;padding:4px 2px}
+  .gate a{color:var(--link);cursor:pointer;text-decoration:underline}
+
+  /* capture-then-seal */
+  .capbox{border:1px solid var(--line);background:#fbfafd;padding:14px 15px}
+  .capbox textarea{width:100%;min-height:92px;font-family:var(--sans);font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:10px 11px;line-height:1.55;resize:vertical}
+  .caprow{display:flex;gap:9px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .mic{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel-alt);border:1px solid var(--line);padding:9px 13px;cursor:pointer;letter-spacing:.02em}
+  .mic:hover{background:#e3def0}
+  .mic.on{color:#fff;background:#9a5c6c;border-color:#834a5a}
+  .mic.na{color:var(--faint);cursor:default;font-style:italic}
+  .mic.na:hover{background:var(--panel-alt)}
+  .sealraw{font-family:var(--sans);font-size:12.5px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:9px 18px;cursor:pointer;letter-spacing:.02em}
+  .sealraw:hover{background:#5a5279}
+  .capnote{color:var(--faint);font-size:11.5px;font-style:italic;font-family:var(--serif);margin-top:11px;line-height:1.55}
+  .capnote a{color:var(--link)}
+
+  .emptycap{color:var(--faint);font-style:italic;font-family:var(--serif);font-size:13px;padding:6px 2px;margin:0}
+  .entry{border:1px solid var(--line);background:var(--panel);margin-bottom:14px}
+  .entry:last-child{margin-bottom:0}
+  .entry .ehead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:9px 13px;background:var(--panel-alt);border-bottom:1px solid var(--line)}
+  .entry .etitle{font-family:var(--serif);font-size:15px;color:var(--ink-strong)}
+  .entry .ecount{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+  .ver{padding:11px 13px;border-top:1px solid var(--line-soft)}
+  .ver:first-of-type{border-top:none}
+  .ver.raw{border-left:3px solid var(--seal);background:#f6f4fb}
+  .ver.pass{border-left:3px solid var(--line)}
+  .vmeta{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-bottom:6px;letter-spacing:.02em;display:flex;flex-wrap:wrap;gap:3px 11px;align-items:baseline}
+  .vmeta .dot{color:var(--seal);font-size:11px}
+  .vmeta .vk{font-weight:bold;color:var(--muted)}
+  .vmeta .vk.raw{color:var(--seal)}
+  .vmeta .vtime{color:var(--faint)}
+  .vmeta .vhash{color:#5a4b9c}
+  .vmeta .vproof{color:var(--link);cursor:pointer;text-decoration:underline}
+  .vtext{color:var(--ink);font-size:13px;line-height:1.62;white-space:pre-wrap}
+  .ver.raw .vtext{font-family:var(--mono);font-size:12px;color:#3a3352;line-height:1.7}
+  .eact{padding:10px 13px;border-top:1px solid var(--line-soft)}
+  .addpass{font-family:var(--sans);font-size:11.5px;color:var(--link);cursor:pointer;font-weight:bold}
+  .passta{width:100%;min-height:72px;font-family:var(--sans);font-size:12.5px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:9px 10px;line-height:1.55;resize:vertical}
+  .passrow{display:flex;gap:10px;align-items:center;margin-top:8px}
+  .sealpass{font-family:var(--sans);font-size:11.5px;color:#fff;background:#655d84;border:1px solid #4f486c;padding:8px 15px;cursor:pointer}
+  .sealpass:hover{background:#5a5279}
+  .passcancel{font-size:11px;color:var(--muted);cursor:pointer}
+
+  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
+  .sitefoot a{color:var(--muted)}
+  .mast .word a{color:inherit;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="mast">
+      <div class="word"><a href="index.html">AUGUR</a></div>
+      <div class="tag">an instrument for dreams that arrive early</div>
+      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+    </div>
+    <nav>
+      <a href="index.html">The instrument</a>
+      <a href="about.html">About</a>
+      <a href="augur-registry.html">The Registry</a>
+      <a href="augur-commons.html">The Commons</a>
+      <a class="on" href="augur-vault.html">The Vault</a>
+      <a href="augur-verifier.html">Verify a proof</a>
+      <a href="augur-seal-prototype.html">Seal a dream</a>
+    </nav>
+
+    <section>
+      <div class="cap">The Vault<span class="rt">your private journal</span></div>
+      <div class="in">
+        <div class="who">
+          <div>
+            <p class="lead">Your own record, kept before it softens.</p>
+            <p class="priv">Private to you. Never sold, never read without you, never used in research unless you opt in. Sealed versions are locked; the first one stays exactly as it came.</p>
+          </div>
+          <div id="authbar" class="authbar"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cap">Capture, before it softens<span class="rt">seal the raw version first</span></div>
+      <div class="in">
+        <div class="capbox">
+          <textarea id="capText" placeholder="Write it the moment you wake, in whatever broken words come. Do not tidy it. The point is the first version, before your waking mind turns it into a story."></textarea>
+          <div class="caprow">
+            <button class="mic" id="micBtn" type="button">&#9679; capture by voice</button>
+            <button class="sealraw" id="sealRawBtn" type="button">&#9679; Seal this first version</button>
+          </div>
+          <p class="capnote">The first words matter most. A seal fixes them to a moment in time and cannot be moved. It proves what you wrote and when, not that the words match the dream: nothing can prove that. Capturing early is how you keep that gap small. You can add a clearer version later; this raw one stays locked. Want to turn a dream into a testable prediction instead? <a href="augur-seal-prototype.html">Seal it with a condition &rarr;</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cap">Your captures<span class="rt">raw first, refined later, each one sealed</span></div>
+      <div class="in">
+        <div id="captures"></div>
+        <p class="capnote" style="margin-top:13px">Your captures are saved to your account and kept across reloads and devices. Each version carries a real SHA-256 proof you can save and check in the <a href="augur-verifier.html">Verifier</a>.</p>
+      </div>
+    </section>
+
+
+        <section id="motifSection" style="display:none">
+      <div class="cap">Motifs, quietly noticed<span class="rt">counted from your own entries</span></div>
+      <div class="in">
+        <div class="motifbox">
+          <div class="mh">recurring across your sealed dreams</div>
+          <p id="motifBody"></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="sitefoot">
+      AUGUR &middot; the Vault is yours alone. entries are encrypted at rest in production<br>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; contact@augur.app
+    </div>
+  </div>
+
+  <script>
+  /* ---- capture-then-seal, wired to the AUGUR API: raw first version sealed + locked, later passes appended, all saved to your account ---- */
+  (function(){
+    var $=function(id){return document.getElementById(id);};
+    var SKEY="augur_session";
+    function token(){return localStorage.getItem(SKEY)||"";}
+    function setToken(t){ if(t) localStorage.setItem(SKEY,t); else localStorage.removeItem(SKEY); }
+
+    // deterministic JSON with recursively sorted keys (must match the verifier / seal page / server)
+    function canon(o){
+      if(Array.isArray(o)) return "["+o.map(canon).join(",")+"]";
+      if(o && typeof o==="object") return "{"+Object.keys(o).sort().map(function(k){return JSON.stringify(k)+":"+canon(o[k]);}).join(",")+"}";
+      return JSON.stringify(o);
+    }
+    async function sha256(str){
+      var buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.prototype.map.call(new Uint8Array(buf), function(b){return ("0"+b.toString(16)).slice(-2);}).join("");
+    }
+    function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+    function pad(n){return ("0"+n).slice(-2);}
+    function fmtTime(iso){var d=new Date(iso);return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());}
+    function titleFrom(text){var w=text.replace(/\s+/g," ").trim().split(" ").slice(0,7).join(" ");if(!w)return "Untitled fragment";return w.length>52?w.slice(0,52)+"…":w;}
+
+    // a real, verifier-compatible seal over the shared payload shape
+    async function seal(content, createdAtISO){
+      var claim={ resolution_by:"", domain:"", specificity:"" };
+      var nonce=(crypto.randomUUID?crypto.randomUUID().slice(0,18):(Date.now().toString(36)+Math.random().toString(36).slice(2,8)));
+      var created_at=createdAtISO||new Date().toISOString();
+      var payload={ content:content, claim:claim, nonce:nonce, created_at:created_at };
+      var hash=await sha256(canon(payload));
+      return { bundle:{ content:content, claim:claim, nonce:nonce, created_at:created_at, sha256:hash } };
+    }
+
+    async function api(path, opts){
+      opts=opts||{};
+      var headers=Object.assign({"content-type":"application/json"}, opts.headers||{});
+      var t=token(); if(t) headers["authorization"]="Bearer "+t;
+      var r=await fetch(path, Object.assign({}, opts, {headers:headers}));
+      var body=await r.json().catch(function(){return null;});
+      if(!r.ok) throw new Error((body&&body.error&&body.error.message)||("HTTP "+r.status));
+      return body;
+    }
+
+    var user=null, entries=[];
+
+    // ---------- auth ----------
+    function renderAuth(){
+      var bar=$("authbar");
+      if(user){
+        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email)+'</span><br><span class="signout">Sign out</span></div>';
+        bar.querySelector(".signout").addEventListener("click", signOut);
+      } else {
+        bar.innerHTML='<div class="signedout"><div class="al">Sign in to capture</div>'+
+          '<input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">'+
+          '<button type="button" class="signin" id="authGo">Sign in</button>'+
+          '<div class="anote">A prototype sign-in: no password, and no email is actually sent. It just creates a private account so your dreams persist.</div></div>';
+        bar.querySelector("#authGo").addEventListener("click", function(){ signIn($("authEmail").value.trim()); });
+        bar.querySelector("#authEmail").addEventListener("keydown", function(e){ if(e.key==="Enter") signIn(this.value.trim()); });
+      }
+    }
+    async function signIn(email){
+      if(!email || email.indexOf("@")<0){ var i=$("authEmail"); if(i) i.focus(); return; }
+      var go=$("authGo"); if(go){ go.disabled=true; go.textContent="Signing in…"; }
+      try{
+        var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email})});
+        var ver=await api("/api/auth/verify",{method:"POST",body:JSON.stringify({token:req.dev_login_token})});
+        setToken(ver.session_token); user=ver.user;
+        renderAuth(); await loadEntries();
+      }catch(e){ alert("Could not sign in: "+e.message); if(go){ go.disabled=false; go.textContent="Sign in"; } }
+    }
+    async function signOut(){
+      try{ await api("/api/auth/logout",{method:"POST"}); }catch(e){}
+      setToken(""); user=null; entries=[]; renderAuth(); render();
+    }
+
+    // ---------- entries ----------
+    async function loadEntries(){
+      try{ var res=await api("/api/vault/entries"); entries=res.items||[]; }
+      catch(e){ setToken(""); user=null; renderAuth(); }
+      render();
+    }
+    function findEntry(id){ for(var i=0;i<entries.length;i++){ if(String(entries[i].id)===String(id)) return entries[i]; } return null; }
+    function replaceEntry(u){ for(var i=0;i<entries.length;i++){ if(entries[i].id===u.id){ entries[i]=u; return; } } entries.unshift(u); }
+
+    function versionHTML(en, v, i){
+      var raw=(v.kind==="raw");
+      return '<div class="ver '+(raw?"raw":"pass")+'">'+
+        '<div class="vmeta"><span class="dot">&#9679;</span> '+
+        '<span class="vk'+(raw?" raw":"")+'">'+(raw?"RAW · first capture":"LATER PASS")+'</span> '+
+        '<span class="vtime">sealed '+fmtTime(v.created_at)+'</span> '+
+        '<span class="vhash" title="sha-256: '+v.hash+'">#'+v.hash.slice(0,10)+'</span> '+
+        '<span class="vproof" data-e="'+en.id+'" data-v="'+i+'">save proof</span></div>'+
+        '<div class="vtext">'+esc(v.text)+'</div></div>';
+    }
+    function entryHTML(en){
+      var vers=en.versions.map(function(v,i){return versionHTML(en,v,i);}).join("");
+      var n=en.versions.length;
+      return '<div class="entry" data-e="'+en.id+'">'+
+        '<div class="ehead"><span class="etitle">'+esc(en.title||"(untitled dream)")+'</span>'+
+        '<span class="ecount">'+n+' version'+(n>1?"s":"")+' · locked</span></div>'+
+        vers+'<div class="eact"><span class="addpass" data-e="'+en.id+'">+ Add a later pass</span></div></div>';
+    }
+    function exampleHTML(){
+      return '<p class="gate">Sign in (top right) to capture and keep your dreams. Here is how an entry looks, raw first then a later pass:</p>'+
+        '<div class="entry" style="opacity:.85">'+
+        '<div class="ehead"><span class="etitle">The station that isn’t real</span><span class="ecount">2 versions · example</span></div>'+
+        '<div class="ver raw"><div class="vmeta"><span class="dot">&#9679;</span> <span class="vk raw">RAW · first capture</span> <span class="vtime">sealed 04:12</span></div>'+
+        '<div class="vtext">train station that isnt real. no signs anywhere. an announcement i couldnt make out. everyone looked up at the same moment. cold. gone the second i was awake</div></div>'+
+        '<div class="ver pass"><div class="vmeta"><span class="dot">&#9679;</span> <span class="vk">LATER PASS</span> <span class="vtime">sealed 09:30</span></div>'+
+        '<div class="vtext">I was standing in a train station that does not exist, with no signage anywhere. An announcement played that I could not make out, and everyone on the platform looked up at exactly the same moment, as though they had understood it and I alone had missed it.</div></div>'+
+        '</div>';
+    }
+    function render(){
+      var host=$("captures");
+      if(!user){ host.innerHTML=exampleHTML(); }
+      else if(!entries.length){ host.innerHTML='<p class="emptycap">Nothing captured yet. Write a dream above and seal the first version. It will appear here, saved to your account.</p>'; }
+      else { host.innerHTML=entries.map(entryHTML).join(""); }
+      renderMotifs();
+    }
+
+    // motif detection: recurring words across the caller's own entries. Noticing, not interpreting.
+    var STOP={};
+    ("the a an and or but of to in on at it its is was were be been being am are i you he she they we me my mine your yours his her hers their our ours this that these those with for from as by so not no nor yes do did does done doing have has had having will would shall should can could may might must then than them there here what when where which who whom whose how why all any some more most much many few out up down off over under again very really just about into onto around through after before while because if though although like get got getting go going gone went come came one two into around still back even also only such own same other another each both either neither now ever never always across against between within without upon toward towards near far away almost quite rather almost thing things something someone anything nothing everyone everything felt feel feeling saw see seen seeing woke wake waking dream dream dreams dreamt dreamed dreaming night morning remember cannot could not instead time times way ways moment moments place places lot bit kind sort part parts side sides end top front area point points able try trying kept keep left right turn turned started start stop stopped came coming went gone knew know").split(/\s+/).forEach(function(w){STOP[w]=1;});
+
+    function computeMotifs(list){
+      var df={};
+      list.forEach(function(en){
+        var text=en.versions.map(function(v){return v.text;}).join(" ").toLowerCase();
+        var words=text.match(/[a-z][a-z']{2,}/g)||[];
+        var seen={};
+        words.forEach(function(w){ w=w.replace(/'s$/,"").replace(/'/g,""); if(w.length<3||STOP[w]||seen[w])return; seen[w]=1; df[w]=(df[w]||0)+1; });
+      });
+      return Object.keys(df).filter(function(w){return df[w]>=2;})
+        .sort(function(a,b){return df[b]-df[a]||a.localeCompare(b);}).slice(0,7)
+        .map(function(w){return {word:w,count:df[w]};});
+    }
+    function renderMotifs(){
+      var sec=$("motifSection"), body=$("motifBody");
+      if(!sec||!body) return;
+      if(!user || entries.length<2){ sec.style.display="none"; return; }
+      var motifs=computeMotifs(entries);
+      if(!motifs.length){ sec.style.display="none"; return; }
+      var parts=motifs.map(function(m){ return '<span class="big">'+esc(m.word)+'</span> in '+m.count; });
+      body.innerHTML=parts.join(", ")+" entries. The instrument only notices; it never interprets. What the pattern means is yours to decide.";
+      sec.style.display="";
+    }
+
+    $("captures").addEventListener("click", function(e){
+      var t=e.target;
+      if(t.classList.contains("addpass")) return openPass(t);
+      if(t.classList.contains("vproof")) return saveProof(t.getAttribute("data-e"), +t.getAttribute("data-v"));
+    });
+
+    function openPass(link){
+      var eact=link.closest(".eact");
+      var eid=link.getAttribute("data-e");
+      eact.innerHTML='<textarea class="passta" placeholder="A clearer or fuller version, written later. The raw one stays locked above, exactly as first captured."></textarea>'+
+        '<div class="passrow"><button type="button" class="sealpass">&#9679; Seal this version</button> <span class="passcancel">cancel</span></div>';
+      var ta=eact.querySelector(".passta"); ta.focus();
+      eact.querySelector(".sealpass").addEventListener("click", async function(){
+        var text=ta.value.trim(); if(!text){ ta.focus(); return; }
+        var btn=this; btn.disabled=true;
+        try{
+          var s=await seal(text);
+          var updated=await api("/api/vault/entries/"+eid+"/versions",{method:"POST",body:JSON.stringify({bundle:s.bundle})});
+          replaceEntry(updated); render();
+        }catch(err){ btn.disabled=false; alert("Could not seal this version: "+err.message); }
+      });
+      eact.querySelector(".passcancel").addEventListener("click", function(){ render(); });
+    }
+
+    function saveProof(eid, vi){
+      var en=findEntry(eid); if(!en) return;
+      var v=en.versions[vi]; if(!v) return;
+      var blob=new Blob([JSON.stringify(v.bundle,null,2)],{type:"application/json"});
+      var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+      a.download="augur-capture-"+(v.kind==="raw"?"raw":"pass"+vi)+".json";
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    // capture a new raw first version
+    $("sealRawBtn").addEventListener("click", async function(){
+      if(!user){ var i=$("authEmail"); if(i){ i.focus(); i.scrollIntoView({behavior:"smooth",block:"center"}); } return; }
+      var text=$("capText").value.trim();
+      if(!text){ $("capText").focus(); return; }
+      var btn=this; btn.disabled=true;
+      try{
+        var s=await seal(text);
+        var entry=await api("/api/vault/entries",{method:"POST",body:JSON.stringify({title:titleFrom(text), bundle:s.bundle})});
+        entries.unshift(entry);
+        $("capText").value=""; stopVoice();
+        render();
+        $("captures").scrollIntoView({behavior:"smooth",block:"nearest"});
+      }catch(err){ alert("Could not seal: "+err.message); }
+      finally{ btn.disabled=false; }
+    });
+
+    // voice capture (progressive enhancement; typing always works)
+    var Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
+    var rec=null, listening=false, base="";
+    var micBtn=$("micBtn");
+    if(Rec){
+      micBtn.addEventListener("click", function(){ listening?stopVoice():startVoice(); });
+    } else {
+      micBtn.classList.add("na"); micBtn.textContent="○ voice needs Chrome";
+      micBtn.title="Voice capture uses the browser speech API, available in Chromium browsers. You can always type.";
+      micBtn.addEventListener("click", function(){ $("capText").focus(); });
+    }
+    function startVoice(){
+      try{
+        rec=new Rec(); rec.lang="en-GB"; rec.interimResults=true; rec.continuous=true;
+        base=$("capText").value;
+        rec.onresult=function(ev){
+          var interim="";
+          for(var i=ev.resultIndex;i<ev.results.length;i++){ var r=ev.results[i]; if(r.isFinal){ base=(base?base+" ":"")+r[0].transcript.trim(); } else { interim+=r[0].transcript; } }
+          $("capText").value=(base?base+(interim?" ":""):"")+interim;
+        };
+        rec.onerror=function(){ stopVoice(); };
+        rec.onend=function(){ if(listening) stopVoiceUI(); };
+        rec.start(); listening=true; micBtn.classList.add("on"); micBtn.textContent="● recording… tap to stop";
+      }catch(e){ stopVoiceUI(); }
+    }
+    function stopVoice(){ if(rec){ try{ rec.stop(); }catch(e){} } stopVoiceUI(); }
+    function stopVoiceUI(){ listening=false; if(micBtn && !micBtn.classList.contains("na")){ micBtn.classList.remove("on"); micBtn.textContent="● capture by voice"; } }
+
+    // ---------- boot ----------
+    renderAuth(); render();
+    (async function boot(){
+      if(!token()) return;
+      try{ var me=await api("/api/auth/me"); user=me.user; renderAuth(); await loadEntries(); }
+      catch(e){ setToken(""); user=null; renderAuth(); render(); }
+    })();
+  })();
+  </script>
+</body>
+</html>

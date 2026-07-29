@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUGUR · The Commons</title>
+<style>
+
+  :root{
+    --bg:#e9ebf5; --card:#f7f6fc;
+    --ink:#34313f; --ink-strong:#25222e; --muted:#787490; --faint:#a6a2be;
+    --line:#e6e3f0; --line-soft:#efedf6;
+    --accent:#5566c4; --accent-soft:#ebedfb; --warm:#d9784e;
+    --name:#2f9d88; --green:#569a68; --link:#4a5bc0;
+    --sans:'Segoe UI',Helvetica,Arial,sans-serif;
+    --serif:Georgia,'Times New Roman',serif;
+    --mono:'Courier New',Courier,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13.5px;line-height:1.6}
+  .wrap{max-width:880px;margin:0 auto;padding:18px 16px 64px}
+  a{color:var(--link);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .bhead{text-align:center;padding:14px 0 6px}
+  .bhead .slash{font-family:var(--serif);font-size:30px;letter-spacing:.01em;color:var(--ink-strong)}
+  .bhead .slash b{color:var(--accent)}
+  .bhead .slash a{color:inherit;text-decoration:none}
+  .bhead .desc{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:5px}
+  .brule{border:none;border-top:1px solid var(--line);margin:14px 0 8px}
+  .btabs{text-align:center;color:var(--muted);font-size:12px;margin-bottom:14px}
+  .btabs a{color:var(--link);padding:0 3px}
+
+  .dir{border:1px solid var(--line);background:var(--card);border-radius:8px;overflow:hidden;margin-bottom:18px;box-shadow:0 1px 3px rgba(70,60,120,.05)}
+  .dir .dh{background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-bottom:1px solid var(--line)}
+  .dir table{width:100%;border-collapse:collapse}
+  .dir td{padding:11px 14px;border-top:1px solid var(--line-soft);vertical-align:middle}
+  .dir tr:first-child td{border-top:none}
+  .dir .slug{font-family:var(--mono);font-size:13px;font-weight:bold;white-space:nowrap}
+  .dir .slug a{text-decoration:none}
+  .dir .bd{color:var(--muted);font-size:12.5px}
+  .dir .ct{color:var(--faint);font-size:11.5px;text-align:right;white-space:nowrap}
+  .dir tr:hover td{background:#f6f7fd}
+  .dir tr.active td{background:var(--accent-soft)}
+  .dir tr.allrow .slug a{color:var(--muted)}
+  .dir a[data-board="came-true"]{color:#3f9d6e}
+  .dir a[data-board="recurring"]{color:#4f7fd0}
+  .dir a[data-board="lucid"]{color:#7d6bd0}
+  .dir a[data-board="astral"]{color:#5566c4}
+  .dir a[data-board="altered"]{color:#cf7440}
+  .dir a[data-board="nightmares"]{color:#c46a7a}
+  .dir a[data-board="discussion"]{color:#3f9d97}
+
+  .viewing{border:1px solid var(--line);background:var(--card);border-radius:8px;color:var(--muted);font-size:12.5px;padding:10px 14px;margin:0 0 18px}
+  .viewing b{color:var(--accent)}
+  .viewing a{color:var(--link)}
+
+  .composer{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:15px 16px;margin:0 0 24px;box-shadow:0 1px 3px rgba(70,60,120,.05)}
+  .composer .ct{color:var(--ink-strong);font-family:var(--serif);font-size:15.5px;font-weight:700;margin-bottom:11px}
+  .composer .row{display:flex;gap:9px;margin-bottom:9px;flex-wrap:wrap;align-items:center}
+  .composer input,.composer textarea,.composer select{font-family:var(--sans);font-size:13px;color:var(--ink);background:#fbfbfe;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+  .composer input{width:160px}
+  .composer select{padding:8px 8px}
+  .composer textarea{width:100%;min-height:62px;resize:vertical}
+  .composer .send{font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;background:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:9px 20px;cursor:pointer}
+  .composer .send:hover{background:#4757b3}
+
+  .group{margin-bottom:26px}
+  .ghead{border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--accent-soft);color:var(--accent);padding:10px 15px;display:flex;justify-content:space-between;align-items:baseline}
+  .ghead .g-slug{font-family:var(--mono);font-size:15px;font-weight:bold}
+  .ghead .g-desc{font-family:var(--serif);font-style:italic;font-size:12.5px;opacity:.9}
+  #came-true .ghead{background:#eef7f1;color:#37946a;border-color:#d6ecdf}
+  #recurring .ghead{background:#eef3fc;color:#4675c6;border-color:#d8e4f8}
+  #lucid .ghead{background:#f2eefb;color:#7360c8;border-color:#e2d9f5}
+  #astral .ghead{background:#edeffb;color:#4f60bf;border-color:#dadff6}
+  #altered .ghead{background:#fbf1ea;color:#c06a37;border-color:#f2ddcd}
+  #nightmares .ghead{background:#fbeef1;color:#bd6172;border-color:#f2d9df}
+  #discussion .ghead{background:#eaf7f5;color:#379089;border-color:#d3ece9}
+
+  .post{background:var(--card);border:1px solid var(--line);border-top:none;padding:13px 15px 15px}
+  .post:last-child{border-radius:0 0 8px 8px}
+  .post.op{background:#f2f3fb}
+  .post + .post{border-top:1px solid var(--line-soft)}
+  .ptop{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.75}
+  .ptop .subject{font-family:var(--serif);color:var(--ink-strong);font-weight:700;font-size:16px;display:block;margin-bottom:5px}
+  .ptop .name{color:var(--name);font-weight:600}
+  .ptop .name.tag{color:var(--warm)}
+  .ptop .no,.ptop .time{color:var(--faint);font-family:var(--mono);font-size:11px}
+  .ptop .id{font-family:var(--mono);font-size:11px;font-weight:bold}
+  .ptop .no a{color:var(--faint)}
+  .pbody{color:var(--ink);font-size:13.5px}
+  .pbody p{margin:0 0 9px}
+  .pbody p:last-child{margin:0}
+  .gt{color:var(--green);display:block;font-weight:500}
+  .ql{color:var(--link);text-decoration:underline}
+  .reply{border-left:3px solid #cfcbe4;background:#edeef7}
+  .reply .ptop::before{content:"\21B3\00a0\00a0";color:var(--faint)}
+
+  .more{text-align:center;color:var(--faint);font-size:11.5px;padding:8px 0 0}
+  .sitefoot{text-align:center;color:var(--muted);font-size:12px;margin-top:26px;line-height:1.9}
+  .sitefoot a{color:var(--link)}
+
+  /* onboarding welcome */
+  .welcome{border:1px solid #dfe6f2;background:#eef3fb;border-radius:8px;padding:12px 15px;margin:0 0 18px;color:var(--ink);font-size:13px;line-height:1.65}
+  .welcome b{color:var(--accent)}
+  .welcome code{font-family:var(--mono);font-size:12px;background:#dfe7f6;padding:0 4px;border-radius:3px;color:#3a4aa0}
+
+  /* interactive board (reply affordance + posting) */
+  .opact{margin-top:9px}
+  .opact .replylink{font-size:11.5px;color:var(--link);font-weight:600;cursor:pointer}
+  .replywrap{background:#eef0f8;border:1px solid var(--line);border-top:none;padding:11px 14px}
+  .replywrap textarea{width:100%;min-height:56px;font-family:var(--sans);font-size:13px;color:var(--ink);background:#fcfcff;border:1px solid var(--line);border-radius:6px;padding:8px 10px;resize:vertical}
+  .replywrap .rbrow{display:flex;gap:10px;align-items:center;margin-top:8px}
+  .replywrap .rname{width:150px;font-family:var(--sans);font-size:13px;color:var(--ink);background:#fcfcff;border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+  .replywrap .rsend{font-family:var(--sans);font-size:12.5px;font-weight:600;color:#fff;background:var(--accent);border:none;border-radius:6px;padding:8px 16px;cursor:pointer}
+  .replywrap .rsend:hover{background:#4757b3}
+  .replywrap .rcancel{font-size:11.5px;color:var(--muted);cursor:pointer}
+
+  /* board statistics */
+  .stats{border:1px solid var(--line);background:var(--card);border-radius:8px;overflow:hidden;margin:8px 0 18px;box-shadow:0 1px 3px rgba(70,60,120,.05)}
+  .stats .sh{background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-bottom:1px solid var(--line)}
+  .stats .srow{display:flex;flex-wrap:wrap;gap:6px 26px;padding:11px 15px;color:var(--muted);font-size:12.5px}
+  .stats .srow.sub{border-top:1px solid var(--line-soft);color:var(--faint);font-size:12px}
+  .stats .srow b{color:var(--ink-strong);font-family:var(--mono);font-weight:bold;font-size:13px}
+  .stats .srow.sub b{color:var(--muted);font-size:12px}
+  #stOnline{color:var(--green)!important}
+  .stbump{transition:none;color:var(--accent)!important}
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="bhead">
+      <div class="slash">/ <a href="index.html"><b>augur</b></a> / &middot; the commons</div>
+      <div class="desc">share the dreams you can't shake. anonymous, and no sign-up needed.</div>
+    </div>
+    <hr class="brule">
+    <div class="btabs">
+      [ <a href="index.html">The instrument</a> ] [ <a href="about.html">About</a> ] [ <a href="augur-registry.html">The Registry</a> ] [ <a href="augur-commons.html">The Commons</a> ] [ <a href="augur-vault.html">The Vault</a> ] [ <a href="augur-verifier.html">Verify</a> ] [ <a href="augur-seal-prototype.html">Seal a dream</a> ]
+    </div>
+
+    <div class="welcome">
+      <b>New here?</b> The Commons is a place to share dreams anonymously, with no account and no names. Pick a board, post a dream, and reply to others. Start a line with <code>&gt;</code> for greentext, and type <code>&gt;&gt;</code> plus a post number to quote it. Above all, be kind: these are people&rsquo;s real dreams.
+    </div>
+
+    <!-- BOARD DIRECTORY -->
+    <div class="dir">
+      <div class="dh">Boards</div>
+      <table>
+        <tr class="allrow"><td class="slug"><a data-board="all" href="#all">All boards</a></td><td class="bd">every dream, newest first</td><td class="ct">1,903 threads</td></tr>
+        <tr><td class="slug"><a data-board="came-true" href="#came-true">/came-true/</a></td><td class="bd">dreams that arrived early</td><td class="ct">412 threads</td></tr>
+        <tr><td class="slug"><a data-board="recurring" href="#recurring">/recurring/</a></td><td class="bd">the ones that keep returning</td><td class="ct">288 threads</td></tr>
+        <tr><td class="slug"><a data-board="lucid" href="#lucid">/lucid/</a></td><td class="bd">waking up inside the dream</td><td class="ct">507 threads</td></tr>
+        <tr><td class="slug"><a data-board="astral" href="#astral">/astral/</a></td><td class="bd">projection, onset, the drift</td><td class="ct">193 threads</td></tr>
+        <tr><td class="slug"><a data-board="altered" href="#altered">/altered/</a></td><td class="bd">tripping in the dream, on a known substance or something nameless</td><td class="ct">106 threads</td></tr>
+        <tr><td class="slug"><a data-board="nightmares" href="#nightmares">/nightmares/</a></td><td class="bd">the dark ones</td><td class="ct">339 threads</td></tr>
+        <tr><td class="slug"><a data-board="discussion" href="#discussion">/discussion/</a></td><td class="bd">is any of this real</td><td class="ct">164 threads</td></tr>
+      </table>
+    </div>
+
+    <div class="viewing" id="viewing">showing all boards</div>
+
+    <!-- COMPOSER -->
+    <div class="composer">
+      <div class="ct">Share a dream</div>
+      <div class="row">
+        <input type="text" value="Anonymous" aria-label="Name">
+        <label style="color:var(--faint);font-size:11px">board
+          <select aria-label="Board">
+            <option>/came-true/</option><option>/recurring/</option><option>/lucid/</option>
+            <option>/astral/</option><option>/altered/</option><option>/nightmares/</option><option>/discussion/</option>
+          </select>
+        </label>
+        <input type="text" placeholder="Subject" aria-label="Subject" style="flex:1;min-width:160px">
+      </div>
+      <textarea placeholder="Write the dream while it is still fresh. Greentext with a leading &gt;, reply to a post with its number. It is sealed the moment you post."></textarea>
+      <div class="row" style="margin-top:8px;justify-content:space-between">
+        <span style="color:var(--faint);font-size:11px">your words are hashed and locked. we never sell or leak a dream.</span>
+        <button class="send">Seal &amp; post</button>
+      </div>
+    </div>
+
+    <!-- boards render here, live from the API -->
+    <div id="boards"><p style="color:var(--faint);font-style:italic;padding:8px 2px">loading the board&hellip;</p></div>
+
+    <!-- BOARD STATISTICS -->
+    <div class="stats">
+      <div class="sh">Board statistics</div>
+      <div class="srow">
+        <span><b id="stTotal">&middot;</b> dreams and replies posted</span>
+        <span><b id="stThreads">&middot;</b> threads across <b id="stBoards">7</b> boards</span>
+        <span><b id="stPosters">&middot;</b> anonymous posters seen</span>
+      </div>
+      <div class="srow sub">
+        <span>Newest post: <b id="stNewest">&middot;</b></span>
+        <span>Counted live from the board itself.</span>
+      </div>
+    </div>
+
+    <div class="sitefoot">
+      AUGUR &middot; the commons is anonymous, not lawless. dreams are never sold or leaked.<br>
+      [ <a href="index.html">The instrument</a> ] [ <a href="terms.html">Terms</a> ] [ <a href="terms.html#research">Research use</a> ] [ contact@augur.app ]
+    </div>
+
+  </div>
+
+<script>
+/* ---- Commons, wired to the AUGUR API (persists on the server; served same-origin) ---- */
+(function(){
+  var boardsEl=document.getElementById("boards");
+  var VALID=["all","came-true","recurring","lucid","astral","altered","nightmares","discussion"];
+  var ORDER=["came-true","recurring","lucid","astral","altered","nightmares","discussion"];
+  var DESC={"came-true":"dreams that arrived early","recurring":"the ones that keep returning",
+    "lucid":"waking up inside the dream","astral":"projection, onset, the drift",
+    "altered":"tripping in the dream, known substance or nameless",
+    "nightmares":"the dark ones","discussion":"is any of this real"};
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function hue(s){var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))%360;}return h;}
+  function colourId(el){var t=(el.textContent||"").replace(/^\s*ID:/i,"").trim();if(t)el.style.color="hsl("+hue(t)+",52%,48%)";}
+  function relTime(iso){
+    var d=new Date(iso),s=(Date.now()-d.getTime())/1000;
+    if(s<60)return "just now";
+    if(s<3600)return Math.floor(s/60)+"m ago";
+    if(s<86400)return Math.floor(s/3600)+"h ago";
+    if(s<86400*7)return Math.floor(s/86400)+"d ago";
+    return d.toISOString().slice(0,10);
+  }
+  function renderBody(text){
+    return esc(text).split(/\r?\n/).map(function(line){
+      if(!line.trim())return "";
+      var wl=line.replace(/&gt;&gt;(\d+)/g,'<a class="ql" data-ref="$1">&gt;&gt;$1</a>');
+      if(/^\s*&gt;(?!&gt;)/.test(line))return '<p><span class="gt">'+wl+'</span></p>';
+      return "<p>"+wl+"</p>";
+    }).join("");
+  }
+  function num(v){return typeof v==="number"?v.toLocaleString("en-GB"):v;}
+  function setText(id,v){var el=document.getElementById(id);if(el)el.textContent=num(v);}
+
+  async function api(path,opts){
+    var r=await fetch(path,Object.assign({headers:{"content-type":"application/json"}},opts||{}));
+    var body=await r.json().catch(function(){return null;});
+    if(!r.ok)throw new Error((body&&body.error&&body.error.message)||("HTTP "+r.status));
+    return body;
+  }
+
+  // ---- rendering ----
+  function postEl(p,isOp){
+    var named=p.name && p.name.toLowerCase()!=="anonymous";
+    var el=document.createElement("div");
+    el.className="post "+(isOp?"op":"reply");
+    el.setAttribute("data-thread",isOp?p.no:p.thread_no);
+    el.innerHTML='<div class="ptop">'+
+      (isOp?'<span class="subject">'+esc(p.subject||"(untitled dream)")+'</span> ':'')+
+      '<span class="name'+(named?' tag':'')+'">'+esc(named?p.name:"Anonymous")+'</span> &nbsp; '+
+      '<span class="time">'+relTime(p.created_at)+'</span> &nbsp; '+
+      '<span class="no"><a id="p'+p.no+'" href="#p'+p.no+'">No.'+p.no+'</a></span> &nbsp; '+
+      '<span class="id">ID:'+esc(p.poster_id)+'</span></div>'+
+      '<div class="pbody">'+renderBody(p.body)+'</div>';
+    colourId(el.querySelector(".id"));
+    if(isOp){
+      var bar=document.createElement("div");bar.className="opact";
+      bar.innerHTML='<span class="replylink">Reply</span>';
+      bar.querySelector(".replylink").addEventListener("click",function(){openReply(p.no);});
+      el.appendChild(bar);
+    }
+    return el;
+  }
+  function boardGroup(slug,threads){
+    var g=document.createElement("div");g.className="group";g.id=slug;
+    var head=document.createElement("div");head.className="ghead";
+    head.innerHTML='<span class="g-slug">/'+slug+'/</span><span class="g-desc">'+esc(DESC[slug]||"")+'</span>';
+    g.appendChild(head);
+    if(!threads.length){
+      var empty=document.createElement("div");empty.className="post empty-note";
+      empty.innerHTML='<div class="pbody" style="color:var(--faint);font-style:italic">No dreams here yet. Be the first to share one.</div>';
+      g.appendChild(empty);
+    } else {
+      threads.forEach(function(t){
+        g.appendChild(postEl(t.op,true));
+        (t.posts||[]).forEach(function(p){g.appendChild(postEl(p,false));});
+      });
+    }
+    return g;
+  }
+
+  function updateDirectory(cat){
+    var counts={},total=cat.length;
+    cat.forEach(function(t){counts[t.board]=(counts[t.board]||0)+1;});
+    [].forEach.call(document.querySelectorAll(".dir a[data-board]"),function(a){
+      var b=a.getAttribute("data-board");
+      var td=a.parentNode.parentNode.querySelector(".ct");
+      if(!td)return;
+      var n=(b==="all")?total:(counts[b]||0);
+      td.textContent=n+" thread"+(n===1?"":"s");
+    });
+  }
+  function updateStats(s){
+    setText("stTotal",s.total);setText("stThreads",s.threads);
+    setText("stBoards",s.boards);setText("stPosters",s.posters);
+    setText("stNewest",s.newest_no?("No."+s.newest_no):"none yet");
+  }
+  async function refreshMeta(){
+    try{updateStats(await api("/api/commons/stats"));updateDirectory((await api("/api/commons/threads")).items);}catch(e){}
+  }
+
+  // ---- board filter (hash based) ----
+  var sel=document.querySelector(".composer select");
+  var ind=document.getElementById("viewing");
+  function show(board){
+    [].forEach.call(boardsEl.querySelectorAll(".group"),function(g){g.style.display=(board==="all"||g.id===board)?"":"none";});
+    [].forEach.call(document.querySelectorAll(".dir a[data-board]"),function(a){
+      var tr=a.parentNode.parentNode;
+      if(a.getAttribute("data-board")===board)tr.classList.add("active");else tr.classList.remove("active");
+    });
+    if(ind){
+      ind.innerHTML=(board==="all")?"showing <b>all boards</b>"
+        :"showing <b>/"+board+"/</b> only &nbsp;&middot;&nbsp; <span style='font-style:italic;font-family:Georgia,serif'>"+esc(DESC[board]||"")+"</span> &nbsp;&middot;&nbsp; <a href='#all'>show all boards</a>";
+    }
+    if(sel&&board!=="all"){for(var k=0;k<sel.options.length;k++){if(sel.options[k].text==="/"+board+"/")sel.selectedIndex=k;}}
+  }
+  function fromHash(){
+    var h=(location.hash||"#all").slice(1);
+    if(/^p\d+$/.test(h))return;              // a post anchor, not a board filter
+    show(VALID.indexOf(h)>=0?h:"all");
+  }
+  window.addEventListener("hashchange",fromHash);
+
+  // quote-links scroll without disturbing the board filter
+  boardsEl.addEventListener("click",function(e){
+    var q=e.target&&e.target.closest?e.target.closest(".ql[data-ref]"):null;
+    if(!q)return;
+    e.preventDefault();
+    var tgt=document.getElementById("p"+q.getAttribute("data-ref"));
+    if(!tgt)return;
+    var post=tgt.closest?tgt.closest(".post"):null;
+    (post||tgt).scrollIntoView({behavior:"smooth",block:"center"});
+    if(post){var ob=post.style.background;post.style.background="#fff6d6";setTimeout(function(){post.style.background=ob;},700);}
+  });
+
+  // ---- posting ----
+  function openReply(threadNo){
+    var nodes=boardsEl.querySelectorAll('[data-thread="'+threadNo+'"]');
+    if(!nodes.length)return;
+    var last=nodes[nodes.length-1];
+    if(last.classList.contains("replywrap")){last.querySelector("textarea").focus();return;}
+    var wrap=document.createElement("div");wrap.className="replywrap";wrap.setAttribute("data-thread",threadNo);
+    wrap.innerHTML='<textarea placeholder="Reply... (use &gt; for greentext, &gt;&gt;number to quote a post)"></textarea>'+
+      '<div class="rbrow"><input class="rname" type="text" value="Anonymous"> <button type="button" class="rsend">Post reply</button> <span class="rcancel">cancel</span></div>';
+    last.parentNode.insertBefore(wrap,last.nextSibling);
+    var ta=wrap.querySelector("textarea");ta.focus();
+    wrap.querySelector(".rsend").addEventListener("click",async function(){
+      var body=ta.value.trim();if(!body){ta.focus();return;}
+      var btn=this;btn.disabled=true;
+      try{
+        var post=await api("/api/commons/threads/"+threadNo+"/posts",{method:"POST",body:JSON.stringify({name:wrap.querySelector(".rname").value.trim(),body:body})});
+        var el=postEl(post,false);
+        wrap.parentNode.insertBefore(el,wrap);
+        wrap.remove();
+        el.scrollIntoView({behavior:"smooth",block:"center"});
+        refreshMeta();
+      }catch(err){btn.disabled=false;alert("Could not post the reply: "+err.message);}
+    });
+    wrap.querySelector(".rcancel").addEventListener("click",function(){wrap.remove();});
+  }
+
+  var send=document.querySelector(".composer .send");
+  if(send)send.addEventListener("click",async function(){
+    var texts=document.querySelectorAll(".composer input[type=text]");
+    var name=texts[0]?texts[0].value.trim():"";
+    var subjectEl=texts[1];
+    var board=(sel?sel.value:"/came-true/").replace(/[^a-z-]/g,"");
+    var ta=document.querySelector(".composer textarea");
+    var body=ta.value.trim();
+    if(!body){ta.focus();return;}
+    send.disabled=true;
+    try{
+      var thread=await api("/api/commons/threads",{method:"POST",body:JSON.stringify({board:board,name:name,subject:subjectEl?subjectEl.value.trim():"",body:body})});
+      var g=document.getElementById(board);
+      if(g){
+        var en=g.querySelector(".empty-note");if(en)en.remove();
+        var op=postEl(thread,true);
+        g.insertBefore(op,g.querySelector(".ghead").nextSibling);
+      }
+      ta.value="";if(subjectEl)subjectEl.value="";
+      var cur=(location.hash||"").slice(1);
+      if(cur&&cur!=="all"&&cur!==board&&VALID.indexOf(cur)>=0)location.hash="#"+board;
+      if(g)g.querySelector(".post.op").scrollIntoView({behavior:"smooth",block:"center"});
+      refreshMeta();
+    }catch(err){alert("Could not post the dream: "+err.message);}
+    finally{send.disabled=false;}
+  });
+
+  // ---- boot ----
+  (async function load(){
+    var cat,fulls,stats;
+    try{
+      cat=(await api("/api/commons/threads")).items;
+      fulls=await Promise.all(cat.map(function(t){return api("/api/commons/threads/"+t.no);}));
+      stats=await api("/api/commons/stats").catch(function(){return null;});
+    }catch(e){
+      boardsEl.innerHTML='<div class="welcome" style="background:#fdeeee;border-color:#f0cccc">The board could not be reached. Start the AUGUR server with <code>npm start</code> and open this page from <b>http://127.0.0.1:8787</b>.</div>';
+      return;
+    }
+    var byBoard={};ORDER.forEach(function(b){byBoard[b]=[];});
+    fulls.forEach(function(f){if(byBoard[f.op.board])byBoard[f.op.board].push(f);});
+    boardsEl.innerHTML="";
+    ORDER.forEach(function(slug){boardsEl.appendChild(boardGroup(slug,byBoard[slug]));});
+    updateDirectory(cat);
+    if(stats)updateStats(stats);
+    fromHash();
+  })();
+})();
+</script>
+</body>
+</html>

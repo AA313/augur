@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUGUR · The Seal mark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bone:#3a2f52;--brass:#7d5bd0;--brass-dim:#b78cff;--muted:#7c6f96;--line:rgba(120,90,180,.18);
+    --serif:"Quicksand",system-ui,sans-serif;--sans:"Inter",system-ui,sans-serif;--mono:"IBM Plex Mono",monospace;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--bone);line-height:1.5;-webkit-font-smoothing:antialiased;
+    background:radial-gradient(1100px 760px at 18% -8%,#ffdcf0 0%,rgba(255,220,240,0) 55%),radial-gradient(1000px 720px at 88% 4%,#cfe0ff 0%,rgba(207,224,255,0) 55%),linear-gradient(180deg,#f4edff 0%,#eaf1ff 100%) fixed;}
+  .wrap{max-width:860px;margin:0 auto;padding:60px 24px 80px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:14px}
+  h1{font-family:var(--serif);font-weight:700;font-size:clamp(32px,6vw,48px);margin-bottom:14px}
+  .lede{font-size:17px;color:var(--muted);max-width:60ch}
+  .panel{margin-top:32px;background:rgba(255,255,255,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 16px 40px -24px rgba(70,50,120,.4)}
+  .hero{display:flex;gap:30px;align-items:center;flex-wrap:wrap}
+  .big{width:190px;height:190px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(160deg,rgba(183,140,255,.16),rgba(143,168,255,.12));border:1px solid var(--line);color:var(--brass)}
+  .big svg{width:130px;height:130px}
+  .uses{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .ctx{display:flex;flex-direction:column;align-items:center;gap:7px}
+  .ctx .lab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .chip{border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:rgba(255,255,255,.7)}
+  .chip.ink{color:var(--bone)} .chip.rev{background:#2c2340;border-color:transparent;color:#fff}
+  .s90{width:90px;height:90px} .s90 svg{width:56px;height:56px}
+  .s32{width:44px;height:44px} .s32 svg{width:28px;height:28px}
+  .s16{width:30px;height:30px} .s16 svg{width:16px;height:16px}
+  .lock{margin-top:22px;padding-top:20px;border-top:1px solid var(--line);display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+  .lk{display:flex;align-items:center;gap:13px} .lk svg{width:40px;height:40px;color:var(--brass)}
+  .wm{font-family:var(--serif);font-weight:700;font-size:32px;letter-spacing:.16em;color:var(--bone);text-transform:lowercase}
+  .lk.dark{background:#2c2340;border-radius:14px;padding:14px 18px} .lk.dark svg{color:#fff} .lk.dark .wm{color:#fff}
+  h2{font-family:var(--serif);font-weight:600;font-size:22px;margin:34px 0 6px}
+  .variants{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px}
+  @media(max-width:640px){.variants{grid-template-columns:1fr}}
+  .vcard{background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:18px;padding:22px;text-align:center;color:var(--brass)}
+  .vcard svg{width:82px;height:82px}
+  .vcard .nm{font-family:var(--serif);font-weight:600;font-size:16px;color:var(--bone);margin-top:12px}
+  .vcard .ds{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .live{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#3f9d78;border:1px solid rgba(63,157,120,.4);border-radius:999px;padding:3px 9px;margin-top:10px}
+</style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%20120%22%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2243%22%20fill%3D%22none%22%20stroke%3D%22%237d5bd0%22%20stroke-width%3D%226%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%237d5bd0%22%20stroke-width%3D%225%22%20stroke-dasharray%3D%220.5%2011%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M60%2C22%20L64.5%2C55.5%20L90%2C60%20L64.5%2C64.5%20L60%2C98%20L55.5%2C64.5%20L30%2C60%20L55.5%2C55.5%20Z%22%20fill%3D%22%237d5bd0%22%2F%3E%3Ccircle%20cx%3D%2281%22%20cy%3D%2239%22%20r%3D%222.4%22%20fill%3D%22%237d5bd0%22%2F%3E%3Ccircle%20cx%3D%2281%22%20cy%3D%2281%22%20r%3D%222.4%22%20fill%3D%22%237d5bd0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2281%22%20r%3D%222.4%22%20fill%3D%22%237d5bd0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2239%22%20r%3D%222.4%22%20fill%3D%22%237d5bd0%22%2F%3E%3C%2Fsvg%3E">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="seal" viewBox="0 0 120 120"><circle cx="60" cy="60" r="43" fill="none" stroke="currentColor" stroke-width="4.5"/><circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="0.5 10" stroke-linecap="round"/><path d="M60,22 L64.5,55.5 L90,60 L64.5,64.5 L60,98 L55.5,64.5 L30,60 L55.5,55.5 Z" fill="currentColor"/><circle cx="81" cy="39" r="2.4" fill="currentColor"/><circle cx="81" cy="81" r="2.4" fill="currentColor"/><circle cx="39" cy="81" r="2.4" fill="currentColor"/><circle cx="39" cy="39" r="2.4" fill="currentColor"/></symbol>
+  <symbol id="sealTicked" viewBox="0 0 120 120">
+    <circle cx="60" cy="60" r="51" fill="none" stroke="currentColor" stroke-width="7" stroke-dasharray="1.6 6.9" stroke-linecap="round"/>
+    <circle cx="60" cy="60" r="42" fill="none" stroke="currentColor" stroke-width="4"/>
+    <path d="M60,26 L64.5,55.5 L88,60 L64.5,64.5 L60,94 L55.5,64.5 L32,60 L55.5,55.5 Z" fill="currentColor"/>
+  </symbol>
+  <symbol id="sealEight" viewBox="0 0 120 120">
+    <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5"/>
+    <circle cx="60" cy="60" r="38" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".5"/>
+    <path d="M60,24 L64,56 L92,60 L64,64 L60,96 L56,64 L28,60 L56,56 Z" fill="currentColor"/>
+    <path d="M60,38 L62.5,57.5 L82,60 L62.5,62.5 L60,82 L57.5,62.5 L38,60 L57.5,57.5 Z" transform="rotate(45 60 60)" fill="currentColor" opacity=".85"/>
+  </symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="eyebrow">Identity · the mark</div>
+  <h1>The Seal.</h1>
+  <p class="lede">A wax-seal rim, a guiding star, and four points orbiting it like fixed stars. A seal that reads the sky, which is exactly what an augur does.</p>
+
+  <div class="panel">
+    <div class="hero">
+      <div class="big"><svg><use href="#seal"/></svg></div>
+      <div class="uses">
+        <div class="ctx"><div class="chip ink s90"><svg><use href="#seal"/></svg></div><span class="lab">one colour</span></div>
+        <div class="ctx"><div class="chip rev s90"><svg><use href="#seal"/></svg></div><span class="lab">reversed</span></div>
+        <div class="ctx"><div class="chip ink s32"><svg><use href="#seal"/></svg></div><span class="lab">32px</span></div>
+        <div class="ctx"><div class="chip ink s16"><svg><use href="#seal"/></svg></div><span class="lab">favicon</span></div>
+      </div>
+    </div>
+    <div class="lock">
+      <div class="lk"><svg><use href="#seal"/></svg><span class="wm">augur</span></div>
+      <div class="lk dark"><svg><use href="#seal"/></svg><span class="wm">augur</span></div>
+    </div>
+  </div>
+
+  <h2>Detailing options</h2>
+  <p class="lede" style="font-size:15px">Same idea, three levels of ornament. Tell me if you want a different one and I will swap it everywhere in one move.</p>
+  <div class="variants">
+    <div class="vcard"><svg><use href="#seal"/></svg><div class="nm">Beaded</div><div class="ds">round-bead rim</div><span class="live">live now</span></div>
+    <div class="vcard"><svg><use href="#sealTicked"/></svg><div class="nm">Milled</div><div class="ds">ticked wax-seal rim</div></div>
+    <div class="vcard"><svg><use href="#sealEight"/></svg><div class="nm">Compass</div><div class="ds">eight-point star</div></div>
+  </div>
+</div>
+</body>
+</html>

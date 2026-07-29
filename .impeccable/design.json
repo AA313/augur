@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-16T00:00:00Z",
+  "title": "Design System: AUGUR",
+  "extensions": {
+    "colorMeta": {
+      "bar":          { "role": "primary",  "displayName": "Dusty Indigo",     "canonical": "#655d84", "tonalRamp": ["#191627", "#26223a", "#33304a", "#494367", "#655d84", "#8880a4", "#b1aac6", "#dcd8e6"] },
+      "link":         { "role": "primary",  "displayName": "Muted Violet Link", "canonical": "#5a4b9c", "tonalRamp": ["#171232", "#241c4c", "#332866", "#463a86", "#5a4b9c", "#7d6fb6", "#a99fd0", "#d7d0ea"] },
+      "commons-name": { "role": "secondary","displayName": "Faded Teal",        "canonical": "#5f8a80", "tonalRamp": ["#182421", "#243631", "#324a43", "#456359", "#5f8a80", "#83a89f", "#aac6bf", "#d3e3df"] },
+      "commons-green":{ "role": "secondary","displayName": "Dusty Sage (greentext)", "canonical": "#79895f", "tonalRamp": ["#20241a", "#313827", "#424c34", "#5b6746", "#79895f", "#9aa885", "#bfc9ac", "#e0e6d5"] },
+      "hit":          { "role": "tertiary", "displayName": "Faded Sage (hit)",  "canonical": "#5c7a54", "tonalRamp": ["#161e14", "#22301f", "#2f412a", "#42593a", "#5c7a54", "#7f9a78", "#a7bca2", "#d2ddce"] },
+      "miss":         { "role": "tertiary", "displayName": "Faded Mauve (miss)", "canonical": "#9a6d7c", "tonalRamp": ["#281920", "#3d2831", "#523743", "#744d5c", "#9a6d7c", "#b58f9b", "#cfb4bd", "#e8dae0"] },
+      "seal":         { "role": "tertiary", "displayName": "Seal Indigo",       "canonical": "#5f5896", "tonalRamp": ["#171531", "#24214c", "#322e66", "#454087", "#5f5896", "#827bb2", "#aca6cd", "#d8d5e8"] },
+      "ink":          { "role": "neutral",  "displayName": "Ink",              "canonical": "#2f2a44", "tonalRamp": ["#171528", "#211d33", "#2f2a44", "#453e60", "#635b82", "#8b84a4", "#b6b1c8", "#e2dfea"] },
+      "muted":        { "role": "neutral",  "displayName": "Muted",            "canonical": "#6f688c", "tonalRamp": ["#221f2c", "#332f41", "#453f57", "#575070", "#6f688c", "#928bab", "#b8b2c9", "#e0dde8"] },
+      "faint":        { "role": "neutral",  "displayName": "Faint (chrome only)", "canonical": "#948dae", "tonalRamp": ["#2a2836", "#3d3a4e", "#524d68", "#6f6889", "#948dae", "#aca6c2", "#c6c1d6", "#e6e3ee"] },
+      "paper":        { "role": "neutral",  "displayName": "Dusk Paper",       "canonical": "#eeecf4", "tonalRamp": ["#2c2940", "#453f63", "#6a6293", "#9c94c3", "#cbc5e5", "#eeecf4", "#f6f5fa", "#ffffff"] },
+      "commons-mist": { "role": "neutral",  "displayName": "Commons Mist",     "canonical": "#e8e4ec", "tonalRamp": ["#2a2732", "#41394b", "#63586f", "#93889f", "#c6bccf", "#e8e4ec", "#f2eef4", "#ffffff"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "AUGUR wordmark and page mastheads only; Georgia, wide-tracked." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles inside panels; Georgia." },
+      "lead":     { "displayName": "Lead",     "purpose": "Opening lines, epigraphs, mystical asides; Georgia, italic-capable." },
+      "body":     { "displayName": "Body",     "purpose": "Prose and UI; Verdana, small, capped at 64ch." },
+      "label":    { "displayName": "Label",    "purpose": "Caption bars, kickers, form labels; Courier, uppercase." },
+      "data":     { "displayName": "Data",     "purpose": "Hashes, timestamps, seal IDs, post numbers, greentext; Courier." }
+    },
+    "registers": [
+      { "name": "instrument", "appliesTo": ["index.html", "about.html", "augur-registry.html", "augur-verifier.html", "augur-vault.html", "augur-seal-prototype.html"], "idiom": "faded phpBB-era forum", "paper": "#eeecf4", "bar": "#655d84", "ink": "#2f2a44", "link": "#5a4b9c", "purpose": "Everything serious and evidentiary. Must read as an instrument, never a psychic app or an AI product." },
+      { "name": "commons", "appliesTo": ["augur-commons.html"], "idiom": "anonymous imageboard", "paper": "#e8e4ec", "name": "#5f8a80", "green": "#79895f", "link": "#6a5aa6", "boards": ["/came-true/", "/recurring/", "/lucid/", "/astral/", "/nightmares/", "/discussion/"], "purpose": "The anonymous community board only. Hushed and welcoming, earnest not crude." }
+    ],
+    "shadows": [
+      { "name": "none", "value": "none", "purpose": "The system is flat. No shadows, no glass, no glow. Depth is 1px lines and flat fills only." }
+    ],
+    "effects": [
+      { "name": "button-bevel", "value": "1px light top+left border against darker bottom+right", "purpose": "The single skeuomorphic touch: a faint Windows-9x control bevel on buttons." },
+      { "name": "starfield", "value": "five 1px radial-gradient dots at ~0.10-0.20 alpha, on the body background only", "purpose": "Faint dusk texture. Never above content, never over ~0.2 alpha." }
+    ],
+    "motion": [
+      { "name": "seal-ring", "value": "slow rotation on the seal emblem only", "purpose": "The one residual animation. Honor prefers-reduced-motion." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Flat dusty-indigo commit button with an old-web bevel. Square, no gradient.",
+      "html": "<button class=\"ds-btn\">Seal a dream</button>",
+      "css": ".ds-btn { font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 13px; letter-spacing: .03em; color: #fff; background: #655d84; border: 1px solid #4f486c; border-top-color: #8279a0; border-left-color: #8279a0; border-radius: 0; padding: 11px 22px; cursor: pointer; } .ds-btn:hover { background: #5a5279; } .ds-btn:focus-visible { outline: 2px solid #5a4b9c; outline-offset: 1px; }"
+    },
+    {
+      "name": "Section Panel",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat 1px-bordered panel opening with a dusty-indigo Courier caption bar.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-cap\">How the seal works</div><div class=\"ds-in\"><p>Write the dream, declare the target, lock it.</p></div></section>",
+      "css": ".ds-panel { border: 1px solid #d1cbe0; background: #f6f5fa; border-radius: 0; } .ds-cap { font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #efecf6; background: #655d84; padding: 6px 13px; border-bottom: 1px solid #524a70; } .ds-in { padding: 16px 18px; font-family: Verdana, sans-serif; font-size: 12.5px; color: #2f2a44; line-height: 1.6; }"
+    },
+    {
+      "name": "Evidence Card",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "The signature Instrument component: a mono panel adjudicating a sealed dream as hit / miss / sealed.",
+      "html": "<div class=\"ds-proof\"><div class=\"ds-ph\">DREAM #0412 &mdash; sealed</div><div class=\"ds-pin\"><div><span class=\"k\">counts if</span> <span class=\"cond\">&ldquo;a passenger plane lands safely, within 30 days&rdquo;</span></div><div><span class=\"k\">sha-256</span> fa936c...c6a5fa43</div></div><div class=\"ds-status\">&#9679; RESOLVED &mdash; HIT</div></div>",
+      "css": ".ds-proof { border: 1px solid #d1cbe0; background: #fbfafd; border-radius: 0; font-family: 'Courier New', monospace; font-size: 11.5px; color: #2f2a44; } .ds-ph { color: #6f688c; padding: 7px 11px; border-bottom: 1px solid #e1dcec; background: #eae7f1; } .ds-pin { padding: 11px 12px; line-height: 1.9; } .ds-pin .k { color: #948dae; } .ds-pin .cond { font-family: Georgia, serif; font-style: italic; color: #3a3352; } .ds-status { padding: 9px 12px; border-top: 1px solid #e1dcec; background: #eef1ea; color: #5c7a54; font-family: Verdana, sans-serif; font-size: 11.5px; font-weight: bold; }"
+    },
+    {
+      "name": "Board Post",
+      "kind": "custom",
+      "refersTo": "body",
+      "description": "The signature Commons component: an imageboard post with greentext and quote-links.",
+      "html": "<div class=\"ds-post\"><div class=\"ds-ptop\"><span class=\"name\">Anonymous</span> <span class=\"meta\">5h ago No.4021301 ID:qk3m9r</span></div><div class=\"ds-pbody\"><span class=\"gt\">&gt;phone buzzes at 8:12</span><p>felt like the dream handed it to me.</p></div></div>",
+      "css": ".ds-post { border: 1px solid #d7d0e0; background: #f2eef4; border-radius: 0; padding: 11px 13px; font-family: 'Courier New', monospace; font-size: 13px; color: #332e46; } .ds-ptop .name { color: #5f8a80; } .ds-ptop .meta { color: #a49cba; font-size: 12px; } .ds-pbody .gt { color: #79895f; display: block; } .ds-pbody p { margin: 6px 0 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Small-Hours Observatory",
+    "overview": "AUGUR looks like a serious, faintly mystical corner of the old web: a nocturnal observatory for dreams, kept by someone rigorous. Dusk-lavender paper under a barely-there starfield, thin square-cornered panels, muted dusty-indigo header bars, small system type. It runs in two registers split by purpose: the Instrument (faded phpBB-era forum) for everything evidentiary and serious (homepage, Registry, Verifier, Vault, About), and the Commons (anonymous imageboard) for the community board only. Above all it rejects the AI look: no gradients, no glass, no rounded pills. It reads as an instrument someone quietly runs in the small hours, not a product being marketed.",
+    "keyCharacteristics": [
+      "Faded nocturnal old-web: dusk-lavender paper, faint starfield, 1px square borders, small system type.",
+      "Two registers by purpose: the serious Instrument, and the anonymous Commons board.",
+      "Faintness lives in chrome; reading text and hit/miss labels stay legible.",
+      "Evidence over persuasion: the homepage demonstrates the seal and shows hits beside honest misses.",
+      "Verdana + Georgia + Courier. No gradients, no glass, no rounded pills."
+    ],
+    "rules": [
+      { "name": "The No-Glow Rule", "body": "No gradients, no backdrop-filter, no glass, no rounded pills, no drop-shadow glows. Flat fills, square corners, 1px borders. The instant something looks glossy it reads as AI, the one thing this system may never do.", "section": "colors" },
+      { "name": "The Two-Register Rule", "body": "A page is Instrument (serious, evidentiary) or Commons (anonymous board). Pick by purpose, load the matching idiom, never blur them.", "section": "colors" },
+      { "name": "The Truth-Signal Rule", "body": "Faded sage means hit, faded mauve means miss, seal indigo means sealed-and-waiting. Never decorative.", "section": "colors" },
+      { "name": "The Machine-Voice Rule", "body": "Anything literally exact (hash, timestamp, seal ID, declared condition, post number) is Courier.", "section": "typography" },
+      { "name": "The Serif-For-Wonder Rule", "body": "Georgia is reserved for the wordmark, headings, and awed/mystical lines; never UI chrome or dense body text.", "section": "typography" },
+      { "name": "The Flat Rule", "body": "Depth is a 1px line and a flat fill, never a shadow. The only raised affordance is the button bevel.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep every surface flat: 1px hairlines, flat fills, square corners, the one permitted button bevel.",
+      "Do pick a page's register by purpose (Instrument vs Commons) and keep the idioms separate.",
+      "Do set every exact value in Courier and reserve Georgia for the wordmark, headings, and awed asides.",
+      "Do reserve sage/mauve/seal-indigo for hit/miss/sealed only.",
+      "Do spend 'faint' on chrome; keep reading text at ink and hit/miss labels legible. Target AAA where feasible.",
+      "Do let the homepage demonstrate the mechanism and show honest misses beside hits."
+    ],
+    "donts": [
+      "Don't ever reintroduce the AI look: no gradient pills, no backdrop-filter/glass, no pastel radial-gradient hero washes, no glossy dreamcore, no rounded-22px buttons. The single most important prohibition.",
+      "Don't drift into psychic or occult woo: no crystal balls, tarot, moon-and-stars mysticism, fortune-teller framing.",
+      "Don't reach for crypto/web3 hype: no neon, no 'blockchain-verified' badges.",
+      "Don't use drop-shadows or glows for depth; use a 1px line.",
+      "Don't let Commons greentext go to the harsh #789922; keep it dusty sage. Don't let the board's looseness leak into the Instrument.",
+      "Don't lowercase or restyle the wordmark; it is Georgia, wide-tracked.",
+      "Don't use an em dash anywhere in user-facing copy."
+    ]
+  }
+}

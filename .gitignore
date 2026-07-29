@@ -1,0 +1,16 @@
+# runtime state
+data/
+server/server.log
+node_modules/
+
+# local dev artifacts (snapshots, archives, zips) — not needed to run or deploy
+*.zip
+_snapshot*/
+_archive*/
+_faded*/
+_dist/
+_dir-*.html
+
+# editor / OS
+.DS_Store
+Thumbs.db

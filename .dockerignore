@@ -1,0 +1,12 @@
+# runtime state and dev artifacts — never ship these
+node_modules
+data
+server/server.log
+*.zip
+_snapshot*
+_archive*
+_faded*
+_dist
+_dir-*.html
+.git
+.claude

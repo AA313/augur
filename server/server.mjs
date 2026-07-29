@@ -1,0 +1,458 @@
+// AUGUR backend — zero external deps (node:http + node:sqlite). Serves the static site and
+// the /api surface from one origin. Implements augur-api-spec.md (persistence foundation).
+import { createServer } from 'node:http';
+import { readFile, stat } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { dirname, join, normalize, extname } from 'node:path';
+import { db, nextNo, nowISO, uid, canon, sha256hex, posterId, voterFingerprint } from './db.mjs';
+import { seedCommonsIfEmpty } from './seed.mjs';
+import { seedRegistryIfEmpty } from './seed-registry.mjs';
+import { anchorHash, inspectToken } from './anchor.mjs';
+import { submitOTS } from './ots.mjs';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(here, '..');              // project root holds the .html files
+const PORT = process.env.PORT || 8787;
+const DEV = process.env.NODE_ENV !== 'production';
+
+const BOARDS = [
+  { slug: 'came-true', label: 'dreams that arrived early' },
+  { slug: 'recurring', label: 'the ones that keep returning' },
+  { slug: 'lucid', label: 'waking up inside the dream' },
+  { slug: 'astral', label: 'projection, onset, the drift' },
+  { slug: 'altered', label: 'a substance in the dream' },
+  { slug: 'nightmares', label: 'the dark ones' },
+  { slug: 'discussion', label: 'is any of this real' },
+];
+const BOARD_SLUGS = new Set(BOARDS.map((b) => b.slug));
+
+// ---------- tiny helpers ----------
+const json = (res, status, obj) => {
+  const body = JSON.stringify(obj);
+  res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'content-length': Buffer.byteLength(body) });
+  res.end(body);
+};
+const fail = (res, status, code, message) => json(res, status, { error: { code, message } });
+const clientOf = (req) => (req.headers['x-forwarded-for']?.split(',')[0].trim()) || req.socket.remoteAddress || 'unknown';
+
+function userFrom(req) {
+  const auth = req.headers['authorization'] || '';
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  if (!m) return null;
+  const s = db.prepare(`SELECT user_id, expires_at FROM sessions WHERE token = ?`).get(m[1]);
+  if (!s || s.expires_at < nowISO()) return null;
+  return db.prepare(`SELECT * FROM users WHERE id = ?`).get(s.user_id) || null;
+}
+
+// ---------- route table ----------
+const routes = [];
+const add = (method, path, handler) => {
+  const keys = [];
+  const rx = new RegExp('^' + path.replace(/:[^/]+/g, (k) => { keys.push(k.slice(1)); return '([^/]+)'; }) + '$');
+  routes.push({ method, rx, keys, handler });
+};
+
+// ===== health =====
+add('GET', '/api/health', async (ctx) => json(ctx.res, 200, { ok: true, time: nowISO() }));
+
+// ===== auth =====
+add('POST', '/api/auth/request', async ({ res, body }) => {
+  const email = (body.email || '').trim().toLowerCase();
+  if (!email || !email.includes('@')) return fail(res, 400, 'bad_email', 'A valid email is required.');
+  const token = uid();
+  const created = nowISO();
+  const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+  db.prepare(`INSERT INTO login_tokens (token, email, created_at, expires_at, used) VALUES (?,?,?,?,0)`).run(token, email, created, expires);
+  // Prototype sign-in: there is no email provider, so the magic-link token is returned directly
+  // (which lets anyone sign in as any email). A real deployment would email it and delete this.
+  json(res, 200, { ok: true, note: 'Prototype: no email is sent; the sign-in token is returned directly.', dev_login_token: token });
+});
+
+add('POST', '/api/auth/verify', async ({ res, body }) => {
+  const token = (body.token || '').trim();
+  const lt = db.prepare(`SELECT * FROM login_tokens WHERE token = ?`).get(token);
+  if (!lt || lt.used || lt.expires_at < nowISO()) return fail(res, 401, 'bad_token', 'Login link is invalid or expired.');
+  db.prepare(`UPDATE login_tokens SET used = 1 WHERE token = ?`).run(token);
+  let user = db.prepare(`SELECT * FROM users WHERE email = ?`).get(lt.email);
+  if (!user) {
+    const id = uid();
+    db.prepare(`INSERT INTO users (id, email, created_at, research_opt_in) VALUES (?,?,?,0)`).run(id, lt.email, nowISO());
+    user = db.prepare(`SELECT * FROM users WHERE id = ?`).get(id);
+  }
+  const session = uid();
+  const expires = new Date(Date.now() + 30 * 864e5).toISOString();
+  db.prepare(`INSERT INTO sessions (token, user_id, created_at, expires_at) VALUES (?,?,?,?)`).run(session, user.id, nowISO(), expires);
+  json(res, 200, { session_token: session, user: publicUser(user) });
+});
+
+add('POST', '/api/auth/logout', async ({ res, req, user }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const token = (req.headers['authorization'] || '').replace(/^Bearer\s+/i, '');
+  db.prepare(`DELETE FROM sessions WHERE token = ?`).run(token);
+  json(res, 200, { ok: true });
+});
+
+add('GET', '/api/auth/me', async ({ res, user }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  json(res, 200, { user: publicUser(user) });
+});
+
+const publicUser = (u) => ({ id: u.id, email: u.email, created_at: u.created_at, research_opt_in: !!u.research_opt_in });
+
+// ===== vault (private, capture-then-seal) =====
+// Verify a bundle against the shared seal contract (identical to the verifier / seal page).
+function verifyBundle(b) {
+  if (!b || typeof b !== 'object') return null;
+  const claim = b.claim && typeof b.claim === 'object' ? b.claim : { resolution_by: '', domain: '', specificity: '' };
+  const payload = { content: String(b.content ?? ''), claim, nonce: String(b.nonce ?? ''), created_at: String(b.created_at ?? '') };
+  if (!payload.content.trim() || !payload.nonce || !payload.created_at) return null;
+  const h = sha256hex(canon(payload));
+  if (h !== String(b.sha256 || '').toLowerCase()) return null;
+  return { ...payload, hash: h };
+}
+const versionsOf = (entryId) => db.prepare(`SELECT * FROM vault_versions WHERE entry_id = ? ORDER BY seq ASC`).all(entryId);
+const versionOut = (v) => {
+  const claim = JSON.parse(v.claim);
+  return { id: v.id, seq: v.seq, kind: v.kind, text: v.content, nonce: v.nonce, hash: v.hash, created_at: v.created_at,
+    bundle: { content: v.content, claim, nonce: v.nonce, created_at: v.created_at, sha256: v.hash } };
+};
+const entryOut = (e) => ({ id: e.id, title: e.title, dream_date: e.dream_date, tags: JSON.parse(e.tags), created_at: e.created_at, updated_at: e.updated_at, versions: versionsOf(e.id).map(versionOut) });
+
+add('GET', '/api/vault/entries', async ({ res, user }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const rows = db.prepare(`SELECT * FROM vault_entries WHERE user_id = ? ORDER BY created_at DESC`).all(user.id);
+  json(res, 200, { items: rows.map(entryOut), next_cursor: null });
+});
+
+add('POST', '/api/vault/entries', async ({ res, user, body }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const v = verifyBundle(body.bundle);
+  if (!v) return fail(res, 400, 'bad_bundle', 'The first version must be a valid sealed bundle (hash must match its contents).');
+  const id = uid(), now = nowISO();
+  const tags = JSON.stringify(Array.isArray(body.tags) ? body.tags : []);
+  db.prepare(`INSERT INTO vault_entries (id, user_id, title, dream_date, tags, created_at, updated_at) VALUES (?,?,?,?,?,?,?)`)
+    .run(id, user.id, (body.title || '').slice(0, 120) || null, body.dream_date || null, tags, now, now);
+  db.prepare(`INSERT INTO vault_versions (id, entry_id, user_id, seq, kind, content, claim, nonce, hash, created_at) VALUES (?,?,?,?, 'raw', ?,?,?,?,?)`)
+    .run(uid(), id, user.id, 1, v.content, JSON.stringify(v.claim), v.nonce, v.hash, v.created_at);
+  json(res, 201, entryOut(db.prepare(`SELECT * FROM vault_entries WHERE id = ?`).get(id)));
+});
+
+// append a later pass. Versions are append-only and immutable (no edit/delete of a version).
+add('POST', '/api/vault/entries/:id/versions', async ({ res, user, params, body }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const e = db.prepare(`SELECT * FROM vault_entries WHERE id = ?`).get(params.id);
+  if (!e || e.user_id !== user.id) return fail(res, 404, 'not_found', 'Entry not found.');
+  const v = verifyBundle(body.bundle);
+  if (!v) return fail(res, 400, 'bad_bundle', 'A version must be a valid sealed bundle (hash must match its contents).');
+  const seq = (db.prepare(`SELECT MAX(seq) AS m FROM vault_versions WHERE entry_id = ?`).get(params.id).m || 0) + 1;
+  db.prepare(`INSERT INTO vault_versions (id, entry_id, user_id, seq, kind, content, claim, nonce, hash, created_at) VALUES (?,?,?,?, 'pass', ?,?,?,?,?)`)
+    .run(uid(), params.id, user.id, seq, v.content, JSON.stringify(v.claim), v.nonce, v.hash, v.created_at);
+  db.prepare(`UPDATE vault_entries SET updated_at = ? WHERE id = ?`).run(nowISO(), params.id);
+  json(res, 201, entryOut(db.prepare(`SELECT * FROM vault_entries WHERE id = ?`).get(params.id)));
+});
+
+add('DELETE', '/api/vault/entries/:id', async ({ res, user, params }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const row = db.prepare(`SELECT * FROM vault_entries WHERE id = ?`).get(params.id);
+  if (!row || row.user_id !== user.id) return fail(res, 404, 'not_found', 'Entry not found.');
+  db.prepare(`DELETE FROM vault_versions WHERE entry_id = ?`).run(params.id);
+  db.prepare(`DELETE FROM vault_entries WHERE id = ?`).run(params.id);
+  json(res, 200, { ok: true });
+});
+
+// ===== seals =====
+add('POST', '/api/seals', async ({ res, user, body }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const hash = (body.commitment_hash || '').toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(hash)) return fail(res, 400, 'bad_hash', 'commitment_hash must be a 64-char SHA-256 hex string.');
+  const id = uid(), sealed = nowISO();
+  const claim = JSON.stringify(body.claim || {});
+  db.prepare(`INSERT INTO seals (id, user_id, commitment_hash, ciphertext, claim, created_at, sealed_at, ots_status, status)
+              VALUES (?,?,?,?,?,?,?, 'pending', 'sealed')`)
+    .run(id, user.id, hash, body.ciphertext || null, claim, body.created_at || sealed, sealed);
+  // Two real anchors, in parallel and both non-fatal: an RFC-3161 TSA token (instant) and an
+  // OpenTimestamps submission (Bitcoin, confirms over hours). If neither is reachable the seal
+  // still stands and can be anchored later.
+  let anchor = null, ots = null;
+  try { [anchor, ots] = await Promise.all([anchorHash(hash).catch(() => null), submitOTS(hash).catch(() => null)]); } catch { /* leave unanchored */ }
+  if (anchor) db.prepare(`UPDATE seals SET tsa_token = ?, tsa_name = ?, anchor_time = ? WHERE id = ?`).run(anchor.tsa_token, anchor.tsa_name, anchor.anchor_time, id);
+  if (ots) db.prepare(`UPDATE seals SET ots_proof = ?, ots_status = 'pending' WHERE id = ?`).run(ots.ots_proof, id);
+  json(res, 201, { id, sealed_at: sealed, anchor: {
+    time: anchor ? anchor.anchor_time : null, tsa: anchor ? anchor.tsa_name : null, receipt: anchor ? anchor.tsa_token : null,
+    ots_proof: ots ? ots.ots_proof : null, ots_status: ots ? 'pending' : 'none',
+  } });
+});
+
+add('GET', '/api/seals', async ({ res, user }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const rows = db.prepare(`SELECT * FROM seals WHERE user_id = ? ORDER BY sealed_at DESC`).all(user.id);
+  json(res, 200, { items: rows.map((r) => sealOut(r, true)), next_cursor: null });
+});
+
+add('GET', '/api/seals/:id', async ({ res, user, params }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const row = db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id);
+  if (!row || row.user_id !== user.id) return fail(res, 404, 'not_found', 'Seal not found.');
+  json(res, 200, sealOut(row, true));
+});
+
+add('POST', '/api/seals/:id/reveal', async ({ res, user, params, body }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const row = db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id);
+  if (!row || row.user_id !== user.id) return fail(res, 404, 'not_found', 'Seal not found.');
+  const payload = body.revealed_payload;
+  if (!payload || typeof payload !== 'object') return fail(res, 400, 'bad_payload', 'revealed_payload is required.');
+  const recomputed = sha256hex(canon(payload));
+  if (recomputed !== row.commitment_hash) return fail(res, 422, 'mismatch', 'Revealed payload does not match the sealed commitment.');
+  db.prepare(`UPDATE seals SET status = 'unsealed', revealed_payload = ?, revealed_at = ? WHERE id = ?`)
+    .run(JSON.stringify(payload), nowISO(), params.id);
+  json(res, 200, sealOut(db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id), true));
+});
+
+add('POST', '/api/seals/:id/publish', async ({ res, user, params, body }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const row = db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id);
+  if (!row || row.user_id !== user.id) return fail(res, 404, 'not_found', 'Seal not found.');
+  // Publishing is allowed while still sealed (a public commitment whose content stays hidden
+  // until reveal, proving anteriority) or after reveal.
+  const handle = (body.handle || 'anonymous').toString().slice(0, 40) || 'anonymous';
+  db.prepare(`UPDATE seals SET is_public = 1, handle = ? WHERE id = ?`).run(handle, params.id);
+  json(res, 200, sealOut(db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id), true));
+});
+
+add('PATCH', '/api/seals/:id/resolve', async ({ res, user, params, body }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const row = db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id);
+  if (!row || row.user_id !== user.id) return fail(res, 404, 'not_found', 'Seal not found.');
+  const outcome = body.outcome;
+  if (outcome !== 'hit' && outcome !== 'miss') return fail(res, 400, 'bad_outcome', 'outcome must be "hit" or "miss".');
+  db.prepare(`UPDATE seals SET outcome = ?, status = 'resolved' WHERE id = ?`).run(outcome, params.id);
+  json(res, 200, sealOut(db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id), true));
+});
+
+function sealOut(r, full = false) {
+  const o = {
+    id: r.id, commitment_hash: r.commitment_hash, claim: JSON.parse(r.claim),
+    created_at: r.created_at, sealed_at: r.sealed_at, ots_status: r.ots_status,
+    anchor_time: r.anchor_time, tsa_name: r.tsa_name, status: r.status, is_public: !!r.is_public,
+    handle: r.handle, outcome: r.outcome, revealed_at: r.revealed_at,
+  };
+  if (full) {
+    if (r.revealed_payload) o.revealed_payload = JSON.parse(r.revealed_payload);
+    if (r.ciphertext) o.ciphertext = r.ciphertext;   // owner-only; lets the client reveal after a reload
+    if (r.tsa_token) o.tsa_token = r.tsa_token;       // owner-only; goes into the downloadable proof
+    if (r.ots_proof) o.ots_proof = r.ots_proof;       // owner-only; the OpenTimestamps .ots (base64)
+  }
+  return o;
+}
+
+// ===== proofs (public verification) =====
+add('GET', '/api/proofs/:id', async ({ res, params }) => {
+  const r = db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id);
+  if (!r || !r.is_public) return fail(res, 404, 'not_found', 'No public proof with that id.');
+  const anchor = { time: r.anchor_time, tsa: r.tsa_name, receipt: r.tsa_token, ots_proof: r.ots_proof, ots_status: r.ots_status };
+  if (r.revealed_payload) {
+    const p = JSON.parse(r.revealed_payload);
+    // shape matches the standalone verifier's bundle (sha256 field), plus the anchor.
+    return json(res, 200, { content: p.content, claim: p.claim, nonce: p.nonce, created_at: p.created_at, sha256: r.commitment_hash, anchor });
+  }
+  // public but not revealed: anteriority provable, content withheld.
+  json(res, 200, { sha256: r.commitment_hash, anchor });
+});
+
+// ===== registry (public) =====
+add('GET', '/api/registry', async ({ res, query }) => {
+  const clauses = ['is_public = 1'];
+  const args = [];
+  if (query.outcome) { clauses.push('outcome = ?'); args.push(query.outcome); }
+  const rows = db.prepare(`SELECT * FROM seals WHERE ${clauses.join(' AND ')} ORDER BY sealed_at DESC LIMIT 200`).all(...args);
+  json(res, 200, { items: rows.map(registryOut), next_cursor: null });
+});
+
+add('GET', '/api/registry/stats', async ({ res }) => {
+  const s = db.prepare(`SELECT
+      COUNT(*) AS sealed,
+      SUM(CASE WHEN outcome='hit' THEN 1 ELSE 0 END) AS hits,
+      SUM(CASE WHEN outcome='miss' THEN 1 ELSE 0 END) AS misses,
+      SUM(CASE WHEN outcome IS NULL OR outcome='pending' THEN 1 ELSE 0 END) AS pending
+    FROM seals WHERE is_public = 1`).get();
+  const hits = s.hits || 0, misses = s.misses || 0;
+  const resolved = hits + misses;
+  json(res, 200, { sealed: s.sealed || 0, hits, misses, pending: s.pending || 0, hit_rate: resolved ? Math.round((hits / resolved) * 100) : null });
+});
+
+add('GET', '/api/registry/leaderboard', async ({ res }) => {
+  const rows = db.prepare(`SELECT handle, COUNT(*) AS hits FROM seals WHERE is_public = 1 AND outcome = 'hit' GROUP BY handle ORDER BY hits DESC LIMIT 20`).all();
+  json(res, 200, { items: rows });
+});
+
+add('GET', '/api/registry/:id', async ({ res, params }) => {
+  const r = db.prepare(`SELECT * FROM seals WHERE id = ? AND is_public = 1`).get(params.id);
+  if (!r) return fail(res, 404, 'not_found', 'No public registry entry with that id.');
+  json(res, 200, registryOut(r));
+});
+
+add('POST', '/api/registry/:id/vote', async ({ res, req, params, body }) => {
+  const r = db.prepare(`SELECT * FROM seals WHERE id = ? AND is_public = 1`).get(params.id);
+  if (!r) return fail(res, 404, 'not_found', 'No public registry entry with that id.');
+  const vote = body.vote;
+  if (vote !== 'hit' && vote !== 'miss') return fail(res, 400, 'bad_vote', 'vote must be "hit" or "miss".');
+  const fp = voterFingerprint(clientOf(req));
+  const existing = db.prepare(`SELECT * FROM registry_votes WHERE seal_id = ? AND voter_fingerprint = ?`).get(params.id, fp);
+  if (existing && existing.vote === vote) {
+    db.prepare(`DELETE FROM registry_votes WHERE id = ?`).run(existing.id);   // same vote twice clears it
+  } else if (existing) {
+    db.prepare(`UPDATE registry_votes SET vote = ?, created_at = ? WHERE id = ?`).run(vote, nowISO(), existing.id);
+  } else {
+    db.prepare(`INSERT INTO registry_votes (id, seal_id, voter_fingerprint, vote, created_at) VALUES (?,?,?,?,?)`).run(uid(), params.id, fp, vote, nowISO());
+  }
+  json(res, 200, { votes: voteCounts(params.id) });
+});
+
+const voteCounts = (sealId) => {
+  const v = db.prepare(`SELECT SUM(vote='hit') AS hit, SUM(vote='miss') AS miss FROM registry_votes WHERE seal_id = ?`).get(sealId);
+  return { hit: v.hit || 0, miss: v.miss || 0 };
+};
+function registryOut(r) {
+  const p = r.revealed_payload ? JSON.parse(r.revealed_payload) : {};
+  return { id: r.id, handle: r.handle, claim: JSON.parse(r.claim), content: p.content ?? null,
+    status: r.status, sealed_at: r.sealed_at, revealed_at: r.revealed_at, outcome: r.outcome || 'pending',
+    hash: r.commitment_hash, votes: voteCounts(r.id), anchor_time: r.anchor_time, tsa_name: r.tsa_name, ots_status: r.ots_status };
+}
+
+// ===== commons (anonymous) =====
+add('GET', '/api/commons/boards', async ({ res }) => json(res, 200, { items: BOARDS }));
+
+add('GET', '/api/commons/stats', async ({ res }) => {
+  const threads = db.prepare(`SELECT COUNT(*) AS c FROM commons_threads WHERE removed = 0`).get().c;
+  const posts = db.prepare(`SELECT COUNT(*) AS c FROM commons_posts WHERE removed = 0`).get().c;
+  const posters = db.prepare(`SELECT COUNT(*) AS c FROM (SELECT poster_id FROM commons_threads WHERE removed = 0 UNION SELECT poster_id FROM commons_posts WHERE removed = 0)`).get().c;
+  const newest = db.prepare(`SELECT MAX(no) AS n FROM (SELECT no FROM commons_threads UNION SELECT no FROM commons_posts)`).get().n;
+  json(res, 200, { threads, posts, total: threads + posts, posters, boards: BOARDS.length, newest_no: newest });
+});
+
+add('GET', '/api/commons/threads', async ({ res, query }) => {
+  const board = query.board;
+  let rows;
+  if (board && board !== 'all') {
+    rows = db.prepare(`SELECT * FROM commons_threads WHERE removed = 0 AND board = ? ORDER BY bumped_at DESC LIMIT 100`).all(board);
+  } else {
+    rows = db.prepare(`SELECT * FROM commons_threads WHERE removed = 0 ORDER BY bumped_at DESC LIMIT 100`).all();
+  }
+  json(res, 200, { items: rows.map(threadCatalogOut), next_cursor: null });
+});
+
+add('GET', '/api/commons/threads/:no', async ({ res, params }) => {
+  const t = db.prepare(`SELECT * FROM commons_threads WHERE no = ? AND removed = 0`).get(Number(params.no));
+  if (!t) return fail(res, 404, 'not_found', 'Thread not found.');
+  const posts = db.prepare(`SELECT * FROM commons_posts WHERE thread_no = ? AND removed = 0 ORDER BY no ASC`).all(t.no);
+  json(res, 200, { op: threadOut(t), posts: posts.map(postOut) });
+});
+
+add('POST', '/api/commons/threads', async ({ res, req, body }) => {
+  const board = body.board;
+  if (!BOARD_SLUGS.has(board)) return fail(res, 400, 'bad_board', 'Unknown board.');
+  const bodyText = (body.body || '').trim();
+  if (!bodyText) return fail(res, 400, 'empty', 'A post needs some text.');
+  const no = nextNo(), now = nowISO();
+  const pid = posterId(no, clientOf(req));
+  db.prepare(`INSERT INTO commons_threads (no, board, name, poster_id, subject, body, created_at, bumped_at) VALUES (?,?,?,?,?,?,?,?)`)
+    .run(no, board, cleanName(body.name), pid, (body.subject || '').trim() || null, bodyText, now, now);
+  json(res, 201, threadOut(db.prepare(`SELECT * FROM commons_threads WHERE no = ?`).get(no)));
+});
+
+add('POST', '/api/commons/threads/:no/posts', async ({ res, req, params, body }) => {
+  const t = db.prepare(`SELECT * FROM commons_threads WHERE no = ? AND removed = 0`).get(Number(params.no));
+  if (!t) return fail(res, 404, 'not_found', 'Thread not found.');
+  const bodyText = (body.body || '').trim();
+  if (!bodyText) return fail(res, 400, 'empty', 'A reply needs some text.');
+  const no = nextNo(), now = nowISO();
+  const pid = posterId(t.no, clientOf(req));   // stable within the thread
+  db.prepare(`INSERT INTO commons_posts (no, thread_no, name, poster_id, body, created_at) VALUES (?,?,?,?,?,?)`)
+    .run(no, t.no, cleanName(body.name), pid, bodyText, now);
+  db.prepare(`UPDATE commons_threads SET bumped_at = ?, reply_count = reply_count + 1 WHERE no = ?`).run(now, t.no);
+  json(res, 201, postOut(db.prepare(`SELECT * FROM commons_posts WHERE no = ?`).get(no)));
+});
+
+add('POST', '/api/commons/posts/:no/report', async ({ res, params, body }) => {
+  db.prepare(`INSERT INTO commons_reports (id, post_no, reason, created_at) VALUES (?,?,?,?)`)
+    .run(uid(), Number(params.no), (body.reason || '').slice(0, 300), nowISO());
+  json(res, 200, { ok: true });
+});
+
+const cleanName = (n) => { n = (n || '').trim(); return (!n || n.toLowerCase() === 'anonymous') ? null : n.slice(0, 40); };
+const snippet = (s) => s.replace(/\s+/g, ' ').trim().slice(0, 140);
+const threadCatalogOut = (t) => ({ no: t.no, board: t.board, subject: t.subject, snippet: snippet(t.body), name: t.name, reply_count: t.reply_count, created_at: t.created_at, bumped_at: t.bumped_at });
+const threadOut = (t) => ({ no: t.no, board: t.board, subject: t.subject, name: t.name, poster_id: t.poster_id, body: t.body, created_at: t.created_at, bumped_at: t.bumped_at, reply_count: t.reply_count });
+const postOut = (p) => ({ no: p.no, thread_no: p.thread_no, name: p.name, poster_id: p.poster_id, body: p.body, created_at: p.created_at });
+
+// ---------- static file serving ----------
+const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json', '.ico': 'image/x-icon', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2' };
+
+async function serveStatic(req, res, pathname) {
+  let rel = decodeURIComponent(pathname);
+  if (rel === '/' || rel === '') rel = '/index.html';
+  const full = normalize(join(ROOT, rel));
+  if (!full.startsWith(ROOT)) return fail(res, 403, 'forbidden', 'Nope.');    // no traversal
+  try {
+    const s = await stat(full);
+    if (s.isDirectory()) return serveStatic(req, res, join(rel, 'index.html'));
+    const data = await readFile(full);
+    res.writeHead(200, { 'content-type': MIME[extname(full).toLowerCase()] || 'application/octet-stream', 'content-length': data.length });
+    res.end(data);
+  } catch {
+    fail(res, 404, 'not_found', 'File not found.');
+  }
+}
+
+// ---------- request pipeline ----------
+async function readBody(req) {
+  if (req.method === 'GET' || req.method === 'HEAD') return {};
+  const chunks = [];
+  let size = 0;
+  for await (const c of req) { size += c.length; if (size > 1e6) throw new Error('body too large'); chunks.push(c); }
+  if (!chunks.length) return {};
+  try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { return {}; }
+}
+
+const server = createServer(async (req, res) => {
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+  const pathname = url.pathname;
+
+  if (!pathname.startsWith('/api/')) return serveStatic(req, res, pathname);
+
+  const match = routes.find((r) => r.method === req.method && r.rx.test(pathname));
+  if (!match) return fail(res, 404, 'no_route', `No route for ${req.method} ${pathname}.`);
+
+  try {
+    const m = pathname.match(match.rx);
+    const params = {};
+    match.keys.forEach((k, i) => { params[k] = decodeURIComponent(m[i + 1]); });
+    const query = Object.fromEntries(url.searchParams);
+    const body = await readBody(req);
+    const user = userFrom(req);
+    await match.handler({ req, res, params, query, body, user });
+  } catch (e) {
+    if (!res.headersSent) fail(res, 500, 'server_error', DEV ? String(e && e.message || e) : 'Something went wrong.');
+  }
+});
+
+const seeded = seedCommonsIfEmpty();
+const seededReg = seedRegistryIfEmpty();
+server.listen(PORT, () => {
+  console.log(`AUGUR backend + site on http://127.0.0.1:${PORT}  (${DEV ? 'dev' : 'production'})`);
+  if (seeded.seeded) console.log(`seeded Commons with ${seeded.threads} starter threads`);
+  if (seededReg.seeded) console.log(`seeded Registry with ${seededReg.entries} published seals`);
+});
+
+// Quietly give any public seal that lacks anchors both an RFC-3161 timestamp and an
+// OpenTimestamps submission (e.g. the seeds). Background so startup stays fast and works offline.
+setTimeout(async () => {
+  const pend = db.prepare(`SELECT id, commitment_hash, tsa_token, ots_proof FROM seals WHERE is_public = 1 AND (tsa_token IS NULL OR ots_proof IS NULL)`).all();
+  let rfc = 0, btc = 0;
+  for (const s of pend) {
+    if (!s.tsa_token) { try { const a = await anchorHash(s.commitment_hash); if (a) { db.prepare(`UPDATE seals SET tsa_token=?, tsa_name=?, anchor_time=? WHERE id=?`).run(a.tsa_token, a.tsa_name, a.anchor_time, s.id); rfc++; } } catch {} }
+    if (!s.ots_proof) { try { const o = await submitOTS(s.commitment_hash); if (o) { db.prepare(`UPDATE seals SET ots_proof=?, ots_status='pending' WHERE id=?`).run(o.ots_proof, s.id); btc++; } } catch {} }
+  }
+  if (rfc || btc) console.log(`anchored public seals: ${rfc} via RFC-3161, ${btc} via OpenTimestamps`);
+}, 600);

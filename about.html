@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUGUR · About</title>
+<style>
+  :root{
+    --paper:#eeecf4;
+    --panel:#f6f5fa;
+    --panel-alt:#eae7f1;
+    --bar:#655d84;
+    --bar-ink:#efecf6;
+    --ink:#2f2a44;
+    --ink-strong:#26213a;
+    --muted:#5f5878;
+    --faint:#948dae;
+    --line:#d1cbe0;
+    --line-soft:#e1dcec;
+    --link:#443a7a;
+    --sans:Verdana, Geneva, Tahoma, sans-serif;
+    --serif:Georgia, "Times New Roman", serif;
+    --mono:"Courier New", Courier, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(1px 1px at 18% 24%, rgba(110,100,150,.18), transparent 60%),
+      radial-gradient(1px 1px at 72% 16%, rgba(110,100,150,.14), transparent 60%),
+      radial-gradient(1px 1px at 40% 70%, rgba(110,100,150,.12), transparent 60%),
+      radial-gradient(1px 1px at 86% 64%, rgba(110,100,150,.14), transparent 60%),
+      radial-gradient(1px 1px at 10% 82%, rgba(110,100,150,.10), transparent 60%);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:12.5px;
+    line-height:1.6;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:22px 16px 64px}
+  a{color:var(--link)}
+
+  .mast{text-align:center;padding:16px 0 8px}
+  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
+  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
+  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
+  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);
+    display:flex;flex-wrap:wrap;justify-content:center}
+  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
+  nav a:hover{text-decoration:underline}
+  nav a.on{color:#3a2f70;background:var(--panel-alt)}
+
+  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
+  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
+  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
+  .in{padding:18px 20px}
+
+  .opener{font-family:var(--serif);font-size:22px;line-height:1.35;color:var(--ink-strong);margin:0 0 12px}
+  .opener .em{color:#4c3f8e;font-style:italic}
+  .stand{color:var(--muted);font-size:13px;margin:0}
+
+  .byline{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--faint);text-align:center;padding:8px 0 2px}
+
+  .cwnote{border:1px solid var(--line);background:var(--panel-alt);padding:11px 14px;margin:14px 0 2px;
+    color:var(--muted);font-size:12px;line-height:1.65}
+  .cwnote b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:12.5px}
+  .cwnote a{color:var(--link)}
+
+  .clause{padding:20px 0;border-top:1px solid var(--line-soft)}
+  .clause:first-of-type{border-top:none;padding-top:4px}
+  .clause h3{font-family:var(--serif);font-weight:normal;font-size:18px;color:var(--ink-strong);margin:0 0 9px}
+  .clause p{font-size:13px;line-height:1.78;color:#3a3450;margin:0 0 11px;max-width:64ch}
+  .clause p:last-child{margin:0}
+  .clause .em{color:#4c3f8e;font-style:italic}
+
+  .pull{font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.5;color:#4a3f80;
+    border-left:2px solid var(--line);padding:4px 0 4px 16px;margin:16px 0}
+
+  .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+  .oldbtn{font-family:var(--sans);font-size:12px;color:#39306b;text-decoration:none;
+    border:1px solid var(--line);border-top-color:#fff;border-left-color:#fff;background:#e7e2f1;padding:8px 16px}
+  .oldbtn:hover{background:#efeaf8;color:#2b2258}
+  .oldbtn.q{background:#f2f0f7}
+
+  .epigraph{font-family:var(--serif);font-style:italic;color:var(--faint);text-align:center;font-size:13px;margin:24px auto 8px;max-width:54ch;line-height:1.7}
+  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
+  .sitefoot a{color:var(--muted)}
+  .mast .word a{color:inherit;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="mast">
+      <div class="word"><a href="index.html">AUGUR</a></div>
+      <div class="tag">an instrument for dreams that arrive early</div>
+      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+    </div>
+
+    <nav>
+      <a href="index.html">The instrument</a>
+      <a class="on" href="about.html">About</a>
+      <a href="augur-registry.html">The Registry</a>
+      <a href="augur-commons.html">The Commons</a>
+      <a href="augur-vault.html">The Vault</a>
+      <a href="augur-verifier.html">Verify a proof</a>
+      <a href="augur-seal-prototype.html">Seal a dream</a>
+    </nav>
+
+    <section>
+      <div class="cap">About<span class="rt">a founder&rsquo;s note</span></div>
+      <div class="in">
+        <p class="opener">AUGUR began with a child who was <span class="em">afraid to sleep</span>.</p>
+        <p class="stand">It did not start as a product. It started as fear, then a diary, then a mystery I still cannot fully explain. This is how it happened.</p>
+        <div class="byline">one dreamer among many</div>
+
+        <div class="cwnote">
+          <b>A note before you read.</b> This account describes childhood nightmares and trauma, including a violent dream from early childhood, and later experiences with substance use, and some readers may find it distressing. If you would rather not read it, you can skip ahead to <a href="#why-augur">why AUGUR exists</a>.
+        </div>
+
+        <div class="clause">
+          <h3>The nightmares came first</h3>
+          <p>When I was a child, my dreams were not gentle. They were nightmares, they were violent, and they felt completely real. I still carry one from when I was six: walking into my school grounds to find a scene of ritual violence done to a boy I knew, staged with a deliberate, ceremonial cruelty that no six year old should be able to picture. I could not un-see it.</p>
+          <p>For years they did not stop. They followed me out of sleep and into the daylight, until I could no longer tell where their darkness ended and my ordinary life began. By the age of nine they had frightened me so relentlessly, and bled so far into my sense of what was real, that childhood had become almost impossible to bear. I came through it. But I have never forgotten how completely a dream can take hold of a life.</p>
+        </div>
+
+        <div class="clause">
+          <h3>At sixteen, I started writing them down</h3>
+          <p>When I turned sixteen I began keeping a dream journal, and I recorded everything: the frightening dreams, the beautiful ones, the plainly strange ones. Writing them down changed my relationship to them. What had haunted me became something I could look at, hold, and compare. The record steadied me. For the first time the dreams were mine to study rather than only to survive.</p>
+        </div>
+
+        <div class="clause">
+          <h3>Then some of them came true</h3>
+          <p>In my early twenties, something happened that I still cannot explain away. I began having dreams that came true. Not deja vu, and nothing grand. Ordinary moments: a small interaction with a family member, a conversation with a friend, scenes with no importance at all, which then played out in real life over the following days, down to the details.</p>
+          <p>I was stunned. How could this be? How was a dream reaching into days that had not happened yet? I knew every tidy explanation, and none of them fully settled the question. And the question only kept growing.</p>
+        </div>
+
+        <div class="clause">
+          <h3>Then I began dreaming I was tripping</h3>
+          <p>In late 2025 I began to experiment with substances. At first there was nothing unusual about it. But from the early months of 2026, and continuing to this day, a new kind of dream started to arrive: dreams in which I was tripping. Sometimes on a substance I knew, sometimes on one I had never tried, and sometimes on something with no name at all, a compound the dream itself seemed to have invented.</p>
+          <p>I found them genuinely strange and fascinating. What struck me was not so much the content as the fact of it, that the sleeping brain could <span class="em">simulate an altered state</span> so completely, building the tilt and the texture and the wrongness of a trip from the inside, sometimes for a substance it could not possibly remember. Where does a feeling you have never felt come from?</p>
+        </div>
+
+        <div class="clause">
+          <h3>Astral projection, found by accident</h3>
+          <p>At the start of 2026 I stumbled into something I had no name for. I would get comfortable, keep my body as completely still as I could hold it, and let my mind fall blank. After a while a strange sensation would rise, something close to being high. So I kept practising.</p>
+          <p>In that still, empty state, random thoughts began to arrive on their own. When I followed them, the space around me would gradually assemble itself into a place, and I would find myself somewhere between asleep and awake, in a world that was building itself out of whatever drifted through my mind. It was one of the strangest and most interesting things I have ever felt. Only later, when I went looking, did I find a name for it: astral projection. And it sharpened the question underneath all of this: <span class="em">how much of any reality, dreaming or waking, is quietly being generated from the inside?</span></p>
+        </div>
+
+        <div class="clause">
+          <h3 id="why-augur">Why AUGUR</h3>
+          <p>Every claim about a dream foretelling something collapses in the same place. You can never prove the dream came first, because memory softens and quietly rewrites itself once the event arrives. AUGUR closes that gap. You record a dream and seal it, fixing its exact words to a moment in time that cannot be moved, so that if the event comes, it meets a record that was already waiting.</p>
+          <p class="pull">Not proof that dreams predict the future. A way to find out honestly, one sealed dream at a time. An instrument, not an oracle.</p>
+        </div>
+
+        <div class="clause">
+          <h3>A place for dreamers, and maybe for research</h3>
+          <p>I did not want to keep asking this question alone. AUGUR is meant to be a community: a place for people who have had dreams like mine, the nightmares that will not let go and the ordinary dreams that quietly came true, to record them, share them, and see that they are not the only one.</p>
+          <p>And if enough of us keep an honest, timestamped record, it could grow into something larger than any one person. A body of evidence that helps us understand dreams, and whether they can genuinely reach into what is coming, in a way scattered anecdotes never could. Keep the wonder. Keep the rigour. Let the record speak.</p>
+          <div class="actions">
+            <a class="oldbtn" href="augur-seal-prototype.html">Seal a dream</a>
+            <a class="oldbtn q" href="augur-vault.html">Open the Vault</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="epigraph">&ldquo;What had haunted me became something I could look at, hold, and compare.&rdquo;</div>
+
+    <div class="sitefoot">
+      AUGUR &middot; the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps (confirms over hours)<br>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; contact@augur.app
+    </div>
+
+  </div>
+</body>
+</html>
