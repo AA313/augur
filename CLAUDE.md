@@ -50,8 +50,16 @@ nonce + commit-reveal).
   downloadable bundle and upgraded/verified with the `ots` tool or ots.tools, independent of AUGUR.
   Shown on the Seal proof card ("bitcoin: submitted…pending"), Your Seals ("bitcoin pending"), and
   noted by the Verifier. Both anchors also backfill onto the seed Registry entries in the
-  background at startup. TODO if wanted: server-side OTS upgrade (op-walk + calendar re-query) so
-  the confirmed Bitcoin attestation is stored automatically. Disclaimers across
+  background at startup.
+- **Automatic OTS upgrade: DONE.** `server/ots.mjs` now also deserialises the `.ots` proof tree,
+  executes its ops to compute each calendar commitment, re-queries the calendars
+  (`GET /timestamp/<commitment>`), grafts in the Bitcoin attestation, and re-serialises. Runs via
+  a background job (~90s after start, then hourly) and an owner endpoint `POST /api/seals/:id/upgrade`
+  ("check bitcoin" button on pending seals). Validated against the `opentimestamps` library: byte
+  round-trip, commitments match exactly, and it reads real Bitcoin blocks (hello-world.txt.ots ->
+  block 358391). Confirmed seals show `ots_status='complete'` + `ots_block`, surfaced as "bitcoin
+  confirmed (block N)". Note: real Bitcoin confirmation still takes hours, so fresh stamps stay
+  pending in-session; the complete path is proven via the library's confirmed example proofs. Disclaimers across
   the pages were updated from "simulated" to reflect the real RFC-3161 anchor.
 
 ## Running locally
@@ -67,6 +75,7 @@ are local state: do not snapshot or deploy them.
 - `augur-registry.html` ... public ledger of resolved predictions + leaderboard + voting
 - `augur-commons.html` .... anonymous imageboard (boards, threads, greentext, quote-links, IDs)
 - `terms.html` ........... Terms, Privacy, Copyright, and Research & scholarly use
+- `augur-admin.html` ..... moderator page (not in nav): admin-token gate, reports queue, remove/restore
 - `augur-theme.css` ...... the bright-blue theme (mirror of the inline theme in each page)
 - `augur-footer.js` ...... shared site footer injector
 - `server/server.mjs` .... zero-dep Node backend (node:http + node:sqlite); serves site + /api
@@ -90,6 +99,18 @@ The commitment is `SHA-256(canonical(payload))` where
 The seal page, the verifier, and the registry all reuse this exact logic, so a proof bundle
 sealed on one page verifies on another. Do not change the payload shape or canonicalisation
 without updating every page together.
+
+## Moderation (roadmap item 4: DONE, MVP)
+- **Rate limiting** (in-memory, per client IP, sliding window) on Commons thread/post creation
+  (6/10 per min), Registry votes (30/min), reports (12/min), and auth requests (6/min) -> 429.
+- **Reporting:** a "report" link on every Commons post opens an inline reason box ->
+  `POST /api/commons/posts/:no/report`.
+- **Admin:** token-gated (`x-augur-admin` header == `AUGUR_ADMIN_TOKEN`, default `augur-admin-dev`
+  for local; SET IT IN PRODUCTION). Endpoints: `GET /api/admin/reports` (queue + reported content),
+  `POST /api/admin/commons/remove|restore` (soft hide via `removed` flag; existing queries already
+  filter `removed=0`), `POST /api/admin/reports/:id/resolve`. UI is `augur-admin.html`.
+- Deferred: IP/subnet bans (the anonymity model deliberately does not store raw IPs, so effective
+  banning needs a stored salted client hash - a privacy tradeoff to decide later).
 
 ## Roadmap (make it real)
 1. **Persistence + backend.** A real datastore for Vault entries, Registry entries, and Commons

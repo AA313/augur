@@ -278,13 +278,16 @@
       var pub=s.is_public?("public as @"+esc(s.handle||"anonymous")):"private";
       var h=s.commitment_hash;
       var anchored=s.anchor_time?(' &middot; <span title="RFC-3161 timestamp">anchored '+fmtTime(s.anchor_time)+' by '+esc(s.tsa_name||"a TSA")+'</span>'):' &middot; anchor pending';
-      var btc=s.ots_status==="pending"?' &middot; <span title="OpenTimestamps: submitted, Bitcoin confirmation pending (hours)">bitcoin pending</span>':"";
+      var btc=s.ots_status==="complete"
+        ? ' &middot; <span style="color:#3f6a37" title="OpenTimestamps, confirmed on Bitcoin'+(s.ots_block?" in block "+s.ots_block:"")+'">bitcoin confirmed'+(s.ots_block?" (block "+s.ots_block+")":"")+'</span>'
+        : (s.ots_status==="pending"?' &middot; <span title="OpenTimestamps: submitted, Bitcoin confirmation pending (hours)">bitcoin pending</span>':"");
       var meta='sealed '+fmtTime(s.sealed_at)+' &middot; sha-256 <span class="hash" title="'+esc(h)+'">'+h.slice(0,10)+"…"+h.slice(-4)+'</span>'+anchored+btc+' &middot; '+pub;
       var acts=[];
       if(s.status==="sealed"){ acts.push(btn("reveal","Reveal")); }
       if(s.status==="unsealed"){ acts.push(btn("resolve-hit","Mark hit","sa hit")); acts.push(btn("resolve-miss","Mark miss","sa miss")); }
       if(!s.is_public){ acts.push(btn("publish","Publish to Registry")); }
       if(s.status==="resolved"){ acts.push('<span class="done">resolved as '+esc(s.outcome)+'</span>'); }
+      if(s.ots_status==="pending"){ acts.push(btn("upgrade","check bitcoin")); }
       acts.push('<span class="proof" data-act="proof">save proof</span>');
       return '<div class="seal-item" data-id="'+s.id+'">'+
         '<div class="si-top"><span class="si-cond">&ldquo;'+esc(s.claim&&s.claim.specificity||"(no condition set)")+'&rdquo;</span>'+
@@ -331,6 +334,11 @@
           await api("/api/seals/"+id+"/publish",{method:"POST",body:JSON.stringify({handle:hv||"anonymous"})});
         }
         else if(act==="publish-cancel"){ render(); return; }
+        else if(act==="upgrade"){
+          el.textContent="checking…";
+          var r=await api("/api/seals/"+id+"/upgrade",{method:"POST"});
+          if(r.ots_status!=="complete") alert("Not confirmed on Bitcoin yet. OpenTimestamps folds the seal into a block over a few hours; check again later.");
+        }
         await loadSeals();
       }catch(err){ alert(err.message); }
     });

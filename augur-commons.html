@@ -89,6 +89,11 @@
   .ptop .no,.ptop .time{color:var(--faint);font-family:var(--mono);font-size:11px}
   .ptop .id{font-family:var(--mono);font-size:11px;font-weight:bold}
   .ptop .no a{color:var(--faint)}
+  .ptop .rep{font-size:10.5px;color:var(--faint);cursor:pointer;text-decoration:underline}
+  .ptop .rep:hover{color:var(--warm)}
+  .repform .repreason{font-family:var(--sans);font-size:11px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px 6px;width:150px}
+  .repform .repsend{font-size:10.5px;color:#fff;background:var(--warm);border-radius:4px;padding:2px 7px;cursor:pointer}
+  .repform .repcancel{font-size:10.5px;color:var(--muted);cursor:pointer}
   .pbody{color:var(--ink);font-size:13.5px}
   .pbody p{margin:0 0 9px}
   .pbody p:last-child{margin:0}
@@ -256,7 +261,8 @@
       '<span class="name'+(named?' tag':'')+'">'+esc(named?p.name:"Anonymous")+'</span> &nbsp; '+
       '<span class="time">'+relTime(p.created_at)+'</span> &nbsp; '+
       '<span class="no"><a id="p'+p.no+'" href="#p'+p.no+'">No.'+p.no+'</a></span> &nbsp; '+
-      '<span class="id">ID:'+esc(p.poster_id)+'</span></div>'+
+      '<span class="id">ID:'+esc(p.poster_id)+'</span> &nbsp; '+
+      '<span class="rep" data-no="'+p.no+'">report</span></div>'+
       '<div class="pbody">'+renderBody(p.body)+'</div>';
     colourId(el.querySelector(".id"));
     if(isOp){
@@ -337,6 +343,28 @@
     var post=tgt.closest?tgt.closest(".post"):null;
     (post||tgt).scrollIntoView({behavior:"smooth",block:"center"});
     if(post){var ob=post.style.background;post.style.background="#fff6d6";setTimeout(function(){post.style.background=ob;},700);}
+  });
+
+  // ---- reporting to the moderators ----
+  boardsEl.addEventListener("click",function(e){
+    var r=e.target&&e.target.classList&&e.target.classList.contains("rep")?e.target:null;
+    if(!r)return;
+    var no=r.getAttribute("data-no");
+    var form=document.createElement("span"); form.className="repform";
+    form.innerHTML='<input class="repreason" placeholder="reason (optional)"> <span class="repsend">send</span> <span class="repcancel">cancel</span>';
+    r.replaceWith(form);
+    var input=form.querySelector(".repreason"); input.focus();
+    input.addEventListener("keydown",function(ev){ if(ev.key==="Enter") form.querySelector(".repsend").click(); });
+    form.querySelector(".repsend").addEventListener("click",async function(){
+      try{
+        await api("/api/commons/posts/"+no+"/report",{method:"POST",body:JSON.stringify({reason:input.value.trim()})});
+        form.replaceWith(document.createTextNode("reported, thank you"));
+      }catch(err){ alert("Could not report: "+err.message); }
+    });
+    form.querySelector(".repcancel").addEventListener("click",function(){
+      var s=document.createElement("span"); s.className="rep"; s.setAttribute("data-no",no); s.textContent="report";
+      form.replaceWith(s);
+    });
   });
 
   // ---- posting ----

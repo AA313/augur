@@ -8,7 +8,7 @@ import { db, nextNo, nowISO, uid, canon, sha256hex, posterId, voterFingerprint }
 import { seedCommonsIfEmpty } from './seed.mjs';
 import { seedRegistryIfEmpty } from './seed-registry.mjs';
 import { anchorHash, inspectToken } from './anchor.mjs';
-import { submitOTS } from './ots.mjs';
+import { submitOTS, upgradeOTS, otsBlock } from './ots.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(here, '..');              // project root holds the .html files
@@ -35,6 +35,21 @@ const json = (res, status, obj) => {
 const fail = (res, status, code, message) => json(res, status, { error: { code, message } });
 const clientOf = (req) => (req.headers['x-forwarded-for']?.split(',')[0].trim()) || req.socket.remoteAddress || 'unknown';
 
+// --- simple in-memory rate limiting (per client, sliding window) ---
+const rlBuckets = new Map();
+function rateLimit(key, max, windowMs) {
+  const now = Date.now();
+  const arr = (rlBuckets.get(key) || []).filter((t) => now - t < windowMs);
+  if (arr.length >= max) { rlBuckets.set(key, arr); return false; }
+  arr.push(now); rlBuckets.set(key, arr);
+  return true;
+}
+setInterval(() => { const now = Date.now(); for (const [k, arr] of rlBuckets) { const f = arr.filter((t) => now - t < 120000); if (f.length) rlBuckets.set(k, f); else rlBuckets.delete(k); } }, 300000).unref?.();
+
+// --- admin auth for moderation. Set AUGUR_ADMIN_TOKEN in production; do not rely on the default. ---
+const ADMIN_TOKEN = process.env.AUGUR_ADMIN_TOKEN || 'augur-admin-dev';
+const isAdmin = (req) => (req.headers['x-augur-admin'] || '') === ADMIN_TOKEN;
+
 function userFrom(req) {
   const auth = req.headers['authorization'] || '';
   const m = auth.match(/^Bearer\s+(.+)$/i);
@@ -56,7 +71,8 @@ const add = (method, path, handler) => {
 add('GET', '/api/health', async (ctx) => json(ctx.res, 200, { ok: true, time: nowISO() }));
 
 // ===== auth =====
-add('POST', '/api/auth/request', async ({ res, body }) => {
+add('POST', '/api/auth/request', async ({ res, req, body }) => {
+  if (!rateLimit('auth:' + clientOf(req), 6, 60000)) return fail(res, 429, 'rate_limited', 'Too many sign-in attempts. Please wait a minute.');
   const email = (body.email || '').trim().toLowerCase();
   if (!email || !email.includes('@')) return fail(res, 400, 'bad_email', 'A valid email is required.');
   const token = uid();
@@ -230,12 +246,27 @@ add('PATCH', '/api/seals/:id/resolve', async ({ res, user, params, body }) => {
   json(res, 200, sealOut(db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id), true));
 });
 
+// Try to fold a seal's pending OpenTimestamps proof into Bitcoin (works once the calendars have
+// confirmed, which takes hours). Owner-only. The periodic job below does this automatically too.
+add('POST', '/api/seals/:id/upgrade', async ({ res, user, params }) => {
+  if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
+  const row = db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id);
+  if (!row || row.user_id !== user.id) return fail(res, 404, 'not_found', 'Seal not found.');
+  if (!row.ots_proof) return json(res, 200, { ots_status: 'none', block: null, changed: false });
+  const up = await upgradeOTS(row.ots_proof);
+  if (up.changed || up.ots_status !== row.ots_status) {
+    db.prepare(`UPDATE seals SET ots_proof = ?, ots_status = ? WHERE id = ?`).run(up.ots_proof, up.ots_status, params.id);
+  }
+  json(res, 200, { ots_status: up.ots_status, block: up.block, changed: up.changed });
+});
+
 function sealOut(r, full = false) {
   const o = {
     id: r.id, commitment_hash: r.commitment_hash, claim: JSON.parse(r.claim),
     created_at: r.created_at, sealed_at: r.sealed_at, ots_status: r.ots_status,
     anchor_time: r.anchor_time, tsa_name: r.tsa_name, status: r.status, is_public: !!r.is_public,
     handle: r.handle, outcome: r.outcome, revealed_at: r.revealed_at,
+    ots_block: r.ots_status === 'complete' && r.ots_proof ? otsBlock(r.ots_proof) : null,
   };
   if (full) {
     if (r.revealed_payload) o.revealed_payload = JSON.parse(r.revealed_payload);
@@ -293,6 +324,7 @@ add('GET', '/api/registry/:id', async ({ res, params }) => {
 });
 
 add('POST', '/api/registry/:id/vote', async ({ res, req, params, body }) => {
+  if (!rateLimit('vote:' + clientOf(req), 30, 60000)) return fail(res, 429, 'rate_limited', 'Too many votes too fast. Please wait a moment.');
   const r = db.prepare(`SELECT * FROM seals WHERE id = ? AND is_public = 1`).get(params.id);
   if (!r) return fail(res, 404, 'not_found', 'No public registry entry with that id.');
   const vote = body.vote;
@@ -317,7 +349,8 @@ function registryOut(r) {
   const p = r.revealed_payload ? JSON.parse(r.revealed_payload) : {};
   return { id: r.id, handle: r.handle, claim: JSON.parse(r.claim), content: p.content ?? null,
     status: r.status, sealed_at: r.sealed_at, revealed_at: r.revealed_at, outcome: r.outcome || 'pending',
-    hash: r.commitment_hash, votes: voteCounts(r.id), anchor_time: r.anchor_time, tsa_name: r.tsa_name, ots_status: r.ots_status };
+    hash: r.commitment_hash, votes: voteCounts(r.id), anchor_time: r.anchor_time, tsa_name: r.tsa_name,
+    ots_status: r.ots_status, ots_block: r.ots_status === 'complete' && r.ots_proof ? otsBlock(r.ots_proof) : null };
 }
 
 // ===== commons (anonymous) =====
@@ -350,6 +383,7 @@ add('GET', '/api/commons/threads/:no', async ({ res, params }) => {
 });
 
 add('POST', '/api/commons/threads', async ({ res, req, body }) => {
+  if (!rateLimit('post:' + clientOf(req), 6, 60000)) return fail(res, 429, 'rate_limited', 'You are posting too fast. Please wait a moment.');
   const board = body.board;
   if (!BOARD_SLUGS.has(board)) return fail(res, 400, 'bad_board', 'Unknown board.');
   const bodyText = (body.body || '').trim();
@@ -362,6 +396,7 @@ add('POST', '/api/commons/threads', async ({ res, req, body }) => {
 });
 
 add('POST', '/api/commons/threads/:no/posts', async ({ res, req, params, body }) => {
+  if (!rateLimit('post:' + clientOf(req), 10, 60000)) return fail(res, 429, 'rate_limited', 'You are posting too fast. Please wait a moment.');
   const t = db.prepare(`SELECT * FROM commons_threads WHERE no = ? AND removed = 0`).get(Number(params.no));
   if (!t) return fail(res, 404, 'not_found', 'Thread not found.');
   const bodyText = (body.body || '').trim();
@@ -374,9 +409,56 @@ add('POST', '/api/commons/threads/:no/posts', async ({ res, req, params, body })
   json(res, 201, postOut(db.prepare(`SELECT * FROM commons_posts WHERE no = ?`).get(no)));
 });
 
-add('POST', '/api/commons/posts/:no/report', async ({ res, params, body }) => {
+add('POST', '/api/commons/posts/:no/report', async ({ res, req, params, body }) => {
+  if (!rateLimit('report:' + clientOf(req), 12, 60000)) return fail(res, 429, 'rate_limited', 'Too many reports too fast. Please wait a moment.');
+  const no = Number(params.no);
+  // ignore reports for content that does not exist
+  const exists = db.prepare(`SELECT 1 FROM commons_threads WHERE no = ? UNION SELECT 1 FROM commons_posts WHERE no = ?`).get(no, no);
+  if (!exists) return fail(res, 404, 'not_found', 'No such post.');
   db.prepare(`INSERT INTO commons_reports (id, post_no, reason, created_at) VALUES (?,?,?,?)`)
-    .run(uid(), Number(params.no), (body.reason || '').slice(0, 300), nowISO());
+    .run(uid(), no, (body.reason || '').slice(0, 300), nowISO());
+  json(res, 200, { ok: true });
+});
+
+// ===== moderation (admin) =====
+add('GET', '/api/admin/reports', async ({ res, req }) => {
+  if (!isAdmin(req)) return fail(res, 401, 'unauth', 'Admin token required.');
+  const reports = db.prepare(`SELECT * FROM commons_reports WHERE resolved = 0 ORDER BY created_at DESC LIMIT 300`).all();
+  const items = reports.map((r) => {
+    const thread = db.prepare(`SELECT no, board, subject, body, removed FROM commons_threads WHERE no = ?`).get(r.post_no);
+    const post = thread ? null : db.prepare(`SELECT no, thread_no, board FROM commons_posts p JOIN commons_threads t ON t.no = p.thread_no WHERE p.no = ?`).get(r.post_no);
+    const postRow = thread ? null : db.prepare(`SELECT no, thread_no, body, removed FROM commons_posts WHERE no = ?`).get(r.post_no);
+    const target = thread
+      ? { kind: 'thread', board: thread.board, subject: thread.subject, body: thread.body, removed: !!thread.removed }
+      : postRow
+        ? { kind: 'post', thread_no: postRow.thread_no, board: post ? post.board : null, body: postRow.body, removed: !!postRow.removed }
+        : { kind: 'gone' };
+    return { id: r.id, post_no: r.post_no, reason: r.reason || null, created_at: r.created_at, target };
+  });
+  const openCount = db.prepare(`SELECT COUNT(*) AS c FROM commons_reports WHERE resolved = 0`).get().c;
+  json(res, 200, { items, open: openCount });
+});
+
+add('POST', '/api/admin/commons/remove', async ({ res, req, body }) => {
+  if (!isAdmin(req)) return fail(res, 401, 'unauth', 'Admin token required.');
+  const no = Number(body.no);
+  const t = db.prepare(`UPDATE commons_threads SET removed = 1 WHERE no = ?`).run(no);
+  const p = db.prepare(`UPDATE commons_posts SET removed = 1 WHERE no = ?`).run(no);
+  db.prepare(`UPDATE commons_reports SET resolved = 1 WHERE post_no = ?`).run(no);
+  json(res, 200, { ok: true, removed: t.changes + p.changes });
+});
+
+add('POST', '/api/admin/commons/restore', async ({ res, req, body }) => {
+  if (!isAdmin(req)) return fail(res, 401, 'unauth', 'Admin token required.');
+  const no = Number(body.no);
+  db.prepare(`UPDATE commons_threads SET removed = 0 WHERE no = ?`).run(no);
+  db.prepare(`UPDATE commons_posts SET removed = 0 WHERE no = ?`).run(no);
+  json(res, 200, { ok: true });
+});
+
+add('POST', '/api/admin/reports/:id/resolve', async ({ res, req, params }) => {
+  if (!isAdmin(req)) return fail(res, 401, 'unauth', 'Admin token required.');
+  db.prepare(`UPDATE commons_reports SET resolved = 1 WHERE id = ?`).run(params.id);
   json(res, 200, { ok: true });
 });
 
@@ -456,3 +538,22 @@ setTimeout(async () => {
   }
   if (rfc || btc) console.log(`anchored public seals: ${rfc} via RFC-3161, ${btc} via OpenTimestamps`);
 }, 600);
+
+// Periodically fold pending OpenTimestamps proofs into Bitcoin. The calendars confirm over hours,
+// so this quietly upgrades pending seals until each one carries a Bitcoin block attestation.
+async function runOtsUpgrades() {
+  const pend = db.prepare(`SELECT id, ots_proof FROM seals WHERE ots_status = 'pending' AND ots_proof IS NOT NULL`).all();
+  let confirmed = 0;
+  for (const s of pend) {
+    try {
+      const up = await upgradeOTS(s.ots_proof);
+      if (up.changed || up.ots_status !== 'pending') {
+        db.prepare(`UPDATE seals SET ots_proof = ?, ots_status = ? WHERE id = ?`).run(up.ots_proof, up.ots_status, s.id);
+        if (up.ots_status === 'complete') confirmed++;
+      }
+    } catch { /* leave pending for the next pass */ }
+  }
+  if (confirmed) console.log(`OpenTimestamps: ${confirmed} seal(s) now confirmed on Bitcoin`);
+}
+setTimeout(runOtsUpgrades, 90 * 1000);            // catch up shortly after a restart
+setInterval(runOtsUpgrades, 60 * 60 * 1000);      // then hourly (Bitcoin confirmation takes hours)
