@@ -45,6 +45,15 @@
   .sa:hover{background:#efeaf8}
   .sa.remove{color:#8a3a2a}
   .sa.restore{color:var(--hit)}
+  .imgitem{border:1px solid var(--line);background:#fbfafd;margin-bottom:11px}
+  .imgitem .rh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line-soft);background:var(--panel-alt)}
+  .imgitem .rh .k{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  .imgitem .rh .flag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--warm);font-weight:bold}
+  .imgitem .rmeta{padding:8px 12px 2px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .imgitem .imgprev{padding:8px 12px}
+  .imgitem .imgprev img{max-width:100%;max-height:320px;border:1px solid var(--line);border-radius:4px;display:block}
+  .imgitem .rbody{padding:2px 12px 8px;color:var(--muted);font-size:12px}
+  .imgitem .racts{padding:8px 12px 11px;display:flex;gap:8px;flex-wrap:wrap}
   .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;margin-top:14px;line-height:1.9}
   .sitefoot a{color:var(--muted)}
 </style>
@@ -66,6 +75,14 @@
           <button class="btn ghost" id="forget">Forget token</button>
         </div>
         <div class="msg" id="msg"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cap">Images awaiting review<span class="rt" id="imgCount"></span></div>
+      <div class="in">
+        <p class="lead" style="margin-bottom:8px">Uploaded images are held here and never appear on the board until you approve them.</p>
+        <div id="imgqueue"><p class="empty">Sign in and load the queue.</p></div>
       </div>
     </section>
 
@@ -148,9 +165,39 @@
       }catch(err){ alert(err.message); }
     });
 
-    $("load").addEventListener("click", loadReports);
+    // ---- image attachment queue ----
+    function imgContext(c){
+      if(!c || c.kind==="gone") return "(post no longer exists)";
+      return (c.kind==="thread"?"thread":"reply")+": "+esc(((c.subject?c.subject+" — ":"")+(c.body||"")).slice(0,120));
+    }
+    function imgHTML(a){
+      return '<div class="imgitem" data-att="'+a.id+'">'+
+        '<div class="rh"><span class="k">image on No.'+a.post_no+(a.board?' &middot; /'+esc(a.board)+'/':'')+'</span><span class="flag">pending</span></div>'+
+        '<div class="rmeta">uploaded '+reltime(a.created_at)+'</div>'+
+        '<div class="imgprev"><img src="data:'+esc(a.mime)+';base64,'+a.data+'" alt="pending attachment"></div>'+
+        '<div class="rbody" style="font-style:italic">'+imgContext(a.context)+'</div>'+
+        '<div class="racts"><span class="sa restore" data-iact="approve" data-id="'+a.id+'">Approve</span>'+
+        '<span class="sa remove" data-iact="reject" data-id="'+a.id+'">Reject</span></div></div>';
+    }
+    async function loadImages(){
+      try{
+        var res=await api("/api/admin/attachments");
+        $("imgCount").textContent=res.pending+" waiting";
+        var host=$("imgqueue");
+        host.innerHTML = res.items.length ? res.items.map(imgHTML).join("") : '<p class="empty">No images waiting. All clear.</p>';
+      }catch(e){ /* the reports loader surfaces auth errors */ }
+    }
+    $("imgqueue").addEventListener("click", async function(e){
+      var el=e.target.closest?e.target.closest("[data-iact]"):null; if(!el) return;
+      var act=el.getAttribute("data-iact"), id=el.getAttribute("data-id");
+      try{ await api("/api/admin/attachments/"+id+"/"+act,{method:"POST"}); await loadImages(); }
+      catch(err){ alert(err.message); }
+    });
+
+    function loadAll(){ loadReports(); loadImages(); }
+    $("load").addEventListener("click", loadAll);
     $("forget").addEventListener("click", function(){ localStorage.removeItem(KEY); $("tok").value=""; $("msg").textContent="Token forgotten."; });
-    $("tok").addEventListener("keydown", function(e){ if(e.key==="Enter") loadReports(); });
+    $("tok").addEventListener("keydown", function(e){ if(e.key==="Enter") loadAll(); });
   })();
   </script>
 </body>

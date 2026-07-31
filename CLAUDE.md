@@ -109,8 +109,17 @@ without updating every page together.
   for local; SET IT IN PRODUCTION). Endpoints: `GET /api/admin/reports` (queue + reported content),
   `POST /api/admin/commons/remove|restore` (soft hide via `removed` flag; existing queries already
   filter `removed=0`), `POST /api/admin/reports/:id/resolve`. UI is `augur-admin.html`.
+- **Image attachments (pre-moderated):** posts/replies can carry one image. The browser re-encodes
+  it through a `<canvas>` first (strips ALL EXIF/GPS metadata, caps to 1200px, JPEG q0.82), so no
+  location leaks and no huge files. Stored `pending` in `commons_attachments`; **never shown on the
+  board until a moderator approves it** (`GET /api/admin/attachments` queue + approve/reject in
+  `augur-admin.html`). `GET /api/commons/attachments/:id` serves bytes only when approved; pending
+  posts show an "awaiting review" placeholder. The proper automated safety layer for a public
+  launch is a perceptual-hash CSAM service (Cloudflare CSAM tool / Microsoft PhotoDNA / Thorn) -
+  NOT a plain hash, and it must use an approved known-CSAM database + report matches to NCMEC.
 - Deferred: IP/subnet bans (the anonymity model deliberately does not store raw IPs, so effective
-  banning needs a stored salted client hash - a privacy tradeoff to decide later).
+  banning needs a stored salted client hash - a privacy tradeoff to decide later); automated
+  CSAM scanning (needs an external approved service, see above).
 
 ## Roadmap (make it real)
 1. **Persistence + backend.** A real datastore for Vault entries, Registry entries, and Commons
@@ -119,9 +128,14 @@ without updating every page together.
 2. **Real timestamp anchor.** Replace the simulated anchor with OpenTimestamps (Bitcoin) plus an
    RFC 3161 instant token, operating on the hash the front end already produces. Keep the
    standalone verifier able to check proofs offline.
-3. **Anonymity + auth.** Private Vault needs per-user storage (with client-side encryption as the
-   Phase 2 goal). Commons stays no-signup anonymous with per-thread IDs.
-4. **Moderation** for the Commons (reporting, removal, rate limits).
+3. **Anonymity + auth.** DONE for the Vault: per-user storage + **end-to-end encryption**. The
+   Vault now derives an AES-GCM key from a passphrase via PBKDF2 (200k iters) in the browser;
+   the server stores only ciphertext (`vault_versions.ciphertext`) + a per-user `kdf_salt` and a
+   `kdf_check` (to verify the passphrase on unlock). The SHA-256 is still over the plaintext, so
+   anteriority holds. Set-once passphrase; forgetting it = unrecoverable (by design). Commons stays
+   no-signup anonymous. Still prototype: the email sign-in returns the token directly (no real
+   email); real emailed magic links are the remaining auth piece.
+4. **Moderation** for the Commons: DONE (MVP) - see the Moderation section above.
 5. **Deploy.** Domain + host. Keep hosting cheap; static + light backend fits generous free tiers.
 
 ## Guardrails for future work

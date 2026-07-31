@@ -65,6 +65,14 @@
   .composer textarea{width:100%;min-height:62px;resize:vertical}
   .composer .send{font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;background:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:9px 20px;cursor:pointer}
   .composer .send:hover{background:#4757b3}
+  .attachrow{margin-top:8px;display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+  .attachbtn{font-family:var(--sans);font-size:11.5px;color:var(--accent);background:var(--accent-soft);border:1px solid #dfe2f6;border-radius:6px;padding:6px 11px;cursor:pointer}
+  .attachbtn:hover{background:#e2e6fb}
+  .attachinfo{font-size:11px;color:var(--muted)}
+  .attachinfo .rmimg{color:var(--warm);cursor:pointer;text-decoration:underline;margin-left:6px}
+  .patt{margin-top:8px}
+  .patt img.pimg{max-width:220px;max-height:200px;border:1px solid var(--line);border-radius:6px;display:block}
+  .patt.pending{font-family:var(--mono);font-size:11px;color:var(--faint);font-style:italic;border:1px dashed var(--line);border-radius:6px;padding:8px 11px;display:inline-block;background:#f6f7fd}
 
   .group{margin-bottom:26px}
   .ghead{border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--accent-soft);color:var(--accent);padding:10px 15px;display:flex;justify-content:space-between;align-items:baseline}
@@ -180,6 +188,11 @@
         <input type="text" placeholder="Subject" aria-label="Subject" style="flex:1;min-width:160px">
       </div>
       <textarea placeholder="Write the dream while it is still fresh. Greentext with a leading &gt;, reply to a post with its number. It is sealed the moment you post."></textarea>
+      <div class="attachrow">
+        <label class="attachbtn" for="capImage">+ attach an image</label>
+        <input type="file" id="capImage" accept="image/png,image/jpeg,image/webp" style="display:none">
+        <span id="capImgInfo" class="attachinfo"></span>
+      </div>
       <div class="row" style="margin-top:8px;justify-content:space-between">
         <span style="color:var(--faint);font-size:11px">your words are hashed and locked. we never sell or leak a dream.</span>
         <button class="send">Seal &amp; post</button>
@@ -250,6 +263,34 @@
     return body;
   }
 
+  function attachHTML(p){
+    if(!p.attachment) return "";
+    if(p.attachment.status==="approved" && p.attachment.id){
+      var u="/api/commons/attachments/"+encodeURIComponent(p.attachment.id);
+      return '<div class="patt"><a href="'+u+'" target="_blank" rel="noopener"><img class="pimg" src="'+u+'" alt="image attached to this dream" loading="lazy"></a></div>';
+    }
+    if(p.attachment.status==="pending") return '<div class="patt pending">image attached, awaiting a moderator&rsquo;s review</div>';
+    return "";
+  }
+
+  // re-encode an image through a canvas: strips ALL metadata (EXIF/GPS) and caps the size.
+  function processImage(file, cb){
+    if(!file){ cb(null); return; }
+    if(!/^image\/(png|jpe?g|webp)$/.test(file.type)){ cb(null,"Please choose a PNG, JPEG or WebP image."); return; }
+    var img=new Image();
+    img.onload=function(){
+      var max=1200, s=Math.min(1, max/Math.max(img.width,img.height));
+      var cw=Math.max(1,Math.round(img.width*s)), ch=Math.max(1,Math.round(img.height*s));
+      var c=document.createElement("canvas"); c.width=cw; c.height=ch;
+      c.getContext("2d").drawImage(img,0,0,cw,ch);
+      URL.revokeObjectURL(img.src);
+      var dataUrl=c.toDataURL("image/jpeg",0.82);            // re-encode -> no original metadata survives
+      cb({ mime:"image/jpeg", data:dataUrl.split(",")[1] });
+    };
+    img.onerror=function(){ URL.revokeObjectURL(img.src); cb(null,"That image could not be read."); };
+    img.src=URL.createObjectURL(file);
+  }
+
   // ---- rendering ----
   function postEl(p,isOp){
     var named=p.name && p.name.toLowerCase()!=="anonymous";
@@ -263,7 +304,7 @@
       '<span class="no"><a id="p'+p.no+'" href="#p'+p.no+'">No.'+p.no+'</a></span> &nbsp; '+
       '<span class="id">ID:'+esc(p.poster_id)+'</span> &nbsp; '+
       '<span class="rep" data-no="'+p.no+'">report</span></div>'+
-      '<div class="pbody">'+renderBody(p.body)+'</div>';
+      '<div class="pbody">'+renderBody(p.body)+'</div>'+attachHTML(p);
     colourId(el.querySelector(".id"));
     if(isOp){
       var bar=document.createElement("div");bar.className="opact";
@@ -375,14 +416,25 @@
     if(last.classList.contains("replywrap")){last.querySelector("textarea").focus();return;}
     var wrap=document.createElement("div");wrap.className="replywrap";wrap.setAttribute("data-thread",threadNo);
     wrap.innerHTML='<textarea placeholder="Reply... (use &gt; for greentext, &gt;&gt;number to quote a post)"></textarea>'+
+      '<div class="attachrow"><label class="attachbtn">+ attach an image<input type="file" class="rimage" accept="image/png,image/jpeg,image/webp" style="display:none"></label> <span class="rimginfo attachinfo"></span></div>'+
       '<div class="rbrow"><input class="rname" type="text" value="Anonymous"> <button type="button" class="rsend">Post reply</button> <span class="rcancel">cancel</span></div>';
     last.parentNode.insertBefore(wrap,last.nextSibling);
     var ta=wrap.querySelector("textarea");ta.focus();
+    var replyImage=null, rimg=wrap.querySelector(".rimage"), rinfo=wrap.querySelector(".rimginfo");
+    rimg.addEventListener("change",function(){
+      var f=rimg.files&&rimg.files[0]; if(!f){ replyImage=null; rinfo.textContent=""; return; }
+      rinfo.textContent="processing…";
+      processImage(f,function(img,errmsg){
+        if(!img){ replyImage=null; rimg.value=""; rinfo.textContent=errmsg||"could not use that image"; return; }
+        replyImage=img; rinfo.innerHTML='image ready, it will be reviewed <span class="rmimg">remove</span>';
+        rinfo.querySelector(".rmimg").addEventListener("click",function(){ replyImage=null; rimg.value=""; rinfo.textContent=""; });
+      });
+    });
     wrap.querySelector(".rsend").addEventListener("click",async function(){
       var body=ta.value.trim();if(!body){ta.focus();return;}
       var btn=this;btn.disabled=true;
       try{
-        var post=await api("/api/commons/threads/"+threadNo+"/posts",{method:"POST",body:JSON.stringify({name:wrap.querySelector(".rname").value.trim(),body:body})});
+        var post=await api("/api/commons/threads/"+threadNo+"/posts",{method:"POST",body:JSON.stringify({name:wrap.querySelector(".rname").value.trim(),body:body,image:replyImage||undefined})});
         var el=postEl(post,false);
         wrap.parentNode.insertBefore(el,wrap);
         wrap.remove();
@@ -392,6 +444,22 @@
     });
     wrap.querySelector(".rcancel").addEventListener("click",function(){wrap.remove();});
   }
+
+  // composer image attachment (processed to strip metadata before it is held)
+  var composerImage=null;
+  var capImage=document.getElementById("capImage");
+  var capImgInfo=document.getElementById("capImgInfo");
+  if(capImage)capImage.addEventListener("change",function(){
+    var f=capImage.files&&capImage.files[0];
+    if(!f){ composerImage=null; capImgInfo.textContent=""; return; }
+    capImgInfo.textContent="processing…";
+    processImage(f,function(img,errmsg){
+      if(!img){ composerImage=null; capImage.value=""; capImgInfo.textContent=errmsg||"could not use that image"; return; }
+      composerImage=img;
+      capImgInfo.innerHTML='image ready, it will be reviewed before it shows <span class="rmimg">remove</span>';
+      capImgInfo.querySelector(".rmimg").addEventListener("click",function(){ composerImage=null; capImage.value=""; capImgInfo.textContent=""; });
+    });
+  });
 
   var send=document.querySelector(".composer .send");
   if(send)send.addEventListener("click",async function(){
@@ -404,7 +472,7 @@
     if(!body){ta.focus();return;}
     send.disabled=true;
     try{
-      var thread=await api("/api/commons/threads",{method:"POST",body:JSON.stringify({board:board,name:name,subject:subjectEl?subjectEl.value.trim():"",body:body})});
+      var thread=await api("/api/commons/threads",{method:"POST",body:JSON.stringify({board:board,name:name,subject:subjectEl?subjectEl.value.trim():"",body:body,image:composerImage||undefined})});
       var g=document.getElementById(board);
       if(g){
         var en=g.querySelector(".empty-note");if(en)en.remove();
@@ -412,6 +480,7 @@
         g.insertBefore(op,g.querySelector(".ghead").nextSibling);
       }
       ta.value="";if(subjectEl)subjectEl.value="";
+      composerImage=null; if(capImage)capImage.value=""; if(capImgInfo)capImgInfo.textContent="";
       var cur=(location.hash||"").slice(1);
       if(cur&&cur!=="all"&&cur!==board&&VALID.indexOf(cur)>=0)location.hash="#"+board;
       if(g)g.querySelector(".post.op").scrollIntoView({behavior:"smooth",block:"center"});

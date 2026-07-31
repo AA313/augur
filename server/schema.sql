@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS users (
   id              TEXT PRIMARY KEY,
   email           TEXT UNIQUE NOT NULL,
   created_at      TEXT NOT NULL,
-  research_opt_in INTEGER NOT NULL DEFAULT 0
+  research_opt_in INTEGER NOT NULL DEFAULT 0,
+  kdf_salt        TEXT,               -- per-user PBKDF2 salt for the Vault passphrase (non-secret)
+  kdf_check       TEXT                -- ciphertext of a known token, to verify the passphrase on unlock
 );
 
 -- short-lived login tokens (magic link). In dev the token is returned directly.
@@ -50,17 +52,18 @@ CREATE TABLE IF NOT EXISTS vault_entries (
 CREATE INDEX IF NOT EXISTS idx_vault_user ON vault_entries(user_id, created_at);
 
 -- append-only sealed versions of an entry: the raw first capture, then later passes.
--- Each is immutable and carries a real SHA-256 over the shared seal payload.
+-- End-to-end encrypted: the server stores only ciphertext (AES-GCM, key derived from the
+-- user's passphrase in the browser). The SHA-256 hash is computed over the PLAINTEXT payload
+-- client-side, so anteriority still holds, but the server cannot read the dream.
 CREATE TABLE IF NOT EXISTS vault_versions (
   id         TEXT PRIMARY KEY,
   entry_id   TEXT NOT NULL REFERENCES vault_entries(id),
   user_id    TEXT NOT NULL REFERENCES users(id),
   seq        INTEGER NOT NULL,
   kind       TEXT NOT NULL,          -- raw | pass
-  content    TEXT NOT NULL,
-  claim      TEXT NOT NULL DEFAULT '{}',
-  nonce      TEXT NOT NULL,
-  hash       TEXT NOT NULL,          -- sha256(canon({content,claim,nonce,created_at}))
+  ciphertext TEXT NOT NULL,          -- base64(iv || AES-GCM ciphertext of the dream text)
+  nonce      TEXT NOT NULL,          -- part of the sealed payload (not secret)
+  hash       TEXT NOT NULL,          -- sha256(canon({content,claim,nonce,created_at})) over plaintext
   created_at TEXT NOT NULL           -- client seal time
 );
 CREATE INDEX IF NOT EXISTS idx_vv_entry ON vault_versions(entry_id, seq);
@@ -132,3 +135,18 @@ CREATE TABLE IF NOT EXISTS commons_reports (
   created_at TEXT NOT NULL,
   resolved   INTEGER NOT NULL DEFAULT 0
 );
+
+-- image attachments on Commons posts. Held pending until a moderator approves them, so an
+-- anonymous board never publishes an unreviewed image. Metadata (EXIF/GPS) is stripped in the
+-- browser by re-encoding through a canvas before upload.
+CREATE TABLE IF NOT EXISTS commons_attachments (
+  id         TEXT PRIMARY KEY,
+  post_no    INTEGER NOT NULL,        -- the thread or reply no this belongs to
+  board      TEXT,
+  mime       TEXT NOT NULL,           -- image/jpeg | image/png | image/webp
+  data       TEXT NOT NULL,           -- base64 image bytes (already metadata-stripped + resized)
+  status     TEXT NOT NULL DEFAULT 'pending',   -- pending | approved | rejected
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_att_status ON commons_attachments(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_att_post ON commons_attachments(post_no);

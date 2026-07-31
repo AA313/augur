@@ -139,7 +139,7 @@
         <div class="who">
           <div>
             <p class="lead">Your own record, kept before it softens.</p>
-            <p class="priv">Private to you. Never sold, never read without you, never used in research unless you opt in. Sealed versions are locked; the first one stays exactly as it came.</p>
+            <p class="priv">Private to you, and <b>end-to-end encrypted</b>: your dreams are locked in your browser with a passphrase only you hold, so we store nothing but ciphertext and cannot read them ourselves. Never sold, never used in research unless you opt in. Sealed versions stay exactly as they came.</p>
           </div>
           <div id="authbar" class="authbar"></div>
         </div>
@@ -164,7 +164,7 @@
       <div class="cap">Your captures<span class="rt">raw first, refined later, each one sealed</span></div>
       <div class="in">
         <div id="captures"></div>
-        <p class="capnote" style="margin-top:13px">Your captures are saved to your account and kept across reloads and devices. Each version carries a real SHA-256 proof you can save and check in the <a href="augur-verifier.html">Verifier</a>.</p>
+        <p class="capnote" style="margin-top:13px">Saved to your account, encrypted in your browser and kept across reloads and devices. Each version still carries a real SHA-256 proof you can save and check in the <a href="augur-verifier.html">Verifier</a>: the anteriority holds even though the text stays private.</p>
       </div>
     </section>
 
@@ -230,19 +230,52 @@
 
     var user=null, entries=[];
 
-    // ---------- auth ----------
+    // ---------- end-to-end encryption (AES-GCM, key derived from a passphrase in THIS browser) ----------
+    var key=null;                        // the derived key; held in memory only, never sent anywhere
+    var CHECK_TOKEN="augur-vault-key-ok";
+    function b64e(bytes){var s="";for(var i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s);}
+    function b64d(str){var bin=atob(str);var a=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+    async function deriveKey(passphrase, saltB64){
+      var base=await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), "PBKDF2", false, ["deriveKey"]);
+      return crypto.subtle.deriveKey({name:"PBKDF2", salt:b64d(saltB64), iterations:200000, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]);
+    }
+    async function encryptText(text){
+      var iv=crypto.getRandomValues(new Uint8Array(12));
+      var ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM", iv:iv}, key, new TextEncoder().encode(text)));
+      var out=new Uint8Array(iv.length+ct.length); out.set(iv,0); out.set(ct,iv.length);
+      return b64e(out);
+    }
+    async function decryptText(b64){
+      var raw=b64d(b64), iv=raw.slice(0,12), ct=raw.slice(12);
+      return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM", iv:iv}, key, ct));
+    }
+
+    // ---------- auth + vault unlock ----------
     function renderAuth(){
       var bar=$("authbar");
-      if(user){
-        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email)+'</span><br><span class="signout">Sign out</span></div>';
-        bar.querySelector(".signout").addEventListener("click", signOut);
-      } else {
+      if(!user){
         bar.innerHTML='<div class="signedout"><div class="al">Sign in to capture</div>'+
           '<input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">'+
           '<button type="button" class="signin" id="authGo">Sign in</button>'+
           '<div class="anote">A prototype sign-in: no password, and no email is actually sent. It just creates a private account so your dreams persist.</div></div>';
         bar.querySelector("#authGo").addEventListener("click", function(){ signIn($("authEmail").value.trim()); });
         bar.querySelector("#authEmail").addEventListener("keydown", function(e){ if(e.key==="Enter") signIn(this.value.trim()); });
+      } else if(!key){
+        var creating=!user.vault_ready;
+        bar.innerHTML='<div class="signedout"><div class="al">'+(creating?"Set a Vault passphrase":"Unlock your Vault")+'</div>'+
+          '<input type="password" id="passIn" placeholder="'+(creating?"choose a passphrase":"your passphrase")+'" autocomplete="off">'+
+          '<button type="button" class="signin" id="passGo">'+(creating?"Set &amp; unlock":"Unlock")+'</button>'+
+          '<div class="anote">'+(creating
+            ? "This encrypts your dreams in this browser; we store only ciphertext and never see this passphrase. <b>If you forget it, your sealed dreams cannot be recovered, not even by us.</b>"
+            : "Signed in as "+esc(user.email)+". Enter your encryption passphrase to decrypt your dreams.")+
+          ' <span class="signout" id="soLink">sign out</span></div></div>';
+        bar.querySelector("#passGo").addEventListener("click", function(){ creating?setupPassphrase($("passIn").value):unlockPassphrase($("passIn").value); });
+        bar.querySelector("#passIn").addEventListener("keydown", function(e){ if(e.key==="Enter") bar.querySelector("#passGo").click(); });
+        bar.querySelector("#soLink").addEventListener("click", signOut);
+      } else {
+        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email)+'</span> &middot; <span title="encrypted, unlocked">&#128275; unlocked</span><br><span class="signout" id="lockLink">lock</span> &middot; <span class="signout" id="soLink2">sign out</span></div>';
+        bar.querySelector("#lockLink").addEventListener("click", function(){ key=null; renderAuth(); render(); });
+        bar.querySelector("#soLink2").addEventListener("click", signOut);
       }
     }
     async function signIn(email){
@@ -251,19 +284,49 @@
       try{
         var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email})});
         var ver=await api("/api/auth/verify",{method:"POST",body:JSON.stringify({token:req.dev_login_token})});
-        setToken(ver.session_token); user=ver.user;
-        renderAuth(); await loadEntries();
+        setToken(ver.session_token); user=ver.user; key=null;
+        renderAuth(); render();          // next step: set or enter the encryption passphrase
       }catch(e){ alert("Could not sign in: "+e.message); if(go){ go.disabled=false; go.textContent="Sign in"; } }
     }
     async function signOut(){
       try{ await api("/api/auth/logout",{method:"POST"}); }catch(e){}
-      setToken(""); user=null; entries=[]; renderAuth(); render();
+      setToken(""); user=null; key=null; entries=[]; renderAuth(); render();
+    }
+    async function setupPassphrase(pass){
+      if(!pass || pass.length<6){ alert("Choose a passphrase of at least 6 characters."); return; }
+      var salt=b64e(crypto.getRandomValues(new Uint8Array(16)));
+      key=await deriveKey(pass, salt);
+      var check=await encryptText(CHECK_TOKEN);
+      try{
+        await api("/api/vault/setup",{method:"POST",body:JSON.stringify({kdf_salt:salt, kdf_check:check})});
+        user.vault_ready=true; user.kdf_salt=salt; user.kdf_check=check;
+        renderAuth(); await loadEntries();
+      }catch(e){ key=null; alert("Could not set passphrase: "+e.message); }
+    }
+    async function unlockPassphrase(pass){
+      if(!pass) return;
+      try{
+        key=await deriveKey(pass, user.kdf_salt);
+        var v=await decryptText(user.kdf_check);      // AES-GCM throws on a wrong key
+        if(v!==CHECK_TOKEN) throw new Error("mismatch");
+      }catch(e){ key=null; alert("Wrong passphrase. Try again."); return; }
+      renderAuth(); await loadEntries();
     }
 
     // ---------- entries ----------
+    async function decorateEntry(en){
+      for(var i=0;i<en.versions.length;i++){
+        var v=en.versions[i];
+        try{ v.text=await decryptText(v.ciphertext); }
+        catch(e){ v.text="[could not decrypt with this passphrase]"; v.decryptFail=true; }
+        v.bundle={ content:v.text, claim:{resolution_by:"",domain:"",specificity:""}, nonce:v.nonce, created_at:v.created_at, sha256:v.hash };
+      }
+      return en;
+    }
     async function loadEntries(){
-      try{ var res=await api("/api/vault/entries"); entries=res.items||[]; }
-      catch(e){ setToken(""); user=null; renderAuth(); }
+      if(!key) return render();
+      try{ var res=await api("/api/vault/entries"); entries=res.items||[]; for(var i=0;i<entries.length;i++){ await decorateEntry(entries[i]); } }
+      catch(e){ if(/Sign in/.test(e.message)){ setToken(""); user=null; key=null; renderAuth(); } }
       render();
     }
     function findEntry(id){ for(var i=0;i<entries.length;i++){ if(String(entries[i].id)===String(id)) return entries[i]; } return null; }
@@ -300,7 +363,8 @@
     function render(){
       var host=$("captures");
       if(!user){ host.innerHTML=exampleHTML(); }
-      else if(!entries.length){ host.innerHTML='<p class="emptycap">Nothing captured yet. Write a dream above and seal the first version. It will appear here, saved to your account.</p>'; }
+      else if(!key){ host.innerHTML='<p class="gate">Set or enter your encryption passphrase (top right) to unlock your dreams. They are stored encrypted; even AUGUR cannot read them.</p>'; }
+      else if(!entries.length){ host.innerHTML='<p class="emptycap">Nothing captured yet. Write a dream above and seal the first version. It is encrypted in your browser before it ever leaves.</p>'; }
       else { host.innerHTML=entries.map(entryHTML).join(""); }
       renderMotifs();
     }
@@ -324,7 +388,7 @@
     function renderMotifs(){
       var sec=$("motifSection"), body=$("motifBody");
       if(!sec||!body) return;
-      if(!user || entries.length<2){ sec.style.display="none"; return; }
+      if(!user || !key || entries.length<2){ sec.style.display="none"; return; }
       var motifs=computeMotifs(entries);
       if(!motifs.length){ sec.style.display="none"; return; }
       var parts=motifs.map(function(m){ return '<span class="big">'+esc(m.word)+'</span> in '+m.count; });
@@ -349,8 +413,9 @@
         var btn=this; btn.disabled=true;
         try{
           var s=await seal(text);
-          var updated=await api("/api/vault/entries/"+eid+"/versions",{method:"POST",body:JSON.stringify({bundle:s.bundle})});
-          replaceEntry(updated); render();
+          var ciphertext=await encryptText(text);
+          var updated=await api("/api/vault/entries/"+eid+"/versions",{method:"POST",body:JSON.stringify({version:{ ciphertext:ciphertext, hash:s.bundle.sha256, nonce:s.bundle.nonce, created_at:s.bundle.created_at }})});
+          await decorateEntry(updated); replaceEntry(updated); render();
         }catch(err){ btn.disabled=false; alert("Could not seal this version: "+err.message); }
       });
       eact.querySelector(".passcancel").addEventListener("click", function(){ render(); });
@@ -368,12 +433,15 @@
     // capture a new raw first version
     $("sealRawBtn").addEventListener("click", async function(){
       if(!user){ var i=$("authEmail"); if(i){ i.focus(); i.scrollIntoView({behavior:"smooth",block:"center"}); } return; }
+      if(!key){ var p=$("passIn"); if(p){ p.focus(); p.scrollIntoView({behavior:"smooth",block:"center"}); } return; }
       var text=$("capText").value.trim();
       if(!text){ $("capText").focus(); return; }
       var btn=this; btn.disabled=true;
       try{
         var s=await seal(text);
-        var entry=await api("/api/vault/entries",{method:"POST",body:JSON.stringify({title:titleFrom(text), bundle:s.bundle})});
+        var ciphertext=await encryptText(text);
+        var entry=await api("/api/vault/entries",{method:"POST",body:JSON.stringify({title:titleFrom(text), version:{ ciphertext:ciphertext, hash:s.bundle.sha256, nonce:s.bundle.nonce, created_at:s.bundle.created_at }})});
+        await decorateEntry(entry);
         entries.unshift(entry);
         $("capText").value=""; stopVoice();
         render();
