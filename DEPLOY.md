@@ -1,6 +1,6 @@
-# Deploying AUGUR for feedback
+# Deploying Oneiratory
 
-AUGUR is now a small Node app (a zero-dependency backend that serves the site and an API).
+Oneiratory is a small Node app (a zero-dependency backend that serves the site and an API).
 Static hosts like tiiny.site or Netlify Drop can no longer run it, because the Commons, Vault,
 Seal, and Registry pages talk to the backend. You need a host that runs Node.
 
@@ -12,36 +12,32 @@ initial commit. Pick one of the two paths below.
 
 ## Option A — Render (recommended: free, no credit card)
 
-You will need a **GitHub account** and a **Render account** (sign up at render.com with GitHub).
+The code is already on GitHub at **`AA313/augur`**, and `render.yaml` is a Render **Blueprint**, so
+Render configures the service for you (no build/start commands to fill in, secrets generated).
 
-### 1. Put the code on GitHub
-Create an empty repo at https://github.com/new (name it `augur`, public or private, do **not**
-add a README). Then, in this folder:
+1. Sign in at https://render.com (sign up free with GitHub if you do not have an account).
+2. **New +** → **Blueprint**.
+3. Connect GitHub and pick the **`AA313/augur`** repo. Render reads `render.yaml` and shows a web
+   service named **oneiratory** (Runtime: Docker, Plan: Free).
+4. Click **Apply**.
 
-```bash
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/augur.git
-git push -u origin main
-```
+Render builds the `Dockerfile` (Node 24, required by `node:sqlite`) and, after a few minutes, gives
+you a URL like `https://oneiratory.onrender.com`. That is the link to share.
 
-(The first push opens a browser to sign in to GitHub, via Git Credential Manager.)
+The blueprint auto-generates `AUGUR_ADMIN_TOKEN` and `AUGUR_SECRET` as strong random values (never
+the dev defaults). To sign in to the moderator page `/augur-admin.html`, read `AUGUR_ADMIN_TOKEN`
+from the service's **Environment** tab. To update the live site later, just `git push` — Render
+redeploys automatically (`autoDeploy: true`).
 
-### 2. Deploy on Render
-1. Render dashboard → **New +** → **Web Service**.
-2. Connect your GitHub and pick the `augur` repo.
-3. Render detects the `Dockerfile` → **Runtime: Docker** (leave build/start commands blank).
-4. **Instance Type: Free**.
-5. **Create Web Service.**
-
-Render builds the image and gives you a URL like `https://augur-xxxx.onrender.com`. That is the
-link to share.
-
-**Free-tier notes (fine for feedback):**
+**Free-tier notes (fine for a preview):**
 - The service sleeps after ~15 minutes of no traffic; the first visit after that takes ~30–60s to
-  wake. Warn people, or just open it yourself first before sharing.
-- The database is ephemeral: it resets on each restart/deploy and **re-seeds** the Commons and
-  Registry automatically, so it always looks populated. Visitor posts/seals persist only until the
-  next restart. That is normal and fine for a demo.
+  wake. Open it yourself first before sharing.
+- The database is ephemeral: it resets on each restart/deploy and **re-seeds** the labelled example
+  Commons and Registry entries automatically, so it always looks populated. Visitor posts/seals
+  persist only until the next restart. To keep real data, upgrade off Free and uncomment the
+  `disk:` block in `render.yaml` (it mounts persistent storage at `/app/data`).
+- **Auth is still a prototype:** anyone can sign in as any email, so treat this deploy as a
+  staging/preview and do not invite people to store real private dreams yet.
 
 ---
 
@@ -83,7 +79,9 @@ of these before you open uploads to the public. Until then, keep uploads pre-mod
 
 ## Good to know either way
 
-- **No environment variables are required.** The host sets `PORT` automatically; the app reads it.
+- **Env vars:** the host sets `PORT` automatically; the app reads it. The Render blueprint also
+  generates `AUGUR_ADMIN_TOKEN` and `AUGUR_SECRET` (never the dev defaults); on other hosts set
+  those two yourself.
 - **Sign-in is a prototype.** There is no email provider, so the Seal and Vault pages let anyone
   sign in with any email (the login token is returned directly). This is disclosed on the pages.
   Fine for a demo; a real launch would send an emailed magic link.
