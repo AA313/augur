@@ -237,7 +237,7 @@
         bar.innerHTML='<div class="signedout"><div class="al">Sign in to capture</div>'+
           '<input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">'+
           '<button type="button" class="signin" id="authGo">Sign in</button>'+
-          '<div class="anote">A prototype sign-in: no password, and no email is actually sent. It just creates a private account so your dreams persist.</div></div>';
+          '<div class="anote">No password. We email you a one-time link that signs you in and creates your private account.</div></div>';
         bar.querySelector("#authGo").addEventListener("click", function(){ signIn($("authEmail").value.trim()); });
         bar.querySelector("#authEmail").addEventListener("keydown", function(e){ if(e.key==="Enter") signIn(this.value.trim()); });
       } else if(!key){
@@ -260,12 +260,18 @@
     }
     async function signIn(email){
       if(!email || email.indexOf("@")<0){ var i=$("authEmail"); if(i) i.focus(); return; }
-      var go=$("authGo"); if(go){ go.disabled=true; go.textContent="Signing in…"; }
+      var go=$("authGo"); if(go){ go.disabled=true; go.textContent="Sending…"; }
       try{
-        var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email})});
-        var ver=await api("/api/auth/verify",{method:"POST",body:JSON.stringify({token:req.dev_login_token})});
-        setToken(ver.session_token); user=ver.user; key=null;
-        renderAuth(); render();          // next step: set or enter the encryption passphrase
+        var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email, next:"augur-vault.html"})});
+        if(req && req.dev_login_token){
+          // mail not configured (local dev): sign in immediately
+          var ver=await api("/api/auth/verify",{method:"POST",body:JSON.stringify({token:req.dev_login_token})});
+          setToken(ver.session_token); user=ver.user; key=null;
+          renderAuth(); render(); return;          // next step: set or enter the encryption passphrase
+        }
+        // real email sent: ask the user to open the link in their inbox
+        $("authbar").innerHTML='<div class="signedout"><div class="al">Check your email</div>'+
+          '<div class="anote">We sent a one-time sign-in link to <b>'+esc(email)+'</b>. Open it to finish signing in; it is valid for 15 minutes.</div></div>';
       }catch(e){ alert("Could not sign in: "+e.message); if(go){ go.disabled=false; go.textContent="Sign in"; } }
     }
     async function signOut(){

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oneiratory · Sign in</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="augur.css">
+<style>
+  main{max-width:560px}
+  .authcard{margin-top:clamp(40px,10vh,110px);text-align:center}
+  .authcard .emblem{line-height:0;margin-bottom:16px}
+  .authcard h1{font-family:var(--serif);font-weight:400;color:var(--ink-strong);font-size:clamp(24px,5vw,32px);margin:0 0 12px;letter-spacing:-.01em}
+  .authcard p{color:var(--muted);font-size:15px;line-height:1.6;max-width:44ch;margin:0 auto}
+  .authcard .em{color:var(--ink-strong);font-family:var(--mono);font-size:13px;font-style:normal}
+  .authcard .act{margin-top:24px;display:flex;gap:11px;justify-content:center;flex-wrap:wrap}
+  .authcard .msg{margin-top:18px;font-size:13.5px;line-height:1.6}
+  .authcard .msg.ok{color:var(--hit)}
+  .authcard .msg.err{color:var(--miss)}
+  .spin{display:inline-block;width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;vertical-align:-2px;margin-right:7px;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){.spin{animation:none;border-top-color:var(--line)}}
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">The instrument</a>
+        <a href="about.html">About</a>
+        <a href="augur-registry.html">Registry</a>
+        <a href="augur-commons.html">Commons</a>
+        <a href="augur-vault.html">Vault</a>
+        <a href="augur-verifier.html">Verify</a>
+        <a href="augur-seal-prototype.html">Seal a dream</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="authcard">
+      <div class="emblem" aria-hidden="true"><svg viewBox="0 0 60 60" width="54" height="54"><circle cx="30" cy="30" r="24" fill="none" stroke="#948dae" stroke-width="1.2"/><circle cx="30" cy="30" r="18" fill="none" stroke="#cbc5db" stroke-width="1"/><path d="M30 11 L33.2 26.8 L49 30 L33.2 33.2 L30 49 L26.8 33.2 L11 30 L26.8 26.8 Z" fill="#7a72a2"/></svg></div>
+      <h1 id="aTitle">Finish signing in</h1>
+      <p id="aLede">Confirm below to sign in to Oneiratory. This link is valid for a few minutes and can be used once.</p>
+      <div class="act" id="aAct">
+        <button class="btn btn-primary" id="confirmBtn" type="button">Sign in to Oneiratory</button>
+      </div>
+      <div class="msg" id="aMsg" role="status" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">a one-time sign-in link. it never contains your password</p>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; contact@oneiratory.com
+    </div>
+  </footer>
+
+  <script>
+  (function(){
+    var SKEY="augur_session";
+    var $=function(id){return document.getElementById(id);};
+    var q=new URLSearchParams(location.search);
+    var token=(q.get("token")||"").trim();
+    var next=q.get("next")||"augur-vault.html";
+    if(!/^[\w.-]+\.html$/.test(next)) next="augur-vault.html";   // only same-site page names
+
+    function setMsg(cls,html){ var el=$("aMsg"); el.className="msg"+(cls?" "+cls:""); el.innerHTML=html; }
+
+    if(!token){
+      $("aTitle").textContent="Sign-in link incomplete";
+      $("aLede").textContent="This link is missing its token. Request a fresh sign-in link and try again.";
+      $("aAct").innerHTML='<a class="btn btn-ghost" href="augur-vault.html">Back to sign in</a>';
+      return;
+    }
+
+    var btn=$("confirmBtn");
+    btn.addEventListener("click", async function(){
+      btn.disabled=true;
+      setMsg("", '<span class="spin"></span> Signing you in&hellip;');
+      try{
+        var r=await fetch("/api/auth/verify",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({token:token})});
+        var b=await r.json().catch(function(){return null;});
+        if(!r.ok || !b || !b.session_token) throw new Error((b&&b.error&&b.error.message)||"This link is invalid or has expired.");
+        localStorage.setItem(SKEY, b.session_token);
+        $("aTitle").textContent="You're signed in";
+        $("aLede").innerHTML='Signed in as <span class="em">'+String((b.user&&b.user.email)||"").replace(/[&<>"]/g,"")+'</span>. Taking you in&hellip;';
+        $("aAct").innerHTML='<a class="btn btn-primary" href="'+next+'">Continue</a>';
+        setMsg("ok","");
+        setTimeout(function(){ location.replace(next); }, 900);
+      }catch(e){
+        btn.disabled=false;
+        setMsg("err", String(e.message||"Could not sign in.")+' <a href="augur-vault.html">Request a new link</a>');
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

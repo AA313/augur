@@ -82,9 +82,12 @@ of these before you open uploads to the public. Until then, keep uploads pre-mod
 - **Env vars:** the host sets `PORT` automatically; the app reads it. The Render blueprint also
   generates `AUGUR_ADMIN_TOKEN` and `AUGUR_SECRET` (never the dev defaults); on other hosts set
   those two yourself.
-- **Sign-in is a prototype.** There is no email provider, so the Seal and Vault pages let anyone
-  sign in with any email (the login token is returned directly). This is disclosed on the pages.
-  Fine for a demo; a real launch would send an emailed magic link.
+- **Sign-in uses emailed magic links (via Resend).** Set `RESEND_API_KEY`, `MAIL_FROM`, and
+  `PUBLIC_BASE_URL` (all in the Render blueprint) to turn it on: `/api/auth/request` then emails a
+  one-time link to `auth.html`, and never returns the token to the browser. Until those are set, a
+  production server **fails secure** (refuses sign-in with a 503); only local dev returns the link
+  directly for convenience. Get a key at resend.com; for `MAIL_FROM`, verify your domain, or use
+  `onboarding@resend.dev` for testing before you own `oneiratory.com`.
 - **The timestamp anchors are real.** On seal, the server calls a public RFC-3161 authority
   (DigiCert) and the OpenTimestamps calendars from wherever it is hosted, so the anchors work in
   production too. Bitcoin confirmation still takes a few hours (unchanged).

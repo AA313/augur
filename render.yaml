@@ -14,6 +14,10 @@ services:
     healthCheckPath: /
     autoDeploy: true           # redeploy on every push to the connected branch
     envVars:
+      # Run in production mode: generic error messages, and sign-in fails secure (never
+      # returns a login token to the browser) until a mail provider is configured below.
+      - key: NODE_ENV
+        value: production
       # Moderator gate for /augur-admin.html. Render generates a strong random value,
       # so it is NEVER the insecure 'augur-admin-dev' default. Read it in the Render
       # dashboard (Environment tab) to sign in to the moderator page.
@@ -22,6 +26,19 @@ services:
       # Server-side secret (session ids / day secret). Generated, not the dev default.
       - key: AUGUR_SECRET
         generateValue: true
+      # Real emailed magic-link sign-in (Resend). Until these are set, sign-in falls back to the
+      # dev behaviour (link returned to the browser). Set all three to turn on real email:
+      #   RESEND_API_KEY  your Resend API key       (resend.com -> API Keys)
+      #   MAIL_FROM       a verified sender, e.g. "Oneiratory <noreply@oneiratory.com>"
+      #                   (before you own the domain, "onboarding@resend.dev" works for testing)
+      #   PUBLIC_BASE_URL the site's public URL, e.g. https://oneiratory.onrender.com
+      #                   (so the emailed link points at the real site)
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
       # Optional: point at a real image-safety scanner before enabling public image uploads.
       # - key: AUGUR_SCAN_URL
       #   sync: false

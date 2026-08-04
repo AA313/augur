@@ -10,6 +10,7 @@ import { seedRegistryIfEmpty } from './seed-registry.mjs';
 import { anchorHash, inspectToken } from './anchor.mjs';
 import { submitOTS, upgradeOTS, otsBlock } from './ots.mjs';
 import { scanImage, addToBlocklist, blocklistSize, scannerConfigured } from './scan.mjs';
+import { mailConfigured, sendMagicLink } from './mail.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(here, '..');              // project root holds the .html files
@@ -91,7 +92,16 @@ const add = (method, path, handler) => {
 };
 
 // ===== health =====
-add('GET', '/api/health', async (ctx) => json(ctx.res, 200, { ok: true, time: nowISO() }));
+add('GET', '/api/health', async (ctx) => json(ctx.res, 200, { ok: true, time: nowISO(), mail: mailConfigured() }));
+
+// Absolute base URL for building the magic link. Prefer PUBLIC_BASE_URL in production
+// (so the link can never be pointed elsewhere by a spoofed Host header); fall back to
+// the request's forwarded proto + host for local dev.
+function baseUrlFromReq(req) {
+  const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() || 'http';
+  const host = req.headers['host'] || ('127.0.0.1:' + PORT);
+  return proto + '://' + host;
+}
 
 // ===== auth =====
 add('POST', '/api/auth/request', async ({ res, req, body }) => {
@@ -102,9 +112,23 @@ add('POST', '/api/auth/request', async ({ res, req, body }) => {
   const created = nowISO();
   const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
   db.prepare(`INSERT INTO login_tokens (token, email, created_at, expires_at, used) VALUES (?,?,?,?,0)`).run(token, email, created, expires);
-  // Prototype sign-in: there is no email provider, so the magic-link token is returned directly
-  // (which lets anyone sign in as any email). A real deployment would email it and delete this.
-  json(res, 200, { ok: true, note: 'Prototype: no email is sent; the sign-in token is returned directly.', dev_login_token: token });
+  const base = (process.env.PUBLIC_BASE_URL || baseUrlFromReq(req)).replace(/\/+$/, '');
+  const next = (typeof body.next === 'string' && /^[\w.-]+\.html$/.test(body.next)) ? body.next : 'augur-vault.html';
+  const link = `${base}/auth.html?token=${encodeURIComponent(token)}&next=${encodeURIComponent(next)}`;
+  if (mailConfigured()) {
+    // Real sign-in: email the one-time magic link, and NEVER return the token to the browser.
+    try { await sendMagicLink(email, link); }
+    catch (e) { console.error('[auth] mail send failed:', e.message); return fail(res, 502, 'mail_failed', 'Could not send the sign-in email. Please try again in a moment.'); }
+    return json(res, 200, { ok: true, sent: true });
+  }
+  if (DEV) {
+    // Local dev only: no mail provider, so return the link/token directly so dev can sign in.
+    console.log('[auth] mail not configured (dev); sign-in link for ' + email + ':\n  ' + link);
+    return json(res, 200, { ok: true, sent: false, dev_login_token: token, dev_link: link, note: 'Mail not configured (dev): link returned directly.' });
+  }
+  // Production without a mail provider: fail secure. Never hand the token to the browser.
+  console.error('[auth] mail not configured in production. Set RESEND_API_KEY + MAIL_FROM (+ PUBLIC_BASE_URL).');
+  return fail(res, 503, 'mail_unconfigured', 'Email sign-in is not set up on this server yet. Please try again later.');
 });
 
 add('POST', '/api/auth/verify', async ({ res, body }) => {
