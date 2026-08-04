@@ -3,76 +3,61 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AUGUR · Moderation</title>
+<title>Oneiratory · Moderation</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="augur.css">
 <style>
-  :root{
-    --paper:#eeecf4;--panel:#f6f5fa;--panel-alt:#eae7f1;--bar:#655d84;--bar-ink:#efecf6;
-    --ink:#2f2a44;--ink-strong:#26213a;--muted:#5f5878;--faint:#948dae;
-    --line:#d1cbe0;--line-soft:#e1dcec;--link:#443a7a;--warm:#a85a44;--hit:#5c7a54;
-    --sans:Verdana, Geneva, Tahoma, sans-serif;--serif:Georgia,"Times New Roman",serif;--mono:"Courier New",Courier,monospace;
-  }
-  *{box-sizing:border-box}html,body{margin:0}
-  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:12.5px;line-height:1.6}
-  .wrap{max-width:760px;margin:0 auto;padding:22px 16px 64px}
-  a{color:var(--link)}
-  .mast{text-align:center;padding:14px 0 8px}
-  .mast .word{font-family:var(--serif);font-size:30px;letter-spacing:.4em;color:#443c62;text-indent:.4em}
-  .mast .sub{color:var(--faint);font-size:11px;margin-top:6px;letter-spacing:.06em;text-transform:uppercase}
-  section{border:1px solid var(--line);background:var(--panel);margin-bottom:16px}
-  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
-  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
-  .in{padding:14px 16px}
-  .lead{font-family:var(--serif);font-size:14px;color:#3a3352;margin:0 0 10px}
-  .authrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  input.tok{font-family:var(--mono);font-size:12px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 10px;min-width:220px}
-  .btn{font-family:var(--sans);font-size:12px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:8px 15px;cursor:pointer}
-  .btn:hover{background:#5a5279}
-  .btn.ghost{background:#eee9f3;color:#40356f;border-top-color:#fff;border-left-color:#fff}
-  .msg{color:var(--muted);font-size:11.5px;margin-top:8px}
-  .empty{color:var(--faint);font-style:italic;font-family:var(--serif);font-size:13px;padding:4px 2px;margin:0}
+  /* ---------- admin-specific ---------- */
+  .site-header .modtag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#cfcae6}
+  .lead{margin-bottom:12px}
+  .authrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input.tok{font-family:var(--mono);font-size:12px;color:var(--ink);background:#fff;border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:9px 11px;min-width:220px;outline:none}
+  input.tok:focus{border-color:var(--accent)}
+  .msg{color:var(--muted);font-size:11.5px;margin-top:9px}
+  .empty{color:var(--faint);font-style:italic;font-family:var(--serif);font-size:14px;padding:4px 2px;margin:0}
 
-  .rep{border:1px solid var(--line);background:#fbfafd;margin-bottom:11px}
-  .rep .rh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line-soft);background:var(--panel-alt)}
-  .rep .rh .k{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
-  .rep .rh .flag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--warm);font-weight:bold}
-  .rep .rmeta{padding:9px 12px 3px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .rep,.imgitem{border:1px solid var(--line);background:#fbfafd;border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
+  .rep .rh,.imgitem .rh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+    padding:9px 13px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+  .rep .rh .k,.imgitem .rh .k{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  .rep .rh .flag,.imgitem .rh .flag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--warm);font-weight:700}
+  .rep .rmeta,.imgitem .rmeta{padding:9px 13px 3px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
   .rep .rmeta .reason{color:var(--warm)}
-  .rep .subj{font-family:var(--serif);font-weight:700;color:var(--ink-strong);font-size:14px;padding:2px 12px 0}
-  .rep .rbody{padding:4px 12px 10px;color:var(--ink);font-size:12.5px;white-space:pre-wrap;word-break:break-word}
-  .rep .removed-badge{color:var(--warm);font-weight:bold}
-  .rep .racts{padding:8px 12px 11px;display:flex;gap:8px;flex-wrap:wrap}
-  .sa{font-family:var(--sans);font-size:11px;text-decoration:none;border:1px solid var(--line);border-top-color:#fff;border-left-color:#fff;padding:6px 12px;cursor:pointer;color:#39306b;background:#e7e2f1}
-  .sa:hover{background:#efeaf8}
-  .sa.remove{color:#8a3a2a}
-  .sa.restore{color:var(--hit)}
-  .imgitem{border:1px solid var(--line);background:#fbfafd;margin-bottom:11px}
-  .imgitem .rh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line-soft);background:var(--panel-alt)}
-  .imgitem .rh .k{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
-  .imgitem .rh .flag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--warm);font-weight:bold}
-  .imgitem .rmeta{padding:8px 12px 2px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
-  .imgitem .imgprev{padding:8px 12px}
-  .imgitem .imgprev img{max-width:100%;max-height:320px;border:1px solid var(--line);border-radius:4px;display:block}
-  .imgitem .rbody{padding:2px 12px 8px;color:var(--muted);font-size:12px}
-  .imgitem .racts{padding:8px 12px 11px;display:flex;gap:8px;flex-wrap:wrap}
-  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;margin-top:14px;line-height:1.9}
-  .sitefoot a{color:var(--muted)}
+  .rep .subj{font-family:var(--serif);font-weight:700;color:var(--ink-strong);font-size:14.5px;padding:2px 13px 0}
+  .rep .rbody{padding:4px 13px 11px;color:var(--ink);font-size:13px;white-space:pre-wrap;word-break:break-word}
+  .rep .removed-badge{color:var(--warm);font-weight:700}
+  .rep .racts,.imgitem .racts{padding:9px 13px 12px;display:flex;gap:8px;flex-wrap:wrap}
+  .imgitem .imgprev{padding:9px 13px}
+  .imgitem .imgprev img{max-width:100%;max-height:320px;border:1px solid var(--line);border-radius:var(--r-sm);display:block}
+  .imgitem .rbody{padding:2px 13px 9px;color:var(--muted);font-size:12.5px}
+
+  .sa{font-family:var(--sans);font-size:11.5px;text-decoration:none;border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:7px 12px;cursor:pointer;color:var(--ink-strong);background:#fff;transition:.15s}
+  .sa:hover{border-color:var(--accent);color:var(--accent)}
+  .sa.remove{color:var(--miss)}.sa.remove:hover{border-color:var(--miss);color:var(--miss)}
+  .sa.restore{color:var(--hit)}.sa.restore:hover{border-color:var(--hit);color:var(--hit)}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="mast">
-      <div class="word">AUGUR</div>
-      <div class="sub">moderation &middot; the commons is anonymous, not lawless</div>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <span class="modtag">moderation</span>
     </div>
+  </header>
 
-    <section>
+  <main>
+    <section style="margin-top:26px">
       <div class="cap">Moderator sign-in<span class="rt">admin token</span></div>
       <div class="in">
         <p class="lead">Review reported posts and hide anything that breaks the rules. Removal is a soft hide (reversible); the content stays in the database but disappears from the board.</p>
         <div class="authrow">
           <input class="tok" id="tok" type="password" placeholder="admin token" autocomplete="off">
-          <button class="btn" id="load">Load reports</button>
-          <button class="btn ghost" id="forget">Forget token</button>
+          <button class="btn btn-primary" id="load">Load reports</button>
+          <button class="btn btn-ghost" id="forget">Forget token</button>
         </div>
         <div class="msg" id="msg"></div>
       </div>
@@ -90,11 +75,14 @@
       <div class="cap">Open reports<span class="rt" id="openCount"></span></div>
       <div class="in"><div id="reports"><p class="empty">Sign in and load reports.</p></div></div>
     </section>
+  </main>
 
-    <div class="sitefoot">
-      AUGUR &middot; moderation is private. <a href="index.html">back to the instrument</a>
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">moderation is private</p>
+      <a href="index.html">back to the instrument</a>
     </div>
-  </div>
+  </footer>
 
   <script>
   (function(){
@@ -182,7 +170,7 @@
     async function loadImages(){
       try{
         var res=await api("/api/admin/attachments");
-        $("imgCount").textContent=res.pending+" waiting";
+        $("imgCount").innerHTML=res.pending+" waiting &middot; "+res.blocklist+" auto-blocked &middot; scanner "+(res.external_scanner?"on":"off");
         var host=$("imgqueue");
         host.innerHTML = res.items.length ? res.items.map(imgHTML).join("") : '<p class="empty">No images waiting. All clear.</p>';
       }catch(e){ /* the reports loader surfaces auth errors */ }

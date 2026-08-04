@@ -3,137 +3,116 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AUGUR · The Vault</title>
+<title>Oneiratory · The Vault</title>
+<meta name="description" content="Your private, end-to-end encrypted dream journal. Capture the raw first version before memory softens it, sealed and locked.">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Social share preview. Set absolute og:url and og:image URLs once the site is deployed. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Oneiratory">
+<meta property="og:title" content="Oneiratory · The Vault">
+<meta property="og:description" content="Your private, end-to-end encrypted dream journal. Capture the raw first version before memory softens it.">
+<meta property="og:image" content="share.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oneiratory · The Vault">
+<meta name="twitter:description" content="A private, end-to-end encrypted dream journal. Kept before it softens.">
+<meta name="twitter:image" content="share.svg">
+<link rel="stylesheet" href="augur.css">
 <style>
-  :root{
-    --paper:#eeecf4;--panel:#f6f5fa;--panel-alt:#eae7f1;--bar:#655d84;--bar-ink:#efecf6;
-    --ink:#2f2a44;--ink-strong:#26213a;--muted:#5f5878;--faint:#948dae;
-    --line:#d1cbe0;--line-soft:#e1dcec;--link:#443a7a;--hit:#5c7a54;--miss:#9a6d7c;--seal:#5f5896;
-    --sans:Verdana, Geneva, Tahoma, sans-serif;--serif:Georgia,"Times New Roman",serif;--mono:"Courier New",Courier,monospace;
-  }
-  *{box-sizing:border-box}html,body{margin:0}
-  body{background:var(--paper);
-    background-image:radial-gradient(1px 1px at 18% 24%,rgba(110,100,150,.18),transparent 60%),radial-gradient(1px 1px at 72% 16%,rgba(110,100,150,.14),transparent 60%),radial-gradient(1px 1px at 40% 70%,rgba(110,100,150,.12),transparent 60%),radial-gradient(1px 1px at 86% 64%,rgba(110,100,150,.14),transparent 60%);
-    color:var(--ink);font-family:var(--sans);font-size:12.5px;line-height:1.6}
-  .wrap{max-width:760px;margin:0 auto;padding:22px 16px 64px}
-  a{color:var(--link)}
-  .mast{text-align:center;padding:16px 0 8px}
-  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
-  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
-  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
-  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);display:flex;flex-wrap:wrap;justify-content:center}
-  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
-  nav a:hover{text-decoration:underline}nav a.on{color:#3a2f70;background:var(--panel-alt)}
-  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
-  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
-  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
-  .in{padding:16px 18px}
-  .lead{font-family:var(--serif);font-size:15px;color:#3a3352;margin:0 0 4px}
-  .priv{color:var(--faint);font-size:11.5px;margin:0}
+  /* ---------- vault-specific ---------- */
+  .priv{color:var(--muted);font-size:12.5px;margin:6px 0 0;line-height:1.6;max-width:60ch}
+  .priv b{color:var(--ink-strong);font-weight:600}
+  .who{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px}
+  .who > div:first-child{flex:1;min-width:240px}
 
-  .who{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-  .who .id{font-family:var(--mono);font-size:11px;color:var(--muted)}
-  .newbtn{font-family:var(--sans);font-size:12px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:8px 16px;cursor:pointer;text-decoration:none}
-  .newbtn:hover{background:#5a5279}
-
-  /* ledger */
-  table{width:100%;border-collapse:collapse;background:var(--panel)}
-  th{background:var(--panel-alt);color:var(--faint);font-weight:normal;font-size:10px;text-transform:uppercase;letter-spacing:.08em;text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
-  td{padding:10px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
-  tr:last-child td{border-bottom:none}
-  .date{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
-  .subj{color:var(--ink-strong);font-size:12.5px}
-  .subj a{color:var(--ink-strong);text-decoration:none}
-  .subj a:hover{color:var(--link);text-decoration:underline}
-  .motif{margin-top:4px}
-  .tag{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--muted);border:1px solid var(--line);padding:1px 6px;margin:2px 4px 0 0;border-radius:2px}
-  .state{font-family:var(--mono);font-size:10.5px;white-space:nowrap;letter-spacing:.02em}
-  .state .d{font-size:11px;vertical-align:-1px;margin-right:3px}
-  .s-seal{color:var(--seal)}.s-hit{color:var(--hit)}.s-miss{color:var(--miss)}.s-draft{color:var(--faint)}
-
-  .motifbox{border:1px solid var(--line);background:#fbfafd;padding:12px 14px;margin-top:2px}
-  .motifbox .mh{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
-  .motifbox p{margin:0;color:var(--muted);font-size:12px}
-  .motifbox .big{color:#4c3f8e;font-family:var(--serif);font-style:italic}
-
-  /* auth bar */
-  .authbar{min-width:230px;max-width:280px}
-  .authbar .signedout .al{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
-  .authbar input{width:100%;font-family:var(--sans);font-size:12.5px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 9px;margin-bottom:7px}
-  .authbar .signin{font-family:var(--sans);font-size:12px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:8px 15px;cursor:pointer;width:100%}
-  .authbar .signin:hover{background:#5a5279}
-  .authbar .anote{color:var(--faint);font-size:10.5px;font-style:italic;font-family:var(--serif);margin-top:6px;line-height:1.5}
-  .authbar .signedin{border:1px solid var(--line);background:#fbfafd;padding:9px 11px;font-size:11.5px;color:var(--muted)}
-  .authbar .signedin .em{color:var(--ink-strong);font-style:normal;font-family:var(--mono);font-size:11px;word-break:break-all}
-  .authbar .signout{font-size:11px;color:var(--link);cursor:pointer;margin-top:5px;display:inline-block}
-  .capbox.locked{opacity:.55;pointer-events:none}
-  .gate{color:var(--muted);font-style:italic;font-family:var(--serif);font-size:13px;padding:4px 2px}
+  /* auth / unlock bar */
+  .authbar{min-width:230px;max-width:290px;flex:0 0 auto}
+  .authbar .signedout .al{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+  .authbar input{width:100%;font-family:var(--sans);font-size:13px;color:var(--ink);background:#fff;
+    border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 10px;margin-bottom:8px}
+  .authbar input:focus{outline:none;border-color:var(--accent)}
+  .authbar .signin{font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;background:var(--warm);
+    border:1px solid #a5583b;border-radius:var(--r-sm);padding:9px 15px;cursor:pointer;width:100%}
+  .authbar .signin:hover{background:#a95a3d}
+  .authbar .anote{color:var(--faint);font-size:11px;font-style:italic;font-family:var(--serif);margin-top:7px;line-height:1.5}
+  .authbar .anote b{color:var(--miss);font-style:normal;font-family:var(--sans)}
+  .authbar .signedin{border:1px solid var(--line);background:#fbfafd;border-radius:var(--r-sm);padding:10px 12px;font-size:12.5px;color:var(--muted)}
+  .authbar .signedin .em{color:var(--ink-strong);font-style:normal;font-family:var(--mono);font-size:12px;word-break:break-all}
+  .authbar .signout{font-size:11.5px;color:var(--link);cursor:pointer;margin-top:6px;display:inline-block}
+  .gate{color:var(--muted);font-style:italic;font-family:var(--serif);font-size:14px;padding:4px 2px}
   .gate a{color:var(--link);cursor:pointer;text-decoration:underline}
 
   /* capture-then-seal */
-  .capbox{border:1px solid var(--line);background:#fbfafd;padding:14px 15px}
-  .capbox textarea{width:100%;min-height:92px;font-family:var(--sans);font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:10px 11px;line-height:1.55;resize:vertical}
-  .caprow{display:flex;gap:9px;align-items:center;margin-top:10px;flex-wrap:wrap}
-  .mic{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel-alt);border:1px solid var(--line);padding:9px 13px;cursor:pointer;letter-spacing:.02em}
-  .mic:hover{background:#e3def0}
-  .mic.on{color:#fff;background:#9a5c6c;border-color:#834a5a}
+  .capbox{border:1px solid var(--line);background:#fbfafd;border-radius:var(--r-sm);padding:15px 16px}
+  .capbox textarea{width:100%;min-height:98px;font-family:var(--sans);font-size:13.5px;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 12px;line-height:1.55;resize:vertical}
+  .capbox textarea:focus{outline:none;border-color:var(--accent)}
+  .caprow{display:flex;gap:10px;align-items:center;margin-top:11px;flex-wrap:wrap}
+  .mic{font-family:var(--mono);font-size:11.5px;color:var(--muted);background:#fff;border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:10px 14px;cursor:pointer;letter-spacing:.02em;transition:.15s}
+  .mic:hover{border-color:var(--accent);color:var(--accent)}
+  .mic.on{color:#fff;background:var(--miss);border-color:#834a5a}
   .mic.na{color:var(--faint);cursor:default;font-style:italic}
-  .mic.na:hover{background:var(--panel-alt)}
-  .sealraw{font-family:var(--sans);font-size:12.5px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:9px 18px;cursor:pointer;letter-spacing:.02em}
-  .sealraw:hover{background:#5a5279}
-  .capnote{color:var(--faint);font-size:11.5px;font-style:italic;font-family:var(--serif);margin-top:11px;line-height:1.55}
+  .mic.na:hover{background:#fff;border-color:var(--line);color:var(--faint)}
+  .capnote{color:var(--faint);font-size:12px;font-style:italic;font-family:var(--serif);margin-top:12px;line-height:1.55}
   .capnote a{color:var(--link)}
 
-  .emptycap{color:var(--faint);font-style:italic;font-family:var(--serif);font-size:13px;padding:6px 2px;margin:0}
-  .entry{border:1px solid var(--line);background:var(--panel);margin-bottom:14px}
+  .emptycap{color:var(--faint);font-style:italic;font-family:var(--serif);font-size:14px;padding:6px 2px;margin:0}
+  .entry{border:1px solid var(--line);background:var(--panel);border-radius:var(--r-sm);overflow:hidden;margin-bottom:14px}
   .entry:last-child{margin-bottom:0}
-  .entry .ehead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:9px 13px;background:var(--panel-alt);border-bottom:1px solid var(--line)}
-  .entry .etitle{font-family:var(--serif);font-size:15px;color:var(--ink-strong)}
+  .entry .ehead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--line)}
+  .entry .etitle{font-family:var(--serif);font-size:15.5px;color:var(--ink-strong)}
   .entry .ecount{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
-  .ver{padding:11px 13px;border-top:1px solid var(--line-soft)}
+  .ver{padding:12px 14px;border-top:1px solid var(--line-soft)}
   .ver:first-of-type{border-top:none}
-  .ver.raw{border-left:3px solid var(--seal);background:#f6f4fb}
-  .ver.pass{border-left:3px solid var(--line)}
-  .vmeta{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-bottom:6px;letter-spacing:.02em;display:flex;flex-wrap:wrap;gap:3px 11px;align-items:baseline}
+  .ver.raw{background:#f5f3fb}          /* raw first capture: subtle tint + the coloured RAW label, no side-stripe */
+  .vmeta{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-bottom:7px;letter-spacing:.02em;display:flex;flex-wrap:wrap;gap:3px 11px;align-items:baseline}
   .vmeta .dot{color:var(--seal);font-size:11px}
-  .vmeta .vk{font-weight:bold;color:var(--muted)}
+  .vmeta .vk{font-weight:700;color:var(--muted)}
   .vmeta .vk.raw{color:var(--seal)}
   .vmeta .vtime{color:var(--faint)}
-  .vmeta .vhash{color:#5a4b9c}
+  .vmeta .vhash{color:var(--accent)}
   .vmeta .vproof{color:var(--link);cursor:pointer;text-decoration:underline}
-  .vtext{color:var(--ink);font-size:13px;line-height:1.62;white-space:pre-wrap}
-  .ver.raw .vtext{font-family:var(--mono);font-size:12px;color:#3a3352;line-height:1.7}
-  .eact{padding:10px 13px;border-top:1px solid var(--line-soft)}
-  .addpass{font-family:var(--sans);font-size:11.5px;color:var(--link);cursor:pointer;font-weight:bold}
-  .passta{width:100%;min-height:72px;font-family:var(--sans);font-size:12.5px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:9px 10px;line-height:1.55;resize:vertical}
-  .passrow{display:flex;gap:10px;align-items:center;margin-top:8px}
-  .sealpass{font-family:var(--sans);font-size:11.5px;color:#fff;background:#655d84;border:1px solid #4f486c;padding:8px 15px;cursor:pointer}
-  .sealpass:hover{background:#5a5279}
-  .passcancel{font-size:11px;color:var(--muted);cursor:pointer}
+  .vtext{color:var(--ink);font-size:13.5px;line-height:1.62;white-space:pre-wrap}
+  .ver.raw .vtext{font-family:var(--mono);font-size:12.5px;color:#3a3352;line-height:1.7}
+  .eact{padding:11px 14px;border-top:1px solid var(--line-soft)}
+  .addpass{font-family:var(--sans);font-size:12px;color:var(--link);cursor:pointer;font-weight:600}
+  .passta{width:100%;min-height:76px;font-family:var(--sans);font-size:13px;color:var(--ink);background:#fff;
+    border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 11px;line-height:1.55;resize:vertical}
+  .passta:focus{outline:none;border-color:var(--accent)}
+  .passrow{display:flex;gap:11px;align-items:center;margin-top:9px}
+  .sealpass{font-family:var(--sans);font-size:12px;font-weight:600;color:#fff;background:var(--warm);
+    border:1px solid #a5583b;border-radius:var(--r-sm);padding:8px 15px;cursor:pointer}
+  .sealpass:hover{background:#a95a3d}
+  .passcancel{font-size:11.5px;color:var(--muted);cursor:pointer}
 
-  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
-  .sitefoot a{color:var(--muted)}
-  .mast .word a{color:inherit;text-decoration:none}
+  /* motifs */
+  .motifbox{border:1px solid var(--line-soft);background:#fbfafd;border-radius:var(--r-sm);padding:13px 15px}
+  .motifbox .mh{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .motifbox p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+  .motifbox .big{color:var(--accent);font-family:var(--serif);font-style:italic}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="mast">
-      <div class="word"><a href="index.html">AUGUR</a></div>
-      <div class="tag">an instrument for dreams that arrive early</div>
-      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">The instrument</a>
+        <a href="about.html">About</a>
+        <a href="augur-registry.html">Registry</a>
+        <a href="augur-commons.html">Commons</a>
+        <a class="on" href="augur-vault.html">Vault</a>
+        <a href="augur-verifier.html">Verify</a>
+        <a href="augur-seal-prototype.html">Seal a dream</a>
+      </nav>
     </div>
-    <nav>
-      <a href="index.html">The instrument</a>
-      <a href="about.html">About</a>
-      <a href="augur-registry.html">The Registry</a>
-      <a href="augur-commons.html">The Commons</a>
-      <a class="on" href="augur-vault.html">The Vault</a>
-      <a href="augur-verifier.html">Verify a proof</a>
-      <a href="augur-seal-prototype.html">Seal a dream</a>
-    </nav>
+  </header>
 
-    <section>
+  <main>
+    <section style="margin-top:26px">
       <div class="cap">The Vault<span class="rt">your private journal</span></div>
       <div class="in">
         <div class="who">
@@ -153,7 +132,7 @@
           <textarea id="capText" placeholder="Write it the moment you wake, in whatever broken words come. Do not tidy it. The point is the first version, before your waking mind turns it into a story."></textarea>
           <div class="caprow">
             <button class="mic" id="micBtn" type="button">&#9679; capture by voice</button>
-            <button class="sealraw" id="sealRawBtn" type="button">&#9679; Seal this first version</button>
+            <button class="btn btn-primary" id="sealRawBtn" type="button">&#9679; Seal this first version</button>
           </div>
           <p class="capnote">The first words matter most. A seal fixes them to a moment in time and cannot be moved. It proves what you wrote and when, not that the words match the dream: nothing can prove that. Capturing early is how you keep that gap small. You can add a clearer version later; this raw one stays locked. Want to turn a dream into a testable prediction instead? <a href="augur-seal-prototype.html">Seal it with a condition &rarr;</a></p>
         </div>
@@ -168,8 +147,7 @@
       </div>
     </section>
 
-
-        <section id="motifSection" style="display:none">
+    <section id="motifSection" style="display:none">
       <div class="cap">Motifs, quietly noticed<span class="rt">counted from your own entries</span></div>
       <div class="in">
         <div class="motifbox">
@@ -178,15 +156,17 @@
         </div>
       </div>
     </section>
+  </main>
 
-    <div class="sitefoot">
-      AUGUR &middot; the Vault is yours alone. entries are encrypted at rest in production<br>
-      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; contact@augur.app
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">the Vault is yours alone. entries are end-to-end encrypted in your browser</p>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="support.html">Support Oneiratory</a> &middot; contact@oneiratory.com
     </div>
-  </div>
+  </footer>
 
   <script>
-  /* ---- capture-then-seal, wired to the AUGUR API: raw first version sealed + locked, later passes appended, all saved to your account ---- */
+  /* ---- capture-then-seal, wired to the Oneiratory API: raw first version sealed + locked, later passes appended, all saved to your account ---- */
   (function(){
     var $=function(id){return document.getElementById(id);};
     var SKEY="augur_session";
@@ -363,7 +343,7 @@
     function render(){
       var host=$("captures");
       if(!user){ host.innerHTML=exampleHTML(); }
-      else if(!key){ host.innerHTML='<p class="gate">Set or enter your encryption passphrase (top right) to unlock your dreams. They are stored encrypted; even AUGUR cannot read them.</p>'; }
+      else if(!key){ host.innerHTML='<p class="gate">Set or enter your encryption passphrase (top right) to unlock your dreams. They are stored encrypted; even Oneiratory cannot read them.</p>'; }
       else if(!entries.length){ host.innerHTML='<p class="emptycap">Nothing captured yet. Write a dream above and seal the first version. It is encrypted in your browser before it ever leaves.</p>'; }
       else { host.innerHTML=entries.map(entryHTML).join(""); }
       renderMotifs();
@@ -426,7 +406,7 @@
       var v=en.versions[vi]; if(!v) return;
       var blob=new Blob([JSON.stringify(v.bundle,null,2)],{type:"application/json"});
       var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
-      a.download="augur-capture-"+(v.kind==="raw"?"raw":"pass"+vi)+".json";
+      a.download="oneiratory-capture-"+(v.kind==="raw"?"raw":"pass"+vi)+".json";
       document.body.appendChild(a); a.click(); a.remove();
     }
 

@@ -1,4 +1,4 @@
-# AUGUR — API & Data Model
+# Oneiratory — API & Data Model
 
 A target for the backend, mapped directly to the front end already built. REST, JSON over
 HTTPS. Pick the stack later (Cloudflare Workers + D1, or Supabase/Postgres both fit); the
@@ -185,7 +185,7 @@ Not public endpoints; a worker plus a cron job.
    Bitcoin has attested, store the completed proof and set `anchor_time` from the block time,
    `ots_status = complete`.
 3. The public proof endpoint serves whichever anchor evidence exists; the standalone verifier
-   confirms it against Bitcoin without trusting AUGUR.
+   confirms it against Bitcoin without trusting Oneiratory.
 
 ---
 

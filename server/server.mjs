@@ -9,6 +9,7 @@ import { seedCommonsIfEmpty } from './seed.mjs';
 import { seedRegistryIfEmpty } from './seed-registry.mjs';
 import { anchorHash, inspectToken } from './anchor.mjs';
 import { submitOTS, upgradeOTS, otsBlock } from './ots.mjs';
+import { scanImage, addToBlocklist, blocklistSize, scannerConfigured } from './scan.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(here, '..');              // project root holds the .html files
@@ -58,10 +59,13 @@ function validImage(img) {
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(data) || data.length < 32 || data.length > 3.2e6) return null;   // up to ~2.4MB
   return { mime: img.mime, data };
 }
-function attachImage(no, board, img, now) {
+async function attachImage(no, board, img, now) {
   const im = validImage(img); if (!im) return;
-  db.prepare(`INSERT INTO commons_attachments (id, post_no, board, mime, data, status, created_at) VALUES (?,?,?,?,?, 'pending', ?)`)
-    .run(uid(), no, board, im.mime, im.data, now);
+  const phash = (typeof img.phash === 'string' && /^[0-9a-f]{16}$/.test(img.phash)) ? img.phash : null;
+  const scan = await scanImage({ mime: im.mime, data: im.data, phash });
+  if (scan.action === 'block') return;   // dropped before it ever reaches the queue; pre-moderation covers the rest
+  db.prepare(`INSERT INTO commons_attachments (id, post_no, board, mime, data, phash, status, created_at) VALUES (?,?,?,?,?,?, 'pending', ?)`)
+    .run(uid(), no, board, im.mime, im.data, phash, now);
 }
 function attachmentOf(no) {
   const a = db.prepare(`SELECT id, status FROM commons_attachments WHERE post_no = ? AND status != 'rejected' ORDER BY created_at DESC LIMIT 1`).get(no);
@@ -423,7 +427,7 @@ add('POST', '/api/commons/threads', async ({ res, req, body }) => {
   const pid = posterId(no, clientOf(req));
   db.prepare(`INSERT INTO commons_threads (no, board, name, poster_id, subject, body, created_at, bumped_at) VALUES (?,?,?,?,?,?,?,?)`)
     .run(no, board, cleanName(body.name), pid, (body.subject || '').trim() || null, bodyText, now, now);
-  if (body.image) attachImage(no, board, body.image, now);   // held pending until a moderator approves
+  if (body.image) await attachImage(no, board, body.image, now);   // scanned, then held pending for a moderator
   json(res, 201, threadOut(db.prepare(`SELECT * FROM commons_threads WHERE no = ?`).get(no)));
 });
 
@@ -437,7 +441,7 @@ add('POST', '/api/commons/threads/:no/posts', async ({ res, req, params, body })
   const pid = posterId(t.no, clientOf(req));   // stable within the thread
   db.prepare(`INSERT INTO commons_posts (no, thread_no, name, poster_id, body, created_at) VALUES (?,?,?,?,?,?)`)
     .run(no, t.no, cleanName(body.name), pid, bodyText, now);
-  if (body.image) attachImage(no, t.board, body.image, now);   // held pending until a moderator approves
+  if (body.image) await attachImage(no, t.board, body.image, now);   // scanned, then held pending for a moderator
   db.prepare(`UPDATE commons_threads SET bumped_at = ?, reply_count = reply_count + 1 WHERE no = ?`).run(now, t.no);
   json(res, 201, postOut(db.prepare(`SELECT * FROM commons_posts WHERE no = ?`).get(no)));
 });
@@ -514,7 +518,7 @@ add('GET', '/api/admin/attachments', async ({ res, req }) => {
     const context = t ? { kind: 'thread', subject: t.subject, body: t.body } : p ? { kind: 'post', body: p.body, thread_no: p.thread_no } : { kind: 'gone' };
     return { id: a.id, post_no: a.post_no, board: a.board, mime: a.mime, data: a.data, created_at: a.created_at, context };
   });
-  json(res, 200, { items, pending: items.length });
+  json(res, 200, { items, pending: items.length, blocklist: blocklistSize(), external_scanner: scannerConfigured() });
 });
 
 add('POST', '/api/admin/attachments/:id/approve', async ({ res, req, params }) => {
@@ -525,6 +529,8 @@ add('POST', '/api/admin/attachments/:id/approve', async ({ res, req, params }) =
 
 add('POST', '/api/admin/attachments/:id/reject', async ({ res, req, params }) => {
   if (!isAdmin(req)) return fail(res, 401, 'unauth', 'Admin token required.');
+  const a = db.prepare(`SELECT phash FROM commons_attachments WHERE id = ?`).get(params.id);
+  if (a && a.phash) addToBlocklist(a.phash, 'moderator rejected');   // auto-block re-uploads of this image
   db.prepare(`UPDATE commons_attachments SET status = 'rejected', data = '' WHERE id = ?`).run(params.id);  // drop the bytes on reject
   json(res, 200, { ok: true });
 });
@@ -589,7 +595,7 @@ const server = createServer(async (req, res) => {
 const seeded = seedCommonsIfEmpty();
 const seededReg = seedRegistryIfEmpty();
 server.listen(PORT, () => {
-  console.log(`AUGUR backend + site on http://127.0.0.1:${PORT}  (${DEV ? 'dev' : 'production'})`);
+  console.log(`Oneiratory backend + site listening on port ${PORT}  (${DEV ? 'dev' : 'production'})`);
   if (seeded.seeded) console.log(`seeded Commons with ${seeded.threads} starter threads`);
   if (seededReg.seeded) console.log(`seeded Registry with ${seededReg.entries} published seals`);
 });

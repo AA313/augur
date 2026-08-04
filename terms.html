@@ -3,85 +3,74 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AUGUR · Terms, Privacy &amp; Use</title>
+<title>Oneiratory · Terms, Privacy &amp; Use</title>
+<meta name="description" content="How Oneiratory works, what happens to what you write, and the permissions that let it help research. The fine print, kept in plain language.">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Social share preview. Set absolute og:url and og:image URLs once the site is deployed. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Oneiratory">
+<meta property="og:title" content="Oneiratory · Terms, Privacy & Use">
+<meta property="og:description" content="How Oneiratory works, what happens to what you write, and the research permissions. In plain language.">
+<meta property="og:image" content="share.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oneiratory · Terms, Privacy & Use">
+<meta name="twitter:description" content="How Oneiratory works and what happens to what you write. In plain language.">
+<meta name="twitter:image" content="share.svg">
+<link rel="stylesheet" href="augur.css">
 <style>
-  :root{
-    --paper:#eeecf4;--panel:#f6f5fa;--panel-alt:#eae7f1;--bar:#655d84;--bar-ink:#efecf6;
-    --ink:#2f2a44;--ink-strong:#26213a;--muted:#5f5878;--faint:#948dae;
-    --line:#d1cbe0;--line-soft:#e1dcec;--link:#443a7a;
-    --sans:Verdana, Geneva, Tahoma, sans-serif;--serif:Georgia,"Times New Roman",serif;--mono:"Courier New",Courier,monospace;
-  }
-  *{box-sizing:border-box}html,body{margin:0}
-  body{background:var(--paper);
-    background-image:radial-gradient(1px 1px at 18% 24%,rgba(110,100,150,.18),transparent 60%),radial-gradient(1px 1px at 72% 16%,rgba(110,100,150,.14),transparent 60%),radial-gradient(1px 1px at 40% 70%,rgba(110,100,150,.12),transparent 60%),radial-gradient(1px 1px at 86% 64%,rgba(110,100,150,.14),transparent 60%);
-    color:var(--ink);font-family:var(--sans);font-size:12.5px;line-height:1.6}
-  .wrap{max-width:760px;margin:0 auto;padding:22px 16px 64px}
-  a{color:var(--link)}
-  .mast{text-align:center;padding:16px 0 8px}
-  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
-  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
-  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
-  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);display:flex;flex-wrap:wrap;justify-content:center}
-  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
-  nav a:hover{text-decoration:underline}nav a.on{color:#3a2f70;background:var(--panel-alt)}
+  /* ---------- terms-specific ---------- */
+  .lede{padding:26px 2px 20px}
+  .lede h1{font-family:var(--serif);font-weight:400;color:var(--ink-strong);
+    font-size:clamp(28px,5vw,42px);line-height:1.16;letter-spacing:-.01em;margin:0 0 12px;text-wrap:balance}
+  .lede p{color:var(--muted);font-size:15px;max-width:62ch;margin:0}
+  .lede .updated{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;margin-top:12px}
 
-  .lede{padding:8px 2px 18px}
-  .lede h1{font-family:var(--serif);font-weight:400;color:var(--ink-strong);font-size:clamp(28px,5vw,40px);line-height:1.2;margin:0 0 10px}
-  .lede p{color:var(--muted);font-size:14px;max-width:60ch;margin:0}
-  .lede .updated{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;margin-top:10px}
-
-  section{border:1px solid var(--line);background:var(--panel);margin-bottom:16px}
-  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70;font-family:var(--mono)}
-  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em}
-  .in{padding:15px 18px}
-  h2{font-family:var(--serif);font-weight:400;color:var(--ink-strong);font-size:19px;line-height:1.25;margin:0 0 9px}
-  p{margin:0 0 10px}p:last-child{margin:0}
-  .in p,.in li{font-size:12.5px;line-height:1.75;color:#3a3450}
-  .em{color:#4c3f8e;font-style:italic}
+  .in p,.in li{font-size:14px;line-height:1.75;color:#3a3450}
   ul{margin:0;padding-left:18px}
   li{margin:0 0 8px}li:last-child{margin:0}
-  li b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:13px}
-  a.mono-email{font-family:var(--mono);font-size:12px}
-  .callout{border:1px solid var(--line);background:var(--panel-alt);padding:12px 14px;margin:12px 0 2px}
-  .callout p{margin:0;color:var(--muted);font-size:12px}
+  li b{color:var(--ink-strong);font-weight:400;font-family:var(--serif);font-size:14.5px}
+  a.mono-email{font-family:var(--mono);font-size:13px}
 
-  .summary .in ul{padding-left:16px}
-  .disclaimer{border:1px dashed var(--line);background:transparent;padding:14px 16px;color:var(--muted);font-size:12px;line-height:1.7;margin-top:4px}
-  .disclaimer b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:13px}
+  .callout{border:1px solid var(--line-soft);background:var(--panel-2);border-radius:var(--r-sm);padding:13px 16px;margin:14px 0 2px}
+  .callout p{margin:0;color:var(--muted);font-size:13px}
+  .callout b{color:var(--ink-strong);font-weight:400;font-family:var(--serif)}
 
-  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:18px;line-height:1.9}
-  .sitefoot a{color:var(--muted)}
-  .mast .word a{color:inherit;text-decoration:none}
+  .disclaimer{border:1px dashed var(--line);border-radius:var(--r-sm);background:transparent;
+    padding:15px 18px;color:var(--muted);font-size:13px;line-height:1.7;margin-top:6px}
+  .disclaimer b{color:var(--ink-strong);font-weight:400;font-family:var(--serif);font-size:14px}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="mast">
-      <div class="word"><a href="index.html">AUGUR</a></div>
-      <div class="tag">an instrument for dreams that arrive early</div>
-      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">The instrument</a>
+        <a href="about.html">About</a>
+        <a href="augur-registry.html">Registry</a>
+        <a href="augur-commons.html">Commons</a>
+        <a href="augur-vault.html">Vault</a>
+        <a href="augur-verifier.html">Verify</a>
+        <a href="augur-seal-prototype.html">Seal a dream</a>
+      </nav>
     </div>
-    <nav>
-      <a href="index.html">The instrument</a>
-      <a href="about.html">About</a>
-      <a href="augur-registry.html">The Registry</a>
-      <a href="augur-commons.html">The Commons</a>
-      <a href="augur-vault.html">The Vault</a>
-      <a href="augur-verifier.html">Verify a proof</a>
-      <a href="augur-seal-prototype.html">Seal a dream</a>
-    </nav>
+  </header>
 
+  <main>
     <div class="lede">
       <h1>The fine print, kept in plain language.</h1>
-      <p>How AUGUR works, what happens to what you write, and the permissions that let this become useful to research. Written to be read, not endured.</p>
-      <div class="updated">Last updated: this prototype build</div>
+      <p>How Oneiratory works, what happens to what you write, and the permissions that let this become useful to research. Written to be read, not endured.</p>
+      <div class="updated">Last updated: 4 August 2026</div>
     </div>
 
     <section class="summary">
       <div class="cap">In short</div>
       <div class="in">
         <ul>
-          <li>AUGUR proves <span class="em">when</span> a dream was written, not that dreams predict anything.</li>
+          <li>Oneiratory proves <span class="em">when</span> a dream was written, not that dreams predict anything.</li>
           <li>Your Vault is private. The Registry and Commons are public and anonymous.</li>
           <li>You keep ownership of your dreams. Posting publicly lets us display them.</li>
           <li>Anonymised public dreams may be used in research and cited in journals. Private ones are not, unless you opt in.</li>
@@ -93,16 +82,16 @@
       <div class="cap">01 &middot; Contact<span class="rt">reaching a human</span></div>
       <div class="in">
         <h2 id="contact">Reaching a human</h2>
-        <p>Questions, corrections, takedown requests, or research enquiries can be sent to <a class="mono-email" href="mailto:contact@augur.app">contact@augur.app</a>. We read everything, even if a reply takes a little while.</p>
+        <p>Questions, corrections, takedown requests, or research enquiries can be sent to <a class="mono-email" href="mailto:contact@oneiratory.com">contact@oneiratory.com</a>. We read everything, even if a reply takes a little while.</p>
       </div>
     </section>
 
     <section>
-      <div class="cap">02 &middot; What AUGUR is<span class="rt">an instrument, not an oracle</span></div>
+      <div class="cap">02 &middot; What Oneiratory is<span class="rt">an instrument, not an oracle</span></div>
       <div class="in">
         <h2 id="nature">An instrument, not an oracle</h2>
-        <p>AUGUR lets you record a dream and <span class="em">seal</span> it, which fixes its exact wording to a point in time and proves the text has not changed since. That is the entire technical claim. A seal proves <span class="em">anteriority</span>, that words existed before an event, and nothing more.</p>
-        <p>AUGUR takes no position on whether dreams can foresee the future. Outcomes shown in the Registry reflect user submissions and community judgement, not scientific proof of precognition. Nothing on this site should be treated as a prediction, a diagnosis, or advice.</p>
+        <p>Oneiratory lets you record a dream and <span class="em">seal</span> it, which fixes its exact wording to a point in time and proves the text has not changed since. That is the entire technical claim. A seal proves <span class="em">anteriority</span>, that words existed before an event, and nothing more.</p>
+        <p>Oneiratory takes no position on whether dreams can foresee the future. Outcomes shown in the Registry reflect user submissions and community judgement, not scientific proof of precognition. Nothing on this site should be treated as a prediction, a diagnosis, or advice.</p>
       </div>
     </section>
 
@@ -111,9 +100,9 @@
       <div class="in">
         <h2 id="privacy">What happens to what you write</h2>
         <ul>
-          <li><b>The Vault is private.</b> In the full service, entries are encrypted so that only you can read them. In this prototype, Vault entries live only in your browser's memory and are never stored or transmitted.</li>
+          <li><b>The Vault is private.</b> Entries are end-to-end encrypted in your browser with a key derived from your passphrase, so the server stores only ciphertext and cannot read them. Forget the passphrase and the entries are unrecoverable, by design.</li>
           <li><b>The Registry and Commons are public and anonymous by default.</b> Treat anything you post there as visible to everyone. Do not include names, addresses, or details you would not share openly.</li>
-          <li><b>You own your dreams.</b> By posting to a public space you grant AUGUR a non-exclusive licence to store, display, and distribute that content within the Service, and for the research uses described in section 05.</li>
+          <li><b>You own your dreams.</b> By posting to a public space you grant Oneiratory a non-exclusive licence to store, display, and distribute that content within the Service, and for the research uses described in section 05.</li>
         </ul>
       </div>
     </section>
@@ -122,7 +111,7 @@
       <div class="cap">04 &middot; Conduct<span class="rt">anonymous, not lawless</span></div>
       <div class="in">
         <h2 id="conduct">The Commons is anonymous, not lawless</h2>
-        <p>Post in good faith. Do not submit content that is illegal, that harasses or targets others, that incites hatred or violence, or that exposes another person's private information. Impersonation and spam are not welcome. We may remove posts or threads, and restrict access, to keep the Commons usable and safe.</p>
+        <p>Post in good faith. Do not submit content that is illegal, that harasses or targets others, that incites hatred or violence, or that exposes another person's private information. Impersonation and spam are not welcome. Image attachments are re-encoded to strip metadata, scanned, and held for moderator approval before they appear. We may remove posts or threads, and restrict access, to keep the Commons usable and safe.</p>
       </div>
     </section>
 
@@ -133,7 +122,7 @@
         <p>A registry of timestamped dreams is genuinely useful to the study of dreaming, memory, and prediction. To make that possible:</p>
         <p>By submitting a dream to the public <span class="em">Registry</span> or the <span class="em">Commons</span>, you grant permission for that content, in anonymised form, to be used for academic and scientific research, and to be quoted or cited in scholarly journals, books, and conference publications.</p>
         <div class="callout"><p>This permission covers only anonymised, publicly submitted material. Your private <b>Vault</b> entries are never included in research without your explicit, separate opt-in.</p></div>
-        <p>Wherever practical, researchers are given aggregated data or short excerpts rather than whole entries, and identifying details are stripped before any dataset leaves AUGUR. You may request removal of your public submissions at any time via <a href="mailto:contact@augur.app">contact@augur.app</a>. Please note that material already published in a third-party scholarly work cannot be retracted by us after the fact.</p>
+        <p>Wherever practical, researchers are given aggregated data or short excerpts rather than whole entries, and identifying details are stripped before any dataset leaves Oneiratory. You may request removal of your public submissions at any time via <a href="mailto:contact@oneiratory.com">contact@oneiratory.com</a>. Please note that material already published in a third-party scholarly work cannot be retracted by us after the fact.</p>
       </div>
     </section>
 
@@ -141,7 +130,7 @@
       <div class="cap">06 &middot; Copyright<span class="rt">ownership</span></div>
       <div class="in">
         <h2 id="copyright">Ownership</h2>
-        <p>&copy; <span id="year">2026</span> AUGUR. The AUGUR name, the site's design, and its code are the property of their creator and may not be copied or reused without permission.</p>
+        <p>&copy; <span id="year">2026</span> Oneiratory. The Oneiratory name, the site's design, and its code are the property of their creator and may not be copied or reused without permission.</p>
         <p>Dream content you submit remains yours. The licences granted in sections 03 and 05 exist only so the Service can function and so the research permission can be honoured. They do not transfer ownership away from you.</p>
       </div>
     </section>
@@ -150,7 +139,7 @@
       <div class="cap">07 &middot; Disclaimers &amp; liability<span class="rt">as is</span></div>
       <div class="in">
         <h2 id="liability">As is</h2>
-        <p>AUGUR is a prototype, provided as is and without warranties of any kind. It may change, break, or lose data. To the fullest extent permitted by law, AUGUR and its creator are not liable for any loss or harm arising from use of the Service. Nothing here is medical, psychological, financial, or legal advice.</p>
+        <p>Oneiratory is provided as is and without warranties of any kind. It may change, or on rare occasions lose data. To the fullest extent permitted by law, Oneiratory and its creator are not liable for any loss or harm arising from use of the Service. Nothing here is medical, psychological, financial, or legal advice.</p>
       </div>
     </section>
 
@@ -158,19 +147,18 @@
       <div class="cap">08 &middot; Changes<span class="rt">updates to these terms</span></div>
       <div class="in">
         <h2 id="changes">Updates to these terms</h2>
-        <p>These terms may be revised as AUGUR grows. The current version always lives on this page, and material changes will be noted here.</p>
+        <p>These terms may be revised as Oneiratory grows. The current version always lives on this page, and material changes will be noted here.</p>
       </div>
     </section>
 
-    <div class="disclaimer">
-      <b>A note on this document.</b> This is a plain-language template written for a prototype, not a substitute for legal advice. Before a public launch, have it reviewed by a qualified professional in your jurisdiction, and update the contact address, the copyright holder, and any region-specific privacy obligations.
-    </div>
+  </main>
 
-    <div class="sitefoot">
-      AUGUR &middot; the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps (confirms over hours)<br>
-      <a href="index.html">The instrument</a> &middot; <a href="about.html">About</a> &middot; contact@augur.app
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps</p>
+      <a href="index.html">The instrument</a> &middot; <a href="about.html">About</a> &middot; <a href="support.html">Support Oneiratory</a> &middot; contact@oneiratory.com
     </div>
-  </div>
+  </footer>
   <script>document.getElementById("year").textContent=new Date().getFullYear();</script>
 </body>
 </html>

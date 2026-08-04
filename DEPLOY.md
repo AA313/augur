@@ -61,6 +61,26 @@ link to share.
 
 ---
 
+## Image safety (read before enabling a public board with uploads)
+
+The Commons accepts image attachments, and they are protected in layers:
+
+1. **Metadata is stripped** in the browser (canvas re-encode) before upload, so no EXIF/GPS leaks.
+2. **Pre-moderation:** every image is held and shown only after a moderator approves it in
+   `/augur-admin.html` (set `AUGUR_ADMIN_TOKEN`).
+3. **Perceptual-hash blocklist:** when a moderator rejects an image, its dHash is remembered and
+   near-duplicate re-uploads are auto-blocked. This only blocks content already removed here.
+4. **External scanner hook (you must configure it for real CSAM detection):** set
+   `AUGUR_SCAN_URL` (and optionally `AUGUR_SCAN_KEY`) to a real service. AUGUR POSTs
+   `{ mime, data }` and blocks the upload if the service returns `{ "match": true }`.
+
+**AUGUR cannot detect CSAM by itself.** Real detection needs an approved service that matches
+against NCMEC's known-CSAM hash database, and in the US it comes with a legal duty to report
+matches to the NCMEC CyberTipline. Options: **Microsoft PhotoDNA Cloud Service** (free, apply for
+access), **Cloudflare CSAM Scanning Tool** (free if the site is proxied through Cloudflare), or
+**Thorn Safer** (paid, also catches novel content). Point `AUGUR_SCAN_URL` at your adapter for one
+of these before you open uploads to the public. Until then, keep uploads pre-moderated (default).
+
 ## Good to know either way
 
 - **No environment variables are required.** The host sets `PORT` automatically; the app reads it.

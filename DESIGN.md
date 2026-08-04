@@ -1,224 +1,260 @@
 ---
-name: AUGUR
-description: Prove you dreamed it first. A faded old-web instrument, with an anonymous dream board attached.
+name: Oneiratory
+description: Prove you dreamed it first. A faded old-web instrument, evolved into one unified dusk-lavender system, with an anonymous dream board as its looser room.
 colors:
-  paper: "#eeecf4"
-  panel: "#f6f5fa"
-  panel-alt: "#eae7f1"
-  bar: "#655d84"
-  bar-ink: "#efecf6"
-  ink: "#2f2a44"
-  ink-strong: "#26213a"
-  muted: "#6f688c"
+  paper: "#edecf4"
+  panel: "#f8f7fc"
+  panel-2: "#efedf7"
+  ink: "#282440"
+  ink-strong: "#1f1b30"
+  muted: "#5c567c"
   faint: "#948dae"
-  line: "#d1cbe0"
-  line-soft: "#e1dcec"
-  link: "#5a4b9c"
-  hit: "#5c7a54"
-  miss: "#9a6d7c"
+  line: "#dad5e7"
+  line-soft: "#e7e3f1"
+  link: "#574896"
+  accent: "#574896"
+  warm: "#bb6647"
+  warm-soft: "#f4e6df"
+  hit: "#587552"
+  miss: "#95687a"
   seal: "#5f5896"
-  commons-mist: "#e8e4ec"
-  commons-post: "#f2eef4"
-  commons-name: "#5f8a80"
-  commons-green: "#79895f"
-  commons-link: "#6a5aa6"
+  bar: "#544d7c"
+  bar-ink: "#f1eff9"
 typography:
-  display:
+  hero:
     fontFamily: "Georgia, 'Times New Roman', serif"
-    fontSize: "38px"
+    fontSize: "clamp(32px, 7vw, 54px)"
+    fontWeight: 400
+    lineHeight: 1.08
+    letterSpacing: "-0.01em"
+  wordmark:
+    fontFamily: "Georgia, 'Times New Roman', serif"
+    fontSize: "21px"
     fontWeight: 400
     lineHeight: 1.2
-    letterSpacing: "0.44em"
+    letterSpacing: "0.34em"
   headline:
     fontFamily: "Georgia, 'Times New Roman', serif"
-    fontSize: "22px"
+    fontSize: "clamp(21px, 3.4vw, 27px)"
     fontWeight: 400
-    lineHeight: 1.25
-    letterSpacing: "normal"
+    lineHeight: 1.2
+    letterSpacing: "-0.01em"
   lead:
     fontFamily: "Georgia, 'Times New Roman', serif"
-    fontSize: "15px"
+    fontSize: "clamp(16px, 1.9vw, 17.5px)"
     fontWeight: 400
     lineHeight: 1.6
     letterSpacing: "normal"
   body:
-    fontFamily: "Verdana, Geneva, Tahoma, sans-serif"
-    fontSize: "12.5px"
+    fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+    fontSize: "15px"
     fontWeight: 400
-    lineHeight: 1.6
+    lineHeight: 1.65
     letterSpacing: "normal"
   label:
-    fontFamily: "'Courier New', Courier, monospace"
+    fontFamily: "ui-monospace, 'Cascadia Code', 'Segoe UI Mono', Consolas, monospace"
     fontSize: "11px"
     fontWeight: 400
     lineHeight: 1.4
-    letterSpacing: "0.14em"
+    letterSpacing: "0.12em"
   data:
-    fontFamily: "'Courier New', Courier, monospace"
-    fontSize: "11.5px"
+    fontFamily: "ui-monospace, 'Cascadia Code', 'Segoe UI Mono', Consolas, monospace"
+    fontSize: "12px"
     fontWeight: 400
     lineHeight: 1.9
     letterSpacing: "normal"
+  scale:
+    micro: "10px"
+    caption: "13px"
+    caption-lg: "13.5px"
+    body-sm: "14px"
+    stat-sm: "19px"
+    title-sm: "20px"
+    stat: "24px"
+    opener: "23px"
+    headline-sm: "26px"
+    headline-md: "28px"
+    display-sm: "30px"
+    display-md: "42px"
+    display-lg: "48px"
 rounded:
-  none: "0px"
-  sm: "2px"
+  xxs: "3px"
+  xs: "4px"
+  sm: "6px"
+  md: "9px"
 spacing:
   xs: "6px"
-  sm: "9px"
-  md: "13px"
+  sm: "11px"
+  md: "14px"
   lg: "18px"
   xl: "22px"
 components:
   button-primary:
-    backgroundColor: "{colors.bar}"
+    backgroundColor: "{colors.warm}"
     textColor: "#ffffff"
-    rounded: "{rounded.none}"
-    padding: "11px 22px"
-  button-old:
-    backgroundColor: "#e7e2f1"
-    textColor: "{colors.link}"
-    rounded: "{rounded.none}"
-    padding: "8px 16px"
+    borderColor: "#a5583b"
+    rounded: "{rounded.sm}"
+    padding: "11px 20px"
+  button-ghost:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink-strong}"
+    borderColor: "{colors.line}"
+    rounded: "{rounded.sm}"
+    padding: "11px 20px"
   card:
     backgroundColor: "{colors.panel}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "16px 18px"
+    borderColor: "{colors.line}"
+    rounded: "{rounded.md}"
+    padding: "clamp(20px, 3.2vw, 28px)"
   input:
     backgroundColor: "#fbfafd"
     textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "8px 9px"
-  cap-bar:
+    borderColor: "{colors.line}"
+    rounded: "{rounded.sm}"
+    padding: "9px 10px"
+  section-cap:
+    backgroundColor: "{colors.panel-2}"
+    textColor: "{colors.accent}"
+    rounded: "0px"
+    padding: "10px 18px"
+  site-header:
     backgroundColor: "{colors.bar}"
     textColor: "{colors.bar-ink}"
-    rounded: "{rounded.none}"
-    padding: "6px 13px"
+    rounded: "0px"
+    padding: "0 clamp(16px, 4vw, 28px)"
 ---
 
-# Design System: AUGUR
+# Design System: Oneiratory
 
 ## 1. Overview
 
 **Creative North Star: "The Small-Hours Observatory"**
 
-AUGUR looks like a serious, faintly mystical corner of the old web: a nocturnal observatory for dreams, kept by someone rigorous. Dusk-lavender paper under a barely-there starfield, thin square-cornered panels, muted dusty-indigo header bars, and small system type. It is calm, hushed, and a little uncanny, but it never reads as fashionable or fun. It reads as an *instrument* someone has been quietly running in the small hours, keeping an honest record. The wonder is real; the presentation is disciplined.
+Oneiratory looks like a serious, faintly mystical corner of the web, kept by someone rigorous: a nocturnal observatory for dreams. Dusk-lavender paper under a barely-there starfield, thin panels with softly rounded corners, a full-width dusty-indigo header, serif headings, and calm system-sans prose. It is hushed and a little uncanny, but it never reads as fashionable, toy-like, or *generated*. It reads as an *instrument* someone has been quietly running in the small hours, keeping an honest record. The wonder is real; the presentation is disciplined.
 
-The system runs in **two registers, split by purpose, not just mood**:
+**This is one unified system.** Every page links a single shared stylesheet (`augur.css`) that owns the tokens, the starfield body, the full-width header/nav, the container, the buttons, the generic panel/caption chrome, and the footer. Page-specific styles layer on top. There is one identity across the whole site; you should never be able to tell you have "left" Oneiratory by moving between pages.
 
-- **The Instrument** (the default) dresses everything evidentiary and serious: the homepage, the Registry, the Verifier, the Vault, and the About note. Its job is to be *taken seriously* and to never read as a psychic app. Faded phpBB-era forum idiom: Verdana body, Georgia serif for headings and the mystical asides, Courier for anything exact, dusty-indigo section bars, and mono "evidence cards" that adjudicate a sealed dream as a hit (faded sage) or an honest miss (faded mauve).
-- **The Commons** dresses the community board only. Anonymous imageboard idiom: Courier throughout, faded-teal "Anonymous", dusty-sage greentext, muted-violet quote-links, and board categories (`/came-true/`, `/recurring/`, `/lucid/`, `/astral/`, `/nightmares/`, `/discussion/`). Hushed and welcoming, earnest rather than crude.
+Within that one system there are **two moods, split by purpose, not by palette**:
 
-This system explicitly rejects, above all, **anything that reads as AI-generated**: gradient-filled pill buttons, `backdrop-filter` glassmorphism, pastel radial-gradient hero washes, and glossy dreamcore. That polished look is the exact thing this redesign exists to escape, because it makes a serious project look like a toy and puts people off. It also rejects **psychic and occult woo** (crystal balls, tarot, fortune-teller framing), **crypto/web3 hype** (neon, "blockchain-verified" badges), and **clinical SaaS coldness**.
+- **The Instrument** (the default) dresses everything evidentiary and serious: the homepage, the Registry, the Verifier, the Seal, the Vault, the About note, and Terms. Its job is to be *taken seriously* and to never read as a psychic app. Serif headings and mystical asides (Georgia), calm sans prose, mono for anything exact, indigo section captions, and mono "evidence cards" that adjudicate a sealed dream as a hit (sage) or an honest miss (mauve).
+- **The Commons** is the *looser room in the same house*: the anonymous community board. It shares the exact same header, type, tokens, containers, and footer as everything else, but keeps its own board idioms: a `/ augur /` slash masthead, mono `/slug/` board headers, sage greentext, colour-hashed Anonymous IDs, per-board tints drawn from the shared palette, and a `>>` quote-link culture. Welcoming and earnest, never crude, and now unmistakably part of the same site.
+
+This system explicitly rejects, above all, **anything that reads as AI-generated**: gradient-filled pill buttons, `backdrop-filter` glassmorphism, pastel radial-gradient hero washes, glossy dreamcore, and the tiny-uppercase-eyebrow-on-every-section scaffold. That polished look is the exact thing this design exists to escape. It also rejects **psychic/occult woo** (crystal balls, tarot, fortune-teller framing), **crypto/web3 hype** (neon, "blockchain-verified" badges), and **clinical SaaS coldness**.
 
 **Key Characteristics:**
-- Faded, nocturnal old-web: dusk-lavender paper, faint starfield, thin square borders, small system type.
-- Two registers by purpose: the serious Instrument, and the anonymous Commons board.
+- One shared system across all pages: dusk-lavender paper, faint starfield, softly-rounded (9px) panels, a full-width sticky indigo header, calm system-sans prose.
+- Two moods by purpose: the serious Instrument and the looser Commons board, sharing one palette and chrome.
 - "Faint" lives in the chrome (borders, counts, meta); reading text and hit/miss labels stay fully legible.
-- Evidence over persuasion: the homepage demonstrates the seal mechanism and shows hits beside honest misses.
-- Verdana + Georgia + Courier. No gradients, no glass, no rounded pills.
+- Evidence over persuasion: the homepage demonstrates the seal mechanism and shows hits beside honest misses, then closes with the track record near the foot.
+- Georgia (headings/wonder) + system-sans (prose/UI) + monospace (exact values). One restrained terracotta accent. No gradients, no glass, no glow.
 
 ## 2. Colors
 
-Two low-contrast, dusk-toned palettes that share one green truth signal. Faintness is spent on chrome, never on reading text.
+One low-contrast, dusk-toned palette carries the whole site. Warmth is carried by a single accent and by typography, never by tinting the paper warm. Faintness is spent on chrome, never on reading text.
 
-### Primary
-- **Dusty Indigo** (#655d84, `--bar`): the Instrument's structural voice. Section header bars, the primary (beveled, square) button, active nav. Not an accent sprinkle; it is the frame.
-- **Muted Violet Link** (#5a4b9c, `--link`): links and interactive text on the Instrument. On the Commons, links shift to **#6a5aa6** (quote-links).
+### Structure
+- **Header Indigo** (#544d7c, `--bar`): the full-width sticky header and the board caption bars in the Registry/Commons. The structural frame, not an accent sprinkle.
+- **Structural Violet** (#574896, `--accent` / `--link`): section captions, links, interactive text, focus borders, active nav. The one recurring structural colour.
 
-### Secondary
-- **Faded Teal** (#5f8a80, `--commons-name`): the Commons "Anonymous" name color, a quiet nod to old board name fields.
-- **Dusty Sage** (#79895f, `--commons-green`): Commons greentext. Deliberately faded, never the harsh `#789922` of a real imageboard.
+### Accent
+- **Terracotta** (#bb6647, `--warm`, border #a5583b, hover #a95a3d): the single warm accent, reserved for **primary actions** (Seal a dream, Seal & post, Sign in) and for small leading marks (step numbers, list bullets). It is what "commit" looks like. Never used as a fill for large areas.
 
-### Tertiary (truth signals)
-- **Faded Sage** (#5c7a54, `--hit`): a resolved hit. Evidence-card HIT labels, resolved-hit states in the Vault and Registry. Reserved for "the proof holds".
-- **Faded Mauve** (#9a6d7c, `--miss`): a resolved miss. Quiet, never alarming, because misses are honorable here.
+### Truth signals
+- **Sage** (#587552, `--hit`): a resolved hit, and the Commons greentext. Reserved for "the proof holds".
+- **Mauve** (#95687a, `--miss`): a resolved miss. Quiet, never alarming, because misses are honourable here.
 - **Seal Indigo** (#5f5896, `--seal`): the "sealed, awaiting the event" state.
 
 ### Neutral
-- **Ink** (#2f2a44) / **Ink Strong** (#26213a): body and headings. Deep dusk, high contrast on paper; never pure black.
-- **Muted** (#6f688c): secondary text, descriptions. Verify it clears AA on the exact panel behind it.
-- **Faint** (#948dae): chrome only, counts, meta, hairline labels. Not for anything that must be read closely.
-- **Paper** (#eeecf4) / **Panel** (#f6f5fa) / **Panel-alt** (#eae7f1): the dusk-lavender page and its flat panels. Commons uses a mistier **#e8e4ec / #f2eef4**.
-- **Line** (#d1cbe0) / **Line-soft** (#e1dcec): thin square hairlines. Every border is 1px.
+- **Ink** (#282440) / **Ink Strong** (#1f1b30): body and headings. Deep dusk, high contrast on paper; never pure black. (Body ink clears ~12:1 on the panels.)
+- **Muted** (#5c567c): secondary text, descriptions. Clears AA on the panels.
+- **Faint** (#948dae): chrome only, counts, meta, hairline labels. Not for anything read closely.
+- **Paper** (#edecf4) / **Panel** (#f8f7fc) / **Panel-2** (#efedf7): the dusk-lavender page and its two flat panel tints.
+- **Line** (#dad5e7) / **Line-soft** (#e7e3f1): thin hairlines. Every border is 1px.
 
 ### Named Rules
-**The No-Glow Rule.** No gradients, no `backdrop-filter`, no glass, no rounded pills, no drop-shadow glows. Fills are flat, corners are square (0-2px), borders are 1px. The instant something looks glossy, it reads as AI, which is the one thing this system may never do.
+**The No-Glow Rule.** No gradients, no `backdrop-filter`, no glass, no pill buttons, no drop-shadow glows. Fills are flat, corners are softly rounded (6-9px, never fully round), borders are 1px. The instant something looks glossy, it reads as AI, which is the one thing this system may never do.
 
-**The Two-Register Rule.** A page is Instrument (serious, evidentiary) or Commons (anonymous board). Pick by purpose, load the matching palette and idiom, and never blur them: the Commons' looseness must never dilute the Instrument's credibility.
+**The One-Accent Rule.** Terracotta (`--warm`) is the only warm colour and appears only on primary actions and small leading marks. Structure is violet/indigo; warmth is the accent. Do not introduce a second accent hue.
 
-**The Truth-Signal Rule.** Faded sage (#5c7a54) means hit, faded mauve (#9a6d7c) means miss, seal indigo (#5f5896) means sealed-and-waiting. These three are never decorative.
+**The Truth-Signal Rule.** Sage (#587552) means hit, mauve (#95687a) means miss, seal indigo (#5f5896) means sealed-and-waiting. These three are never decorative (sage doubles only as Commons greentext, which is itself a "this is plain talk" signal).
 
 ## 3. Typography
 
-**Display / mystical voice:** Georgia (with Times New Roman fallback) — serif, used for the wordmark, headings, and the awed italic asides.
-**Body / UI voice:** Verdana (with Geneva, Tahoma) — the plain, legible old-web workhorse.
-**Exact / data voice:** Courier New (with Courier) — hashes, timestamps, seal IDs, post meta, kickers, and the entire Commons.
+**Wonder / heading voice:** Georgia (Times New Roman fallback) — serif, used for the wordmark, the hero, section headings, leads, and the awed italic asides.
+**Prose / UI voice:** the system-sans stack (`system-ui, -apple-system, 'Segoe UI', Roboto, ...`) — a calm, modern, legible workhorse. This retires the old Verdana body; Verdana was one of the "2010 web" tells the evolution set out to remove.
+**Exact / data voice:** the monospace stack (`ui-monospace, 'Cascadia Code', 'Segoe UI Mono', Consolas, ...`) — hashes, timestamps, seal IDs, captions, post meta, and the Commons board furniture.
 
-**Character:** Deliberately of the old web. Georgia carries the wonder and the seriousness; Verdana keeps the interface plain and trustworthy; Courier is the sound of the machine and the anonymous board. The wordmark is Georgia, wide-tracked (0.44em), never lowercased into a "brand".
+**Character:** Georgia carries the wonder and the seriousness; the system sans keeps the interface calm, current, and trustworthy; monospace is the sound of the machine and the anonymous board. The pairing is on a real contrast axis (serif + humanist sans + mono), never two similar sans. The wordmark is Georgia, wide-tracked (0.34em), never lowercased into a "brand".
 
 ### Hierarchy
-- **Display** (Georgia 400, ~38px, tracking 0.44em): the AUGUR wordmark and page mastheads only.
-- **Headline** (Georgia 400, 20-22px): section titles inside panels.
-- **Lead** (Georgia 400, 15px, italic-capable): the opening line of a section; the mystical asides and epigraphs.
-- **Body** (Verdana 400, 12.5px, line-height 1.6): prose and UI. Small, like the era; cap measure at 64ch.
-- **Label** (Courier 400, 11px, tracking 0.14em, uppercase): section-bar captions, kickers, form labels.
-- **Data** (Courier 400, 11.5px): hashes, timestamps, seal IDs, post numbers, greentext.
+- **Hero** (Georgia 400, clamp 32-54px, tracking -0.01em, `text-wrap:balance`): the homepage headline only.
+- **Wordmark** (Georgia 400, 21px, tracking 0.34em): the Oneiratory brand in the header.
+- **Headline** (Georgia 400, clamp 21-27px): section titles inside panels.
+- **Lead** (Georgia 400, clamp 16-17.5px): the opening line of a section; mystical asides and epigraphs.
+- **Body** (system-sans 400, 15px, line-height 1.65): prose and UI. Cap prose measure at ~66ch.
+- **Label** (mono 400, 11px, tracking 0.12em, uppercase): section-cap captions and form labels.
+- **Data** (mono 400, 12px): hashes, timestamps, seal IDs, post numbers, greentext, stat figures.
 
 ### Named Rules
-**The Machine-Voice Rule.** Anything literally exact (a hash, a timestamp, a seal ID, a declared condition, a post number) is Courier. Monospace is how the interface signals checkable fact.
+**The Machine-Voice Rule.** Anything literally exact (a hash, a timestamp, a seal ID, a declared condition, a post number, a stat) is monospace. It is how the interface signals checkable fact.
 
-**The Serif-For-Wonder Rule.** Georgia is reserved for the wordmark, headings, and the awed/mystical lines. It is never used for UI chrome or dense body text.
+**The Serif-For-Wonder Rule.** Georgia is reserved for the wordmark, the hero, headings, leads, and the awed/mystical lines. It is never used for UI chrome or dense body text.
 
 ## 4. Elevation
 
-This system is **flat**. There are no shadows, no glass, no glow. Depth is conveyed only by 1px hairlines, flat panel fills a shade off the paper, and dusty-indigo header bars. The single skeuomorphic touch is the **old-web bevel**: buttons get a 1px light top-and-left border against a darker bottom-and-right, the faint memory of a Windows-9x control. A barely-there tiled starfield (five 1px radial dots at ~0.1-0.2 alpha) sits on the page background as texture, never as a layer above content.
+This system is **flat**. There are no shadows, no glass, no glow. Depth is conveyed only by 1px hairlines, flat panel fills a shade off the paper, softly-rounded corners, and the full-width indigo header. A barely-there tiled starfield (five 1px radial dots at ~0.1-0.2 alpha, `background-attachment:fixed`) sits on the page background as texture, never as a layer above content. The old Windows-9x button bevel has been retired along with Verdana; the evolved primary button is a flat terracotta fill.
 
 ### Named Rules
-**The Flat Rule.** If a surface needs to separate from another, it uses a 1px line and a flat fill, never a shadow. The only permitted "raised" affordance is the button bevel.
+**The Flat Rule.** If a surface needs to separate from another, it uses a 1px line and a flat fill, never a shadow. Corners are softly rounded (6-9px), not sharp and not fully round.
 
-**The Starfield-Is-Background Rule.** The faint dot texture lives in the body background only. It never overlaps or dims content, and it stays under ~0.2 alpha so it reads as dusk, not decoration.
+**The Starfield-Is-Background Rule.** The faint dot texture lives in the fixed body background only. It never overlaps or dims content, and it stays under ~0.2 alpha so it reads as dusk, not decoration.
 
 ## 5. Components
 
+### Site header (shared)
+- A full-width sticky bar in header-indigo (`--bar`), inner content capped at 1060px. The Georgia wordmark sits left; the nav sits right as small sans links that highlight on hover and mark the active page with a translucent white fill. On narrow screens the nav scrolls horizontally rather than wrapping or breaking the bar. There is exactly one of these, defined once in `augur.css`.
+
 ### Buttons
-- **Primary:** flat dusty-indigo (#655d84) fill, white text, square, with a 1px light top/left bevel. For Seal and other commits.
-- **Old-web (secondary):** pale lilac (#e7e2f1) fill, violet text, square, 1px bevel. On hover the fill lightens.
-- **No pills, no gradients, no glow.**
+- **Primary:** flat terracotta (`--warm`) fill, white text, 6px radius, 1px darker terracotta border. For Seal and other commits.
+- **Ghost (secondary):** transparent fill, `--line` border, ink text; on hover the border and text go to accent violet on white.
+- **No pills, no gradients, no glow, no bevel.**
 
 ### Panels / Sections
-- A 1px `--line` border, flat `--panel` fill, square corners. Each opens with a **caption bar**: a dusty-indigo strip in Courier uppercase, optionally with an italic Georgia note floated right.
+- A 1px `--line` border, flat `--panel` fill, 9px corners. Each opens with a **caption bar** (`.cap`): a light `--panel-2` strip in mono uppercase violet, optionally with an italic Georgia note (`.rt`) at the right via flex.
 
-### Board index & tables (Instrument)
-- Real `<table>` layout, 1px hairlines, small Courier column heads, alternating `--panel-alt` rows. Forums/rows carry an icon, a description, a count, and a "last resolved / last dream" column.
+### Board tables (Registry)
+- Real `<table>` layout inside an `overflow-x:auto` wrapper so it scrolls on mobile instead of breaking the page. Indigo board header, mono column heads, alternating `--panel-2` rows, mono hashes and dates.
 
 ### Evidence card (signature, Instrument)
-- A mono panel that shows a sealed dream's anatomy: hidden text, the declared condition (Georgia italic), timestamp, and SHA-256. A status footer adjudicates it: **HIT** (faded sage), **MISS** (faded mauve), or **SEALED** (seal indigo). This is how the site proves it is an instrument, not an oracle.
+- A mono panel showing a sealed dream's anatomy: hidden text, the declared condition (Georgia italic), timestamp, and SHA-256. A status footer adjudicates it: **HIT** (sage), **MISS** (mauve), or **SEALED** (seal indigo). This is how the site proves it is an instrument, not an oracle.
 
 ### Inputs / Fields
-- Flat off-white (#fbfafd) fill, 1px `--line` border, square, Courier or Verdana. Focus deepens the border to the link violet; no glow ring.
+- Flat off-white (#fbfafd) fill, 1px `--line` border, 6px radius. Focus deepens the border to accent violet; no glow ring.
 
 ### Post (signature, Commons)
-- An imageboard post: a Courier meta line (subject, faded-teal Anonymous, time, `No.`, `ID:`), then the body with dusty-sage greentext (leading `>`) and muted-violet `>>` quote-links. Replies are indented under a 1px left rule.
+- An imageboard post: a mono meta line (subject, teal-sage Anonymous, time, `No.`, colour-hashed `ID:`), then the body with sage greentext (leading `>`) and violet `>>` quote-links. Replies are marked by a return-arrow (↳) and a `--panel-2` tint, **not** a coloured side-stripe.
 
-### Navigation
-- A single 1px-bordered strip of small Courier/Verdana links separated by middots (Instrument) or `[ bracketed ]` links (Commons). Active item gets a flat `--panel-alt` fill. No sticky glass bar.
+### Footer (shared)
+- A full-width `--panel-2` band with a mono note line (the real-anchor disclaimer) and small centred links. Defined once in `augur.css`.
 
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** keep every surface flat: 1px hairlines, flat fills, square corners, the one permitted button bevel (The Flat Rule, The No-Glow Rule).
-- **Do** pick a page's register by purpose (Instrument vs Commons) and keep the idioms separate (The Two-Register Rule).
-- **Do** set every exact value in Courier (The Machine-Voice Rule) and reserve Georgia for the wordmark, headings, and awed asides (The Serif-For-Wonder Rule).
-- **Do** reserve sage/mauve/seal-indigo for hit/miss/sealed only (The Truth-Signal Rule).
-- **Do** spend "faint" on chrome; keep reading text at `--ink` and hit/miss labels fully legible. Target AAA where feasible, AA everywhere.
-- **Do** let the homepage demonstrate the mechanism and show honest misses beside hits.
+- **Do** keep everything on the one shared system: link `augur.css`, use the `.site-header`, `.cap`/`.in` panels, `.btn`/`.btn-primary`/`.btn-ghost`, and `.site-footer`. Put only page-specific rules inline.
+- **Do** keep every surface flat: 1px hairlines, flat fills, 6-9px corners (The Flat Rule, The No-Glow Rule).
+- **Do** reserve terracotta for primary actions and small leading marks only (The One-Accent Rule).
+- **Do** set every exact value in monospace (The Machine-Voice Rule) and reserve Georgia for the wordmark, hero, headings, leads, and awed asides (The Serif-For-Wonder Rule).
+- **Do** reserve sage/mauve/seal-indigo for hit/miss/sealed (The Truth-Signal Rule).
+- **Do** spend "faint" on chrome; keep reading text at `--ink` and hit/miss labels fully legible. Target AA everywhere, AAA where feasible.
+- **Do** let the Commons keep its board character (slash masthead, `/slug/` heads, greentext, colour-hashed IDs) while sharing the site's header, type, tokens, and footer.
 
 ### Don't:
-- **Don't** ever reintroduce the AI look: no gradient-filled pills, no `backdrop-filter`/glass, no pastel radial-gradient hero washes, no glossy dreamcore, no rounded-22px buttons. This is the single most important prohibition.
-- **Don't** drift into psychic or occult woo: no crystal balls, tarot, moon-and-stars mysticism, or fortune-teller framing, despite the faded mystical mood.
-- **Don't** reach for crypto/web3 hype: no neon, no "blockchain-verified" badges, despite the real seal.
-- **Don't** use drop-shadows or glows to create depth; use a 1px line instead (The Flat Rule).
-- **Don't** let Commons greentext go to the harsh `#789922`; keep it dusty sage. Don't let the board's looseness leak into the Instrument.
+- **Don't** ever reintroduce the AI look: no gradient-filled pills, no `backdrop-filter`/glass, no pastel radial-gradient washes, no glossy dreamcore, no uppercase eyebrow on every section. This is the single most important prohibition.
+- **Don't** give a page its own palette or its own header/footer. If it looks like a different site, it is wrong.
+- **Don't** use a coloured side-stripe (`border-left`/`border-right` > 1px as an accent) on cards, replies, or callouts. Distinguish with a tint, a full border, a label, or a leading mark instead.
+- **Don't** bring back Verdana or the Windows-9x button bevel; those were the "2010 web" tells the evolution removed.
+- **Don't** drift into psychic/occult woo or crypto/web3 hype, despite the faded mystical mood and the real seal.
+- **Don't** use drop-shadows or glows for depth; use a 1px line (The Flat Rule).
 - **Don't** lowercase or restyle the wordmark; it is Georgia, wide-tracked, as-is.
 - **Don't** use an em dash anywhere in user-facing copy (house rule).

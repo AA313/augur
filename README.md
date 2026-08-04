@@ -1,4 +1,4 @@
-# AUGUR
+# Oneiratory
 
 A registry for dreams and the rare moments they seem to arrive early.
 

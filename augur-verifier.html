@@ -3,94 +3,77 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AUGUR · Verifier</title>
+<title>Oneiratory · Verifier</title>
+<meta name="description" content="Paste a proof bundle and recompute its fingerprint entirely in your browser. Verify a sealed dream offline, trusting no one.">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Social share preview. Set absolute og:url and og:image URLs once the site is deployed. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Oneiratory">
+<meta property="og:title" content="Oneiratory · Verifier">
+<meta property="og:description" content="Recompute a proof's fingerprint entirely in your browser. Verify a sealed dream offline, trusting no one.">
+<meta property="og:image" content="share.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oneiratory · Verifier">
+<meta name="twitter:description" content="Verify a sealed dream offline. Trust no one, check the arithmetic.">
+<meta name="twitter:image" content="share.svg">
+<link rel="stylesheet" href="augur.css">
 <style>
-  :root{
-    --paper:#eeecf4;--panel:#f6f5fa;--panel-alt:#eae7f1;--bar:#655d84;--bar-ink:#efecf6;
-    --ink:#2f2a44;--ink-strong:#26213a;--muted:#5f5878;--faint:#948dae;
-    --line:#d1cbe0;--line-soft:#e1dcec;--link:#443a7a;--hit:#5c7a54;--miss:#9a6d7c;
-    --sans:Verdana, Geneva, Tahoma, sans-serif;--serif:Georgia,"Times New Roman",serif;--mono:"Courier New",Courier,monospace;
-  }
-  *{box-sizing:border-box}html,body{margin:0}
-  body{background:var(--paper);
-    background-image:radial-gradient(1px 1px at 18% 24%,rgba(110,100,150,.18),transparent 60%),radial-gradient(1px 1px at 72% 16%,rgba(110,100,150,.14),transparent 60%),radial-gradient(1px 1px at 40% 70%,rgba(110,100,150,.12),transparent 60%),radial-gradient(1px 1px at 86% 64%,rgba(110,100,150,.14),transparent 60%);
-    color:var(--ink);font-family:var(--sans);font-size:12.5px;line-height:1.6}
-  .wrap{max-width:720px;margin:0 auto;padding:22px 16px 64px}
-  a{color:var(--link)}
-  .mast{text-align:center;padding:16px 0 8px}
-  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
-  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
-  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
-  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);display:flex;flex-wrap:wrap;justify-content:center}
-  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
-  nav a:hover{text-decoration:underline}nav a.on{color:#3a2f70;background:var(--panel-alt)}
-  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
-  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
-  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
-  .in{padding:16px 18px}
-  h2{font-family:var(--serif);font-weight:normal;color:var(--ink-strong);font-size:20px;margin:0 0 8px}
-  .lead{font-family:var(--serif);font-size:15px;color:#3a3352;margin:0 0 10px}
-  p{margin:0 0 10px}p:last-child{margin:0}
-  .em{color:#4c3f8e;font-style:italic}
+  /* ---------- verifier-specific ---------- */
+  textarea{font-family:var(--mono);font-size:12px;color:var(--ink);background:#fbfafd;border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:12px;width:100%;min-height:150px;resize:vertical;line-height:1.6}
+  textarea:focus{outline:none;border-color:var(--accent)}
+  .row{display:flex;gap:11px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  .offline{color:var(--faint);font-size:11.5px}
 
-  textarea{font-family:var(--mono);font-size:11.5px;color:var(--ink);background:#fbfafd;border:1px solid var(--line);padding:10px;width:100%;min-height:120px;resize:vertical;line-height:1.6}
-  .row{display:flex;gap:9px;align-items:center;margin-top:10px;flex-wrap:wrap}
-  .vbtn{font-family:var(--sans);font-size:13px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:10px 20px;cursor:pointer;letter-spacing:.03em}
-  .vbtn:hover{background:#5a5279}
-  .vbtn.ghost{background:#eee9f3;color:#40356f;border-top-color:#fff;border-left-color:#fff}
-  .offline{color:var(--faint);font-size:11px}
-
-  /* result cards */
-  .res{border:1px solid var(--line);background:#fbfafd;margin-top:2px}
-  .res .rh{font-family:var(--mono);font-size:11px;color:var(--muted);padding:7px 11px;border-bottom:1px solid var(--line-soft);background:var(--panel-alt);letter-spacing:.02em}
-  .res .rin{padding:11px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink);line-height:1.9}
+  /* result card */
+  .res{border:1px solid var(--line);background:#fbfafd;border-radius:var(--r-sm);overflow:hidden;margin-top:2px}
+  .res .rh{font-family:var(--mono);font-size:11px;color:var(--muted);padding:9px 13px;
+    border-bottom:1px solid var(--line-soft);background:var(--panel-2);letter-spacing:.02em}
+  .res .rin{padding:13px;font-family:var(--mono);font-size:12px;color:var(--ink);line-height:1.95}
   .res .k{color:var(--faint)}
   .res .hash{word-break:break-all}
   .res .hash.ok{color:var(--hit)}
   .res .hash.bad{color:var(--miss)}
-  .res .verdict{padding:10px 12px;border-top:1px solid var(--line-soft);font-size:12px;line-height:1.6}
-  .res.ok .verdict{background:#eef1ea}
-  .res.ok .verdict .lab{color:var(--hit);font-weight:bold;letter-spacing:.04em}
-  .res.bad .verdict{background:#f2ecef}
-  .res.bad .verdict .lab{color:var(--miss);font-weight:bold;letter-spacing:.04em}
-  .res .verdict .why{color:var(--muted);display:block;margin-top:3px}
-  .twin{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:620px){.twin{grid-template-columns:1fr}}
-  .exlabel{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px}
+  .res .verdict{padding:12px 13px;border-top:1px solid var(--line-soft);font-size:13px;line-height:1.6}
+  .res.ok .verdict{background:#eef3ec}
+  .res.ok .verdict .lab{color:var(--hit);font-weight:700;letter-spacing:.04em}
+  .res.bad .verdict{background:#f3ecef}
+  .res.bad .verdict .lab{color:var(--miss);font-weight:700;letter-spacing:.04em}
+  .res .verdict .why{color:var(--muted);display:block;margin-top:4px}
 
   ul.steps{list-style:none;margin:0;padding:0;counter-reset:s}
-  ul.steps li{counter-increment:s;padding:9px 0 9px 30px;border-top:1px solid var(--line-soft);position:relative;color:var(--muted);font-size:12px}
-  ul.steps li:first-child{border-top:none}
-  ul.steps li::before{content:counter(s);position:absolute;left:4px;top:9px;font-family:var(--mono);color:var(--faint)}
-  ul.steps b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:13px}
-
-  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
-  .sitefoot a{color:var(--muted)}
-  .mast .word a{color:inherit;text-decoration:none}
+  ul.steps li{counter-increment:s;padding:12px 0 12px 34px;border-top:1px solid var(--line-soft);position:relative;color:var(--muted);font-size:13.5px;line-height:1.6}
+  ul.steps li:first-child{border-top:none;padding-top:2px}
+  ul.steps li::before{content:counter(s);position:absolute;left:2px;top:12px;font-family:var(--mono);color:var(--warm);font-weight:600}
+  ul.steps li:first-child::before{top:2px}
+  ul.steps b{color:var(--ink-strong);font-weight:400;font-family:var(--serif);font-size:14.5px}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="mast">
-      <div class="word"><a href="index.html">AUGUR</a></div>
-      <div class="tag">an instrument for dreams that arrive early</div>
-      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">The instrument</a>
+        <a href="about.html">About</a>
+        <a href="augur-registry.html">Registry</a>
+        <a href="augur-commons.html">Commons</a>
+        <a href="augur-vault.html">Vault</a>
+        <a class="on" href="augur-verifier.html">Verify</a>
+        <a href="augur-seal-prototype.html">Seal a dream</a>
+      </nav>
     </div>
-    <nav>
-      <a href="index.html">The instrument</a>
-      <a href="about.html">About</a>
-      <a href="augur-registry.html">The Registry</a>
-      <a href="augur-commons.html">The Commons</a>
-      <a href="augur-vault.html">The Vault</a>
-      <a class="on" href="augur-verifier.html">Verify a proof</a>
-      <a href="augur-seal-prototype.html">Seal a dream</a>
-    </nav>
+  </header>
 
-    <section>
+  <main>
+    <section style="margin-top:26px">
       <div class="cap">Verify a proof<span class="rt">trust no one. check the arithmetic.</span></div>
       <div class="in">
         <p class="lead">Paste a proof bundle below. This page recomputes the fingerprint entirely in your browser and tells you whether the dream&rsquo;s words existed, unchanged, at the sealed time. If the bundle carries a timestamp anchor, it also checks that an independent authority certified the same fingerprint.</p>
-        <p style="color:var(--muted)">You do not have to trust AUGUR, or the dreamer, or this page. The check is pure arithmetic on the text you hold. It runs <span class="em">offline</span>, and it will keep working even if AUGUR is gone.</p>
+        <p style="color:var(--muted)">You do not have to trust Oneiratory, or the dreamer, or this page. The check is pure arithmetic on the text you hold. It runs <span class="em">offline</span>, and it will keep working even if Oneiratory is gone.</p>
         <textarea id="bundle" aria-label="Proof bundle">{
   "content": "I was standing in a train station that does not exist ...",
   "claim": { "resolution_by": "2026-08-15", "domain": "public event", "specificity": "high" },
@@ -99,8 +82,8 @@
   "sha256": "c1a7e0...4b9f"
 }</textarea>
         <div class="row">
-          <button id="verifyBtn" class="vbtn">&#9679; Recompute &amp; verify</button>
-          <button id="exampleBtn" class="vbtn ghost">Load an example</button>
+          <button id="verifyBtn" class="btn btn-primary">&#9679; Recompute &amp; verify</button>
+          <button id="exampleBtn" class="btn btn-ghost">Load an example</button>
           <span class="offline">nothing leaves your browser</span>
         </div>
       </div>
@@ -136,12 +119,14 @@
         </ul>
       </div>
     </section>
+  </main>
 
-    <div class="sitefoot">
-      AUGUR &middot; the verifier is deliberately independent. it must work even if AUGUR is down<br>
-      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; contact@augur.app
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">the verifier is deliberately independent. it must work even if Oneiratory is down</p>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="support.html">Support Oneiratory</a> &middot; contact@oneiratory.com
     </div>
-  </div>
+  </footer>
 
   <script>
   (function(){
@@ -219,7 +204,7 @@
           if(imprintOk){
             aEl.textContent="✓ "+utc(tok.genTime)+" · "+(b.anchor.tsa||"a TSA")+" (RFC-3161)";
             aEl.className="hash ok";
-            if(ok) $("rWhy").textContent="The fingerprints match, and an independent time-stamping authority ("+(b.anchor.tsa||"a TSA")+") certified this exact fingerprint at "+utc(tok.genTime)+". Anteriority is proven without trusting AUGUR.";
+            if(ok) $("rWhy").textContent="The fingerprints match, and an independent time-stamping authority ("+(b.anchor.tsa||"a TSA")+") certified this exact fingerprint at "+utc(tok.genTime)+". Anteriority is proven without trusting Oneiratory.";
           } else {
             aEl.textContent="✗ this token covers a different hash";
             aEl.className="hash bad";
@@ -231,7 +216,7 @@
       }
       // a bundled OpenTimestamps (Bitcoin) proof, if present, is verified independently with the ots tool
       if(b.anchor && b.anchor.ots_proof){
-        $("rWhy").textContent += " A Bitcoin proof (OpenTimestamps"+(b.anchor.ots_status==="pending"?", confirmation pending":"")+") is also bundled; upgrade and verify it against the blockchain with the ots tool, independent of AUGUR.";
+        $("rWhy").textContent += " A Bitcoin proof (OpenTimestamps"+(b.anchor.ots_status==="pending"?", confirmation pending":"")+") is also bundled; upgrade and verify it against the blockchain with the ots tool, independent of Oneiratory.";
       }
     });
     $("exampleBtn").addEventListener("click", async function(){

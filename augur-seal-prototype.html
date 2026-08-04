@@ -3,128 +3,117 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AUGUR · The Seal</title>
+<title>Oneiratory · The Seal</title>
+<meta name="description" content="Write a dream, declare in advance what would count as it coming true, and seal it. Its exact words are locked to this moment in time.">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Social share preview. Set absolute og:url and og:image URLs once the site is deployed. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Oneiratory">
+<meta property="og:title" content="Oneiratory · Seal a dream">
+<meta property="og:description" content="Write a dream, declare in advance what would count as it coming true, and seal it to this moment in time.">
+<meta property="og:image" content="share.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oneiratory · Seal a dream">
+<meta name="twitter:description" content="Write it, declare the target, lock it. Its exact words are fixed to now.">
+<meta name="twitter:image" content="share.svg">
+<link rel="stylesheet" href="augur.css">
 <style>
-  :root{
-    --paper:#eeecf4;--panel:#f6f5fa;--panel-alt:#eae7f1;--bar:#655d84;--bar-ink:#efecf6;
-    --ink:#2f2a44;--ink-strong:#26213a;--muted:#5f5878;--faint:#948dae;
-    --line:#d1cbe0;--line-soft:#e1dcec;--link:#443a7a;--hit:#5c7a54;
-    --sans:Verdana, Geneva, Tahoma, sans-serif;--serif:Georgia,"Times New Roman",serif;--mono:"Courier New",Courier,monospace;
-  }
-  *{box-sizing:border-box}html,body{margin:0}
-  body{background:var(--paper);
-    background-image:radial-gradient(1px 1px at 18% 24%,rgba(110,100,150,.18),transparent 60%),radial-gradient(1px 1px at 72% 16%,rgba(110,100,150,.14),transparent 60%),radial-gradient(1px 1px at 40% 70%,rgba(110,100,150,.12),transparent 60%),radial-gradient(1px 1px at 86% 64%,rgba(110,100,150,.14),transparent 60%);
-    color:var(--ink);font-family:var(--sans);font-size:12.5px;line-height:1.6}
-  .wrap{max-width:720px;margin:0 auto;padding:22px 16px 64px}
-  a{color:var(--link)}
-  .mast{text-align:center;padding:16px 0 8px}
-  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
-  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
-  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
-  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);display:flex;flex-wrap:wrap;justify-content:center}
-  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
-  nav a:hover{text-decoration:underline}nav a.on{color:#3a2f70;background:var(--panel-alt)}
-  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
-  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
-  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
-  .in{padding:16px 18px}
-  h2{font-family:var(--serif);font-weight:normal;color:var(--ink-strong);font-size:22px;line-height:1.25;margin:0 0 8px}
-  p{margin:0 0 10px}p:last-child{margin:0}
-  .lead{font-family:var(--serif);font-size:15px;color:#3a3352}
-  .em{color:#4c3f8e;font-style:italic}
-
-  .field{margin-bottom:16px}
-  .field .fl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
-  .field .fl b{color:var(--faint);font-weight:normal}
-  .field .hint{color:var(--faint);font-size:11px;margin-top:5px;font-style:italic;font-family:var(--serif)}
-  textarea,input,select{font-family:var(--sans);font-size:12.5px;color:var(--ink);background:#fbfafd;border:1px solid var(--line);padding:8px 9px;width:100%}
-  textarea{min-height:96px;resize:vertical;line-height:1.55}
-  .cond textarea{min-height:56px}
-  .metarow{display:flex;gap:10px;flex-wrap:wrap;margin-top:9px}
+  /* ---------- seal-specific ---------- */
+  .field{margin-bottom:18px}
+  .field .fl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);margin-bottom:7px}
+  .field .fl b{color:var(--faint);font-weight:400}
+  .field .hint{color:var(--faint);font-size:12px;margin-top:6px;font-style:italic;font-family:var(--serif)}
+  textarea,input,select{font-family:var(--sans);font-size:13px;color:var(--ink);background:#fbfafd;
+    border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 10px;width:100%}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--accent)}
+  textarea{min-height:104px;resize:vertical;line-height:1.55}
+  .cond textarea{min-height:60px}
+  .metarow{display:flex;gap:11px;flex-wrap:wrap;margin-top:10px}
   .metarow label{flex:1;min-width:150px}
-  .metarow .ml{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.05em;display:block;margin-bottom:4px}
-
-  .sealbtn{font-family:var(--sans);font-size:13px;color:#fff;background:#655d84;border:1px solid #4f486c;
-    border-top-color:#8279a0;border-left-color:#8279a0;padding:11px 22px;cursor:pointer;letter-spacing:.03em}
-  .sealbtn:hover{background:#5a5279}
-  .sealnote{color:var(--faint);font-size:11px;margin-top:10px;line-height:1.6}
+  .metarow .ml{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.05em;display:block;margin-bottom:5px}
+  .sealnote{color:var(--faint);font-size:12px;margin-top:11px;line-height:1.6}
 
   /* auth bar */
-  .authbar{margin-bottom:14px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)}
-  .authbar .signedout{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .authbar{margin-bottom:16px;padding-bottom:15px;border-bottom:1px solid var(--line-soft)}
+  .authbar .signedout{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
   .authbar .al{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);width:100%}
-  .authbar input{font-family:var(--sans);font-size:12.5px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 9px;min-width:190px}
-  .authbar .signin{font-family:var(--sans);font-size:12px;color:#fff;background:#655d84;border:1px solid #4f486c;border-top-color:#8279a0;border-left-color:#8279a0;padding:8px 15px;cursor:pointer}
-  .authbar .signin:hover{background:#5a5279}
-  .authbar .anote{color:var(--faint);font-size:10.5px;font-style:italic;font-family:var(--serif);width:100%}
-  .authbar .signedin{font-size:11.5px;color:var(--muted)}
-  .authbar .signedin .em{color:var(--ink-strong);font-family:var(--mono);font-size:11px}
+  .authbar input{width:auto;min-width:200px}
+  .authbar .signin{font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;background:var(--warm);
+    border:1px solid #a5583b;border-radius:var(--r-sm);padding:9px 16px;cursor:pointer}
+  .authbar .signin:hover{background:#a95a3d}
+  .authbar .signin:disabled{opacity:.6;cursor:default}
+  .authbar .anote{color:var(--faint);font-size:11px;font-style:italic;font-family:var(--serif);width:100%}
+  .authbar .signedin{font-size:12.5px;color:var(--muted)}
+  .authbar .signedin .em{color:var(--ink-strong);font-family:var(--mono);font-size:12px;font-style:normal}
   .authbar .signout{color:var(--link);cursor:pointer;margin-left:8px}
 
   /* your seals */
-  .emptyseals{color:var(--faint);font-style:italic;font-family:var(--serif);font-size:13px;margin:0}
-  .seal-item{border:1px solid var(--line);background:#fbfafd;margin-bottom:11px}
-  .seal-item .si-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line-soft);background:var(--panel-alt)}
-  .seal-item .si-cond{font-family:var(--serif);font-style:italic;color:#3a3352;font-size:13px}
-  .seal-item .si-status{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;font-weight:bold}
-  .st-sealed{color:var(--seal,#5f5896)}.st-unsealed{color:#4c3f8e}.st-resolved-hit{color:var(--hit)}.st-resolved-miss{color:#9a6d7c}
-  .seal-item .si-meta{font-family:var(--mono);font-size:10.5px;color:var(--muted);padding:8px 12px 4px;line-height:1.7;word-break:break-word}
-  .seal-item .si-meta .hash{color:#5a4b9c}
-  .seal-item .si-acts{padding:6px 12px 11px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-  .sa{font-family:var(--sans);font-size:11px;color:#39306b;text-decoration:none;border:1px solid var(--line);border-top-color:#fff;border-left-color:#fff;background:#e7e2f1;padding:6px 11px;cursor:pointer}
-  .sa:hover{background:#efeaf8}
-  .sa.hit{color:#3f6a37}.sa.miss{color:#84495a}
-  .si-acts .done{font-size:11px;color:var(--muted);font-style:italic}
-  .si-acts .proof{font-size:11px;color:var(--link);cursor:pointer;text-decoration:underline;margin-left:auto}
+  .emptyseals{color:var(--faint);font-style:italic;font-family:var(--serif);font-size:14px;margin:0}
+  .seal-item{border:1px solid var(--line);background:#fbfafd;border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
+  .seal-item .si-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+    padding:10px 13px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+  .seal-item .si-cond{font-family:var(--serif);font-style:italic;color:#3a3352;font-size:14px}
+  .seal-item .si-status{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;font-weight:700}
+  .st-sealed{color:var(--seal)}.st-unsealed{color:var(--accent)}.st-resolved-hit{color:var(--hit)}.st-resolved-miss{color:var(--miss)}
+  .seal-item .si-meta{font-family:var(--mono);font-size:11px;color:var(--muted);padding:9px 13px 4px;line-height:1.7;word-break:break-word}
+  .seal-item .si-meta .hash{color:var(--accent)}
+  .seal-item .si-acts{padding:7px 13px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .sa{font-family:var(--sans);font-size:11.5px;color:var(--ink-strong);text-decoration:none;
+    border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;padding:7px 12px;cursor:pointer;transition:.15s}
+  .sa:hover{border-color:var(--accent);color:var(--accent)}
+  .sa.hit{color:var(--hit)}.sa.miss{color:var(--miss)}
+  .si-acts .done{font-size:11.5px;color:var(--muted);font-style:italic}
+  .si-acts .proof{font-size:11.5px;color:var(--link);cursor:pointer;text-decoration:underline;margin-left:auto}
 
   /* proof preview */
-  .proof{border:1px solid var(--line);background:#fbfafd;margin-top:2px}
-  .proof .ph{font-family:var(--mono);font-size:11px;color:var(--muted);padding:7px 11px;border-bottom:1px solid var(--line-soft);background:var(--panel-alt);letter-spacing:.02em}
-  .proof .pin{padding:11px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink);line-height:1.9}
+  .proof{border:1px solid var(--line);background:#fbfafd;border-radius:var(--r-sm);overflow:hidden;margin-top:2px}
+  .proof .ph{font-family:var(--mono);font-size:11px;color:var(--muted);padding:9px 13px;
+    border-bottom:1px solid var(--line-soft);background:var(--panel-2);letter-spacing:.02em}
+  .proof .pin{padding:13px;font-family:var(--mono);font-size:12px;color:var(--ink);line-height:1.95}
   .proof .k{color:var(--faint)}
   .proof .hidden{color:var(--faint);letter-spacing:.1em}
   .proof .cond{font-family:var(--serif);font-style:italic;color:#3a3352}
-  .proof .hash{color:#5a4b9c;word-break:break-all}
-  .proof .status{padding:9px 12px;border-top:1px solid var(--line-soft);font-size:11.5px;background:#eef1ea;line-height:1.6}
-  .proof .status .lab{color:var(--hit);font-weight:bold;letter-spacing:.04em}
-  .proof .status .why{color:var(--muted);display:block;margin-top:2px}
-  .proof .pacts{padding:9px 12px;border-top:1px solid var(--line-soft);font-size:11px}
+  .proof .hash{color:var(--accent);word-break:break-all}
+  .proof .status{padding:11px 13px;border-top:1px solid var(--line-soft);font-size:12.5px;background:#eef3ec;line-height:1.6}
+  .proof .status .lab{color:var(--hit);font-weight:700;letter-spacing:.04em}
+  .proof .status .why{color:var(--muted);display:block;margin-top:3px}
+  .proof .pacts{padding:11px 13px;border-top:1px solid var(--line-soft);font-size:12px}
 
   ul.reassure{list-style:none;margin:0;padding:0}
-  ul.reassure li{padding:8px 0 8px 20px;border-top:1px solid var(--line-soft);position:relative;color:var(--muted);font-size:12px}
-  ul.reassure li:first-child{border-top:none}
-  ul.reassure li::before{content:"\203A";position:absolute;left:2px;top:7px;color:var(--faint);font-size:14px}
-  ul.reassure b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:13px}
-
-  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
-  .sitefoot a{color:var(--muted)}
-  .mast .word a{color:inherit;text-decoration:none}
+  ul.reassure li{padding:12px 0 12px 24px;border-top:1px solid var(--line-soft);position:relative;color:var(--muted);font-size:13.5px;line-height:1.6}
+  ul.reassure li:first-child{border-top:none;padding-top:2px}
+  ul.reassure li::before{content:"\203A";position:absolute;left:3px;top:11px;color:var(--warm);font-size:16px}
+  ul.reassure li:first-child::before{top:1px}
+  ul.reassure b{color:var(--ink-strong);font-weight:400;font-family:var(--serif);font-size:14.5px}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="mast">
-      <div class="word"><a href="index.html">AUGUR</a></div>
-      <div class="tag">an instrument for dreams that arrive early</div>
-      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">The instrument</a>
+        <a href="about.html">About</a>
+        <a href="augur-registry.html">Registry</a>
+        <a href="augur-commons.html">Commons</a>
+        <a href="augur-vault.html">Vault</a>
+        <a href="augur-verifier.html">Verify</a>
+        <a class="on" href="augur-seal-prototype.html">Seal a dream</a>
+      </nav>
     </div>
-    <nav>
-      <a href="index.html">The instrument</a>
-      <a href="about.html">About</a>
-      <a href="augur-registry.html">The Registry</a>
-      <a href="augur-commons.html">The Commons</a>
-      <a href="augur-vault.html">The Vault</a>
-      <a href="augur-verifier.html">Verify a proof</a>
-      <a class="on" href="augur-seal-prototype.html">Seal a dream</a>
-    </nav>
+  </header>
 
-    <section>
+  <main>
+    <section style="margin-top:26px">
       <div class="cap">Seal a dream<span class="rt">write it, declare the target, lock it</span></div>
       <div class="in">
         <div id="authbar" class="authbar"></div>
         <p class="lead">Write the dream while it is still fresh, and say in advance what would count as it coming true. The moment you seal, its exact words are fixed to now and cannot be moved.</p>
 
-        <div class="field" style="margin-top:16px">
+        <div class="field" style="margin-top:18px">
           <div class="fl">1 &middot; THE DREAM &middot; <b>the exact words, as you remember them</b></div>
           <textarea id="dream" placeholder="I was standing in a train station that does not exist. An announcement I could not hear. Everyone looking up at once."></textarea>
           <div class="hint">Write it plainly. Detail is what makes a later hit meaningful.</div>
@@ -143,8 +132,8 @@
 
         <div class="field">
           <div class="fl">3 &middot; SEAL</div>
-          <button id="sealBtn" class="sealbtn">&#9679; Seal this dream</button>
-          <div class="sealnote">On seal, your browser computes SHA-256 over the dream, the condition, a random nonce, and the timestamp. Only that fingerprint is ever made public. The dream text is saved privately to your account so you can reveal it later (stored plainly for now; encrypted at rest in production).</div>
+          <button id="sealBtn" class="btn btn-primary">&#9679; Seal this dream</button>
+          <div class="sealnote">On seal, your browser computes SHA-256 over the dream, the condition, a random nonce, and the timestamp. Only that fingerprint is ever made public. The dream text is saved privately to your account so you can reveal it later; if you would rather the server could never read it at all, capture the dream in the end-to-end encrypted <a href="augur-vault.html">Vault</a> instead.</div>
         </div>
       </div>
     </section>
@@ -189,15 +178,17 @@
         <div id="yourSeals"></div>
       </div>
     </section>
+  </main>
 
-    <div class="sitefoot">
-      AUGUR &middot; the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps (confirms over hours)<br>
-      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; contact@augur.app
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps</p>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="support.html">Support Oneiratory</a> &middot; contact@oneiratory.com
     </div>
-  </div>
+  </footer>
 
   <script>
-  /* ---- Seal, wired to the AUGUR API: seal persists to your account; reveal, publish to the Registry, resolve ---- */
+  /* ---- Seal, wired to the Oneiratory API: seal persists to your account; reveal, publish to the Registry, resolve ---- */
   (function(){
     var $=function(id){return document.getElementById(id);};
     var SKEY="augur_session";
@@ -279,7 +270,7 @@
       var h=s.commitment_hash;
       var anchored=s.anchor_time?(' &middot; <span title="RFC-3161 timestamp">anchored '+fmtTime(s.anchor_time)+' by '+esc(s.tsa_name||"a TSA")+'</span>'):' &middot; anchor pending';
       var btc=s.ots_status==="complete"
-        ? ' &middot; <span style="color:#3f6a37" title="OpenTimestamps, confirmed on Bitcoin'+(s.ots_block?" in block "+s.ots_block:"")+'">bitcoin confirmed'+(s.ots_block?" (block "+s.ots_block+")":"")+'</span>'
+        ? ' &middot; <span style="color:#587552" title="OpenTimestamps, confirmed on Bitcoin'+(s.ots_block?" in block "+s.ots_block:"")+'">bitcoin confirmed'+(s.ots_block?" (block "+s.ots_block+")":"")+'</span>'
         : (s.ots_status==="pending"?' &middot; <span title="OpenTimestamps: submitted, Bitcoin confirmation pending (hours)">bitcoin pending</span>':"");
       var meta='sealed '+fmtTime(s.sealed_at)+' &middot; sha-256 <span class="hash" title="'+esc(h)+'">'+h.slice(0,10)+"…"+h.slice(-4)+'</span>'+anchored+btc+' &middot; '+pub;
       var acts=[];
@@ -312,7 +303,7 @@
         if(s.ots_proof){ bundle.anchor.ots_proof=s.ots_proof; bundle.anchor.ots_status=s.ots_status||"pending"; }
       }
       var blob=new Blob([JSON.stringify(bundle,null,2)],{type:"application/json"});
-      var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="augur-proof.json";
+      var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="oneiratory-proof.json";
       document.body.appendChild(a); a.click(); a.remove();
     }
 
@@ -381,7 +372,7 @@
       e.preventDefault();
       if(!lastBundle){ $("dream").focus(); return; }
       var blob=new Blob([JSON.stringify(lastBundle,null,2)],{type:"application/json"});
-      var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="augur-proof.json";
+      var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="oneiratory-proof.json";
       document.body.appendChild(a); a.click(); a.remove();
     });
 

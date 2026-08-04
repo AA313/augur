@@ -1,0 +1,45 @@
+# Render Blueprint for Oneiratory  (render.com)
+#
+# To deploy:
+#   1. Push this repo to GitHub (already wired to origin: AA313/augur).
+#   2. Render dashboard -> New -> Blueprint -> pick this repo -> Apply.
+#   Render reads this file, builds the Dockerfile (Node 24, required for node:sqlite),
+#   and starts the service. It sets PORT itself; the server already reads process.env.PORT.
+#
+services:
+  - type: web
+    name: oneiratory
+    runtime: docker            # build via ./Dockerfile so we get Node 24 + built-in node:sqlite
+    plan: free                 # a live preview. NOTE the data caveat below.
+    healthCheckPath: /
+    autoDeploy: true           # redeploy on every push to the connected branch
+    envVars:
+      # Moderator gate for /augur-admin.html. Render generates a strong random value,
+      # so it is NEVER the insecure 'augur-admin-dev' default. Read it in the Render
+      # dashboard (Environment tab) to sign in to the moderator page.
+      - key: AUGUR_ADMIN_TOKEN
+        generateValue: true
+      # Server-side secret (session ids / day secret). Generated, not the dev default.
+      - key: AUGUR_SECRET
+        generateValue: true
+      # Optional: point at a real image-safety scanner before enabling public image uploads.
+      # - key: AUGUR_SCAN_URL
+      #   sync: false
+      # - key: AUGUR_SCAN_KEY
+      #   sync: false
+
+    # ----------------------------------------------------------------------------
+    # DATA PERSISTENCE  (read this)
+    # The free plan has an EPHEMERAL filesystem. The SQLite database (data/augur.db)
+    # is recreated on every redeploy or spin-down: the seeded example entries come
+    # back, but anything a visitor enters (dreams, seals, Vault, Commons posts) is
+    # LOST. That is fine for a public preview; it is NOT fine for real launch data.
+    #
+    # To keep real data, upgrade off the free plan and uncomment the disk below
+    # (it mounts persistent storage at /app/data, where the server writes augur.db):
+    #
+    # disk:
+    #   name: oneiratory-data
+    #   mountPath: /app/data
+    #   sizeGB: 1
+    # ----------------------------------------------------------------------------

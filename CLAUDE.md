@@ -1,6 +1,16 @@
-# AUGUR
+# Oneiratory
 
-A registry for dreams and the rare moments they seem to arrive early. AUGUR lets a person
+> **Naming (2026-08-04):** the project and site were renamed from the prototype name **AUGUR** to
+> **Oneiratory** (chosen for uniqueness; several sites already use "Augur", incl. the Ethereum
+> prediction market). The change is **user-facing only**. Internal identifiers deliberately keep the
+> `augur` token so the backend does not break: the page files (`augur-*.html`), the stylesheet
+> (`augur.css`), the env vars (`AUGUR_ADMIN_TOKEN`, `AUGUR_SCAN_URL`, `AUGUR_SCAN_KEY`), the
+> localStorage keys (`augur_session` / `augur_admin`), and the SQLite store all stay as-is. Contact
+> email placeholder is now `contact@oneiratory.com`. Where prose below still says "AUGUR", read
+> "Oneiratory"; where it names an `AUGUR_*` env var or an `augur-*` path, that is the literal
+> identifier and must not change.
+
+A registry for dreams and the rare moments they seem to arrive early. Oneiratory lets a person
 record a dream, "seal" it so its exact wording is cryptographically fixed to a point in time,
 and later prove the dream was written before the event it seemed to foretell. It also has a
 private journal (the Vault), a public ledger of resolved predictions (the Registry), and an
@@ -75,9 +85,11 @@ are local state: do not snapshot or deploy them.
 - `augur-registry.html` ... public ledger of resolved predictions + leaderboard + voting
 - `augur-commons.html` .... anonymous imageboard (boards, threads, greentext, quote-links, IDs)
 - `terms.html` ........... Terms, Privacy, Copyright, and Research & scholarly use
+- `support.html` ......... "Support AUGUR" donation page (linked from every public footer). Honest, no-obligation founder note; the "Donate to AUGUR" button href is a placeholder pending a real payment provider (see the TODO comment in the file).
 - `augur-admin.html` ..... moderator page (not in nav): admin-token gate, reports queue, remove/restore
-- `augur-theme.css` ...... the bright-blue theme (mirror of the inline theme in each page)
-- `augur-footer.js` ...... shared site footer injector
+- `augur.css` ............ THE shared design system (tokens, starfield body, full-width header/nav, container, buttons, panel/caption chrome, footer, epigraph). Every page links it; see DESIGN.md.
+- `augur-theme.css` ...... LEGACY, no longer linked (the retired bright-blue Commons theme). Superseded by `augur.css`.
+- `augur-footer.js` ...... LEGACY, no longer used (footer is now markup + `.site-footer` in `augur.css`).
 - `server/server.mjs` .... zero-dep Node backend (node:http + node:sqlite); serves site + /api
 - `server/db.mjs` ........ SQLite data layer + shared helpers (canon, poster ids, counters)
 - `server/schema.sql` .... the data model (maps 1:1 to augur-api-spec.md)
@@ -85,12 +97,17 @@ are local state: do not snapshot or deploy them.
 - `package.json` ......... `npm start` runs the backend on :8787
 
 ## Conventions
-- Vanilla HTML/CSS/JS. No framework, no build step. Fonts: Cormorant Garamond (display),
-  Hanken Grotesk (UI), Space Mono (data). 
-- Each page currently INLINES the theme in a `<style id="augur-theme">` block and inlines the
-  footer script, so single-file previews render. `augur-theme.css` / `augur-footer.js` are
-  kept in sync for when the site is hosted and can switch to shared linked files.
-- All colors live in the `:root` variables at the top of each page's `<style id="augur-theme">` block. The site uses two registers: **dreamcore** (bright lilac/sky pastels) for the loose half (Home, Vault, Commons, Seal) and **Gen X Soft Club** (cool frosted iMac-blue) for the evidentiary half (Registry, Verifier, Terms). Fonts: Quicksand (display), Inter (body), IBM Plex Mono (data).
+- Vanilla HTML/CSS/JS. No framework, no build step.
+- **One shared stylesheet: `augur.css`.** Every page links it (`<link rel="stylesheet" href="augur.css">`)
+  and it owns the design system: the `:root` tokens, the starfield body, the full-width sticky
+  `.site-header` + `.site-nav`, the `main` container, `.btn`/`.btn-primary`/`.btn-ghost`, the generic
+  `section`/`.cap`/`.in` panel chrome, `.intro`, `.epigraph`, and `.site-footer`. Page-specific styles
+  layer inline in each page's own `<style>` block. Change the system in ONE place; do not fork tokens
+  back into pages.
+- Fonts: **Georgia** (headings, wordmark, wonder), the **system-sans stack** (body/UI, retiring the old
+  Verdana), **monospace stack** (exact values, board furniture). One restrained **terracotta** accent
+  (`--warm` #bb6647) for primary actions; structural colour is violet/indigo. Softly-rounded 9px panels,
+  flat, no glow. Full palette + rules are in DESIGN.md ("The Small-Hours Observatory", evolved).
 
 ## The seal mechanic (shared, must stay identical across pages)
 The commitment is `SHA-256(canonical(payload))` where
@@ -114,12 +131,19 @@ without updating every page together.
   location leaks and no huge files. Stored `pending` in `commons_attachments`; **never shown on the
   board until a moderator approves it** (`GET /api/admin/attachments` queue + approve/reject in
   `augur-admin.html`). `GET /api/commons/attachments/:id` serves bytes only when approved; pending
-  posts show an "awaiting review" placeholder. The proper automated safety layer for a public
-  launch is a perceptual-hash CSAM service (Cloudflare CSAM tool / Microsoft PhotoDNA / Thorn) -
-  NOT a plain hash, and it must use an approved known-CSAM database + report matches to NCMEC.
+  posts show an "awaiting review" placeholder.
+- **Image safety scanning (`server/scan.mjs`):** two layers before pre-moderation. (1) A local
+  perceptual-hash blocklist: the client computes a 64-bit dHash; when a moderator REJECTS an image
+  its dHash is remembered (`image_blocklist`), and future uploads within Hamming distance 10 are
+  auto-blocked (blocks re-uploads of removed content only - NOT a CSAM database). (2) A pluggable
+  external scanner hook: if `AUGUR_SCAN_URL` (+ optional `AUGUR_SCAN_KEY`) is set, each upload is
+  POSTed `{mime,data}` and blocked on `{match:true}` - this is where you wire a REAL CSAM service
+  (Microsoft PhotoDNA / Cloudflare CSAM tool / Thorn Safer), which matches NCMEC's known-CSAM DB
+  and carries a legal duty to report. AUGUR cannot detect CSAM itself; the hook is the integration
+  point. Off by default (no-op). Admin page shows blocklist size + scanner on/off. See DEPLOY.md.
 - Deferred: IP/subnet bans (the anonymity model deliberately does not store raw IPs, so effective
-  banning needs a stored salted client hash - a privacy tradeoff to decide later); automated
-  CSAM scanning (needs an external approved service, see above).
+  banning needs a stored salted client hash - a privacy tradeoff to decide later); an actual
+  contracted CSAM provider behind the hook (needs your account + their vetting).
 
 ## Roadmap (make it real)
 1. **Persistence + backend.** A real datastore for Vault entries, Registry entries, and Commons
@@ -153,9 +177,15 @@ the impeccable design skill. Read them before UI work.
   no gradients/glass) in two registers by purpose: the serious Instrument (homepage, Registry,
   Verifier, Vault, About) and the anonymous Commons board. Sidecar: `.impeccable/design.json`.
 
-Migration note (2026-07-16): the earlier dreamcore/Soft Club theme was retired for looking
-AI-generated. `index.html` and `about.html` are already on the new faded-forum system; the
-functional pages (augur-seal-prototype, augur-verifier, augur-commons, augur-registry,
-augur-vault) still need re-skinning to it while preserving their real crypto/board JS. The
-old versions are archived in `_archive-dreamcore/`, and static look-references are the
-`_dir-*.html` files.
+Migration note (2026-08-02): the faded "Small-Hours Observatory" look was **evolved into one
+unified system** to shed the last "2010 web" tells (retired Verdana + the boxed centered nav +
+the Windows-9x bevel; added a full-width sticky indigo header, softly-rounded panels, a terracotta
+primary accent, and a fluid type ramp), and **extracted into the shared `augur.css`**. ALL pages
+now link it and share one identity: index, about, terms, augur-registry, augur-verifier,
+augur-seal-prototype, augur-vault, augur-commons, and augur-admin. The Commons was brought into the
+same system (shared header/type/tokens/containers/footer) while keeping its board character
+(slash masthead, `/slug/` heads, sage greentext, colour-hashed anon IDs, per-board tints). Two
+impeccable "absolute ban" side-stripes were removed in the process (the About pull-quote and the
+Commons/Vault version markers). All real crypto/board/E2E JS was preserved verbatim and re-verified
+end-to-end after the reskin. Earlier history: the pre-evolution faded pages, and before them the
+retired dreamcore/Soft Club theme (archived in `_archive-dreamcore/`, static refs `_dir-*.html`).

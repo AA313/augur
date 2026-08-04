@@ -145,8 +145,19 @@ CREATE TABLE IF NOT EXISTS commons_attachments (
   board      TEXT,
   mime       TEXT NOT NULL,           -- image/jpeg | image/png | image/webp
   data       TEXT NOT NULL,           -- base64 image bytes (already metadata-stripped + resized)
+  phash      TEXT,                    -- 64-bit dHash (hex), for blocklist matching
   status     TEXT NOT NULL DEFAULT 'pending',   -- pending | approved | rejected
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_att_status ON commons_attachments(status, created_at);
 CREATE INDEX IF NOT EXISTS idx_att_post ON commons_attachments(post_no);
+
+-- perceptual hashes of images a moderator has rejected; re-uploads that match are auto-blocked.
+-- This is NOT a CSAM database (which requires an approved external service); it only blocks
+-- re-uploads of content already removed on this instance.
+CREATE TABLE IF NOT EXISTS image_blocklist (
+  id         TEXT PRIMARY KEY,
+  phash      TEXT NOT NULL,
+  reason     TEXT,
+  created_at TEXT NOT NULL
+);

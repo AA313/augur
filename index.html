@@ -3,181 +3,146 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AUGUR · The Instrument</title>
+<title>Oneiratory · Prove you dreamed it first</title>
+<meta name="description" content="Record a dream, seal its exact wording to a moment in time, and prove you wrote it before the event it seemed to foretell. An instrument for dreams that arrive early, not an oracle.">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Social share preview. Set absolute og:url and og:image URLs (https://your-domain/...) once the site is deployed. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Oneiratory">
+<meta property="og:title" content="Oneiratory · Prove you dreamed it first">
+<meta property="og:description" content="Record a dream, seal its exact wording to a moment in time, and prove you wrote it before the event it seemed to foretell.">
+<meta property="og:image" content="share.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oneiratory · Prove you dreamed it first">
+<meta name="twitter:description" content="An instrument for dreams that arrive early. A way to prove anteriority, not an oracle.">
+<meta name="twitter:image" content="share.svg">
+<link rel="stylesheet" href="augur.css">
 <style>
-  :root{
-    --paper:#eeecf4;
-    --panel:#f6f5fa;
-    --panel-alt:#eae7f1;
-    --bar:#655d84;          /* muted dusty indigo */
-    --bar-ink:#efecf6;
-    --ink:#2f2a44;          /* readable body ink */
-    --ink-strong:#26213a;
-    --muted:#5f5878;
-    --faint:#948dae;
-    --line:#d1cbe0;
-    --line-soft:#e1dcec;
-    --link:#443a7a;
-    --hit:#5c7a54;          /* faded sage — proof holds */
-    --miss:#9a6d7c;         /* faded mauve — honest miss */
-    --sans:Verdana, Geneva, Tahoma, sans-serif;
-    --serif:Georgia, "Times New Roman", serif;
-    --mono:"Courier New", Courier, monospace;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    background:var(--paper);
-    background-image:
-      radial-gradient(1px 1px at 18% 24%, rgba(110,100,150,.18), transparent 60%),
-      radial-gradient(1px 1px at 72% 16%, rgba(110,100,150,.14), transparent 60%),
-      radial-gradient(1px 1px at 40% 70%, rgba(110,100,150,.12), transparent 60%),
-      radial-gradient(1px 1px at 86% 64%, rgba(110,100,150,.14), transparent 60%),
-      radial-gradient(1px 1px at 10% 82%, rgba(110,100,150,.10), transparent 60%);
-    color:var(--ink);
-    font-family:var(--sans);
-    font-size:12.5px;
-    line-height:1.6;
-  }
-  .wrap{max-width:800px;margin:0 auto;padding:22px 16px 64px}
-  a{color:var(--link)}
+  /* ---------- homepage-specific ---------- */
+  .hero{text-align:center;padding:clamp(40px,8vw,72px) 0 clamp(28px,5vw,40px)}
+  .hero .emblem{line-height:0;margin-bottom:18px}
+  .hero h1{font-family:var(--serif);font-weight:400;color:var(--ink-strong);
+    font-size:clamp(32px,7vw,54px);line-height:1.08;letter-spacing:-.01em;margin:0 auto;max-width:16ch;text-wrap:balance}
+  .hero .sub{font-family:var(--serif);font-style:italic;color:var(--muted);
+    font-size:clamp(15px,2.4vw,18px);margin:16px auto 0;max-width:44ch;line-height:1.55}
+  .hero .cta{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:26px}
 
-  /* masthead */
-  .mast{text-align:center;padding:16px 0 8px}
-  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
-  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
-  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
-  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);
-    display:flex;flex-wrap:wrap;justify-content:center}
-  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
-  nav a:hover{text-decoration:underline}
-  nav a.on{color:#3a2f70;background:var(--panel-alt)}
-
-  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
-  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;
-    text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
-  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
-  .in{padding:16px 18px}
-  h2{font-family:var(--serif);font-weight:normal;color:var(--ink-strong);font-size:22px;line-height:1.25;margin:0 0 10px}
-  p{margin:0 0 10px}
-  p:last-child{margin:0}
-  .lead{font-family:var(--serif);font-size:15.5px;line-height:1.6;color:#39335199}
-  .lead{color:#3a3352}
-  .em{color:#4c3f8e;font-style:italic}
-  .quietrule{border:none;border-top:1px solid var(--line-soft);margin:14px 0}
+  /* ---------- record so far ---------- */
+  .record{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);overflow:hidden;margin-bottom:22px}
+  .rlab{background:var(--bar);color:var(--bar-ink);font-family:var(--mono);font-size:11px;
+    letter-spacing:.12em;text-transform:uppercase;padding:9px 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .rlab .rt{color:#c9c3e2;text-transform:none;letter-spacing:.02em;font-family:var(--serif);font-style:italic;font-size:12px}
+  .rgrid{display:grid;grid-template-columns:repeat(4,1fr)}
+  @media(max-width:560px){.rgrid{grid-template-columns:1fr 1fr}}
+  .stat{padding:16px 18px;border-top:1px solid var(--line-soft);border-left:1px solid var(--line-soft)}
+  .stat:nth-child(-n+4){border-top:none}
+  .rgrid .stat:first-child,.rgrid .stat:nth-child(5){border-left:none}
+  @media(max-width:560px){
+    .rgrid .stat{border-top:1px solid var(--line-soft)}
+    .rgrid .stat:nth-child(odd){border-left:none}
+    .rgrid .stat:nth-child(1),.rgrid .stat:nth-child(2){border-top:none}
+  }
+  .stat b{display:block;font-family:var(--mono);font-size:24px;font-weight:700;color:var(--ink-strong);letter-spacing:-.01em;line-height:1}
+  .stat b.hit{color:var(--hit)} .stat b.miss{color:var(--miss)}
+  .stat span{display:block;margin-top:6px;font-size:12.5px;color:var(--muted)}
+  .rfoot{padding:12px 16px;border-top:1px solid var(--line-soft);font-size:13px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+  .rfoot .rate{color:var(--muted)} .rfoot .rate b{font-family:var(--mono);color:var(--ink-strong)}
 
   /* mechanism steps */
-  ol.steps{list-style:none;margin:6px 0 0;padding:0;counter-reset:s}
-  ol.steps > li{counter-increment:s;position:relative;padding:12px 0 12px 46px;border-top:1px solid var(--line-soft)}
-  ol.steps > li:first-child{border-top:none}
-  ol.steps > li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:12px;
-    font-family:var(--mono);font-size:15px;color:var(--faint);letter-spacing:.02em}
-  ol.steps h3{font-family:var(--serif);font-size:16px;color:var(--ink-strong);margin:0 0 4px;font-weight:normal}
-  ol.steps p{color:var(--muted);font-size:12px;margin:0}
-  ol.steps .key{color:#4c3f8e}
+  ol.steps{list-style:none;margin:2px 0 0;padding:0;counter-reset:s}
+  ol.steps > li{counter-increment:s;position:relative;padding:18px 0 18px 54px;border-top:1px solid var(--line-soft)}
+  ol.steps > li:first-child{border-top:none;padding-top:2px}
+  ol.steps > li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:16px;
+    font-family:var(--mono);font-size:15px;color:var(--warm);letter-spacing:.02em;font-weight:600}
+  ol.steps > li:first-child::before{top:0}
+  ol.steps h3{font-family:var(--serif);font-size:18px;color:var(--ink-strong);margin:0 0 5px;font-weight:400}
+  ol.steps p{color:var(--muted);font-size:14px;margin:0}
+  ol.steps .key{color:var(--accent);font-weight:500}
 
-  /* proof / evidence cards */
-  .proofgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
-  @media(max-width:620px){.proofgrid{grid-template-columns:1fr}}
-  .proof{border:1px solid var(--line);background:#fbfafd}
-  .proof .ph{font-family:var(--mono);font-size:11px;color:var(--muted);padding:7px 11px;
-    border-bottom:1px solid var(--line-soft);background:var(--panel-alt);letter-spacing:.02em}
-  .proof .pin{padding:11px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink);line-height:1.85}
+  /* evidence cards */
+  .proofgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:600px){.proofgrid{grid-template-columns:1fr}}
+  .proof{border:1px solid var(--line);background:#fcfbfe;border-radius:var(--r-sm);overflow:hidden}
+  .proof .ph{font-family:var(--mono);font-size:11px;color:var(--muted);padding:9px 13px;
+    border-bottom:1px solid var(--line-soft);background:var(--panel-2);letter-spacing:.03em}
+  .proof .pin{padding:13px;font-family:var(--mono);font-size:12px;color:var(--ink);line-height:1.95}
   .proof .k{color:var(--faint)}
-  .proof .hidden{color:var(--faint);letter-spacing:.12em}
-  .proof .cond{color:#3a3352;font-family:var(--serif);font-style:italic;font-size:12.5px}
-  .proof .hash{color:#5a4b9c;word-break:break-all}
-  .proof .status{padding:9px 12px;border-top:1px solid var(--line-soft);font-family:var(--sans);font-size:11.5px;line-height:1.6}
+  .proof .hidden{color:var(--faint);letter-spacing:.1em}
+  .proof .cond{color:#332f4c;font-family:var(--serif);font-style:italic;font-size:13.5px}
+  .proof .hash{color:var(--accent);word-break:break-all}
+  .proof .status{padding:11px 13px;border-top:1px solid var(--line-soft);font-size:13px;line-height:1.55}
   .proof .status .dot{font-size:13px;vertical-align:-1px}
-  .proof.h .status{background:#eef2ea}
-  .proof.h .status .lab{color:var(--hit);font-weight:bold;letter-spacing:.04em}
+  .proof.h .status{background:#eef3ec}
+  .proof.h .status .lab{color:var(--hit);font-weight:700;letter-spacing:.03em}
   .proof.h .status .dot{color:var(--hit)}
-  .proof.m .status{background:#f2ecef}
-  .proof.m .status .lab{color:var(--miss);font-weight:bold;letter-spacing:.04em}
+  .proof.m .status{background:#f3ecef}
+  .proof.m .status .lab{color:var(--miss);font-weight:700;letter-spacing:.03em}
   .proof.m .status .dot{color:var(--miss)}
-  .proof .status .why{color:var(--muted);display:block;margin-top:2px}
+  .proof .status .why{color:var(--muted);display:block;margin-top:3px}
 
   /* not-a-psychic points */
-  ul.points{list-style:none;margin:6px 0 0;padding:0}
-  ul.points li{padding:9px 0 9px 22px;border-top:1px solid var(--line-soft);position:relative;color:var(--muted);font-size:12px}
-  ul.points li:first-child{border-top:none}
-  ul.points li::before{content:"\203A";position:absolute;left:4px;top:8px;color:var(--faint);font-size:14px}
-  ul.points li b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:13px}
+  ul.points{list-style:none;margin:0;padding:0}
+  ul.points li{padding:14px 0 14px 24px;border-top:1px solid var(--line-soft);position:relative;color:var(--muted);font-size:14px;line-height:1.6}
+  ul.points li:first-child{border-top:none;padding-top:2px}
+  ul.points li::before{content:"\203A";position:absolute;left:3px;top:13px;color:var(--warm);font-size:16px}
+  ul.points li:first-child::before{top:1px}
+  ul.points li b{color:var(--ink-strong);font-weight:400;font-family:var(--serif);font-size:15.5px}
 
   /* two rooms */
-  .rooms{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:620px){.rooms{grid-template-columns:1fr}}
-  .room{border:1px solid var(--line);padding:13px 14px;background:#fbfafd}
-  .room .rk{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
-  .room h4{font-family:var(--serif);font-weight:normal;font-size:16px;color:var(--ink-strong);margin:0 0 6px}
-  .room p{font-size:11.5px;color:var(--muted);margin:0 0 9px}
-  .room a{font-size:11.5px}
+  .rooms{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:600px){.rooms{grid-template-columns:1fr}}
+  .room{border:1px solid var(--line);border-radius:var(--r-sm);padding:18px;background:#fcfbfe}
+  .room .rk{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .room h4{font-family:var(--serif);font-weight:400;font-size:18px;color:var(--ink-strong);margin:0 0 8px}
+  .room p{font-size:13.5px;color:var(--muted);margin:0 0 12px;line-height:1.6}
+  .room a{font-size:13.5px;font-weight:600;text-decoration:none}
+  .room a:hover{text-decoration:underline}
 
-  .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
-  .oldbtn{font-family:var(--sans);font-size:12px;color:#39306b;text-decoration:none;
-    border:1px solid var(--line);border-top-color:#fff;border-left-color:#fff;background:#e7e2f1;padding:8px 16px}
-  .oldbtn:hover{background:#efeaf8;color:#2b2258}
-  .oldbtn.q{background:#f2f0f7}
+  .cta-band{text-align:center}
+  .cta-band .in{padding:clamp(28px,5vw,44px)}
+  .cta-band h2{margin-bottom:8px}
+  .cta-band p{color:var(--muted);max-width:46ch;margin:0 auto 18px}
+  .cta-band .row{display:flex;gap:11px;flex-wrap:wrap;justify-content:center}
 
-  .epigraph{font-family:var(--serif);font-style:italic;color:var(--faint);text-align:center;font-size:13px;margin:24px auto 8px;max-width:54ch;line-height:1.7}
-  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
-  .sitefoot a{color:var(--muted)}
-  .mast .word a{color:inherit;text-decoration:none}
-  .mast .emblem{line-height:0;margin-bottom:4px}
-  .intro{margin:2px 0 20px;padding:0 2px}
-  .intro p{font-family:var(--serif);font-size:16px;line-height:1.62;color:#3a3352;max-width:68ch;margin:0}
-  .intro p + p{margin-top:12px}
-  .intro b{color:var(--ink-strong)}
+  .epigraph{font-family:var(--serif);font-style:italic;color:var(--muted);text-align:center;
+    font-size:clamp(14px,2vw,16px);margin:36px auto 10px;max-width:52ch;line-height:1.7}
 
-  /* the record so far (mirrors the Registry's published figures) */
-  .record{border:1px solid var(--line);background:var(--panel);margin:0 0 18px}
-  .record .rlab{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
-  .record .rlab .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
-  .record .rnums{display:flex;flex-wrap:wrap;gap:9px 26px;padding:13px 16px 11px}
-  .record .rnums span{font-size:12px;color:var(--muted)}
-  .record .rnums b{font-family:var(--mono);font-size:16px;color:var(--ink-strong);font-weight:bold;letter-spacing:.01em}
-  .record .rnums b.hit{color:var(--hit)}
-  .record .rnums b.miss{color:var(--miss)}
-  .record .rnums .sep{color:var(--faint);margin:0 3px}
-  .record .rmore{padding:0 16px 12px;font-size:11.5px}
-  @media(min-width:900px){ .mast{padding-top:26px} .mast .emblem svg{width:56px;height:56px} }
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
 <body>
-  <div class="wrap">
-
-    <div class="mast">
-      <div class="emblem" aria-hidden="true"><svg viewBox="0 0 60 60" width="48" height="48"><circle cx="30" cy="30" r="24" fill="none" stroke="#948dae" stroke-width="1.2"/><circle cx="30" cy="30" r="18" fill="none" stroke="#cbc5db" stroke-width="1"/><path d="M30 11 L33.2 26.8 L49 30 L33.2 33.2 L30 49 L26.8 33.2 L11 30 L26.8 26.8 Z" fill="#8078a6"/><circle cx="42.7" cy="17.3" r="1.3" fill="#948dae"/><circle cx="42.7" cy="42.7" r="1.3" fill="#948dae"/><circle cx="17.3" cy="42.7" r="1.3" fill="#948dae"/><circle cx="17.3" cy="17.3" r="1.3" fill="#948dae"/></svg></div>
-      <div class="word"><a href="index.html">AUGUR</a></div>
-      <div class="tag">an instrument for dreams that arrive early</div>
-      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="on" href="index.html">The instrument</a>
+        <a href="about.html">About</a>
+        <a href="augur-registry.html">Registry</a>
+        <a href="augur-commons.html">Commons</a>
+        <a href="augur-vault.html">Vault</a>
+        <a href="augur-verifier.html">Verify</a>
+        <a href="augur-seal-prototype.html">Seal a dream</a>
+      </nav>
     </div>
+  </header>
 
-    <nav>
-      <a class="on" href="index.html">The instrument</a>
-      <a href="about.html">About</a>
-      <a href="augur-registry.html">The Registry</a>
-      <a href="augur-commons.html">The Commons</a>
-      <a href="augur-vault.html">The Vault</a>
-      <a href="augur-verifier.html">Verify a proof</a>
-      <a href="augur-seal-prototype.html">Seal a dream</a>
-    </nav>
+  <main>
+    <section class="hero" style="border:none;background:none;overflow:visible">
+      <div class="emblem" aria-hidden="true"><svg viewBox="0 0 60 60" width="60" height="60"><circle cx="30" cy="30" r="24" fill="none" stroke="#948dae" stroke-width="1.2"/><circle cx="30" cy="30" r="18" fill="none" stroke="#cbc5db" stroke-width="1"/><path d="M30 11 L33.2 26.8 L49 30 L33.2 33.2 L30 49 L26.8 33.2 L11 30 L26.8 26.8 Z" fill="#7a72a2"/><circle cx="42.7" cy="17.3" r="1.3" fill="#948dae"/><circle cx="42.7" cy="42.7" r="1.3" fill="#948dae"/><circle cx="17.3" cy="42.7" r="1.3" fill="#948dae"/><circle cx="17.3" cy="17.3" r="1.3" fill="#948dae"/></svg></div>
+      <h1>Prove you dreamed it first.</h1>
+      <p class="sub">An instrument for dreams that arrive early. A way to prove anteriority, not an oracle.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="augur-seal-prototype.html">Seal a dream</a>
+        <a class="btn btn-ghost" href="augur-verifier.html">Verify a proof yourself</a>
+      </div>
+    </section>
 
     <div class="intro">
-      <p><b>AUGUR is a place to record a dream and prove you wrote it down before the event it seemed to foretell.</b> You write the dream, say in advance what would count as it coming true, and seal it: its exact words are locked to this moment in time. If the event later happens, the proof is already waiting, and anyone can check it themselves.</p>
-      <p>AUGUR takes no side on whether dreams can see ahead. It simply keeps an honest record, with the misses shown next to the hits. But for the first time it turns a question people have only ever believed or dismissed into one that can actually be tested, and if a large enough honest record ever showed these dreams landing more often than chance can explain, the implications for how we understand the mind, memory, and time would be profound.</p>
-    </div>
-
-    <!-- THE RECORD SO FAR -->
-    <div class="record">
-      <div class="rlab">The record so far<span class="rt">the same figures the Registry publishes</span></div>
-      <div class="rnums">
-        <span><b id="recSealed">9</b> dreams sealed</span>
-        <span><b class="hit" id="recHits">5</b> hits <span class="sep">&middot;</span> <b class="miss" id="recMiss">2</b> misses, among those resolved</span>
-        <span><b id="recRate">71%</b> hit rate on resolved</span>
-        <span><b id="recOpen">2</b> still sealed, awaiting the event</span>
-      </div>
-      <div class="rmore"><a href="augur-registry.html">Read the full ledger, hits and misses alike &rarr;</a></div>
+      <p><b>Oneiratory is a place to record a dream and prove you wrote it down before the event it seemed to foretell.</b> You write the dream, say in advance what would count as it coming true, and seal it: its exact words are locked to this moment in time. If the event later happens, the proof is already waiting, and anyone can check it themselves.</p>
+      <p>Oneiratory takes no side on whether dreams can see ahead. It simply keeps an honest record, with the misses shown next to the hits. But for the first time it turns a question people have only ever believed or dismissed into one that can actually be tested, and if a large enough honest record ever showed these dreams landing more often than chance can explain, the implications for how we understand the mind, memory, and time would be profound.</p>
     </div>
 
     <!-- THESIS -->
@@ -186,7 +151,7 @@
       <div class="in">
         <h2>A premonition only counts if it was written down first.</h2>
         <p class="lead">Everyone has felt it: a dream that seems to land days before the event it described. But by the time the event arrives, memory has softened, and no one can tell whether the dream truly came first or whether the mind quietly rewrote it after. That gap is where every claim of foresight collapses.</p>
-        <p>AUGUR is built to close that gap and to answer one narrow, testable question: <span class="em">did the words of this dream provably exist, unchanged, before the event it seemed to foretell?</span> Nothing more mystical than that, and nothing less rigorous. We take no position on why a dream might arrive early. We only make sure that when one does, it can be proven, and when it does not, that is on the record too.</p>
+        <p>Oneiratory is built to close that gap and to answer one narrow, testable question: <span class="em">did the words of this dream provably exist, unchanged, before the event it seemed to foretell?</span> Nothing more mystical than that, and nothing less rigorous. We take no position on why a dream might arrive early. We only make sure that when one does, it can be proven, and when it does not, that is on the record too.</p>
       </div>
     </section>
 
@@ -219,7 +184,7 @@
     <section>
       <div class="cap">A worked example<span class="rt">how a dream is adjudicated</span></div>
       <div class="in">
-        <p style="color:var(--muted);margin-bottom:13px">Two sealed dreams. One resolved as a hit, one as a miss. Both are proven, and both are permanent. The instrument does not decide whether a dream is meaningful, only whether the call was made in advance and whether the declared condition was met.</p>
+        <p style="color:var(--muted);margin-bottom:16px">Two sealed dreams. One resolved as a hit, one as a miss. Both are proven, and both are permanent. The instrument does not decide whether a dream is meaningful, only whether the call was made in advance and whether the declared condition was met.</p>
         <div class="proofgrid">
 
           <div class="proof h">
@@ -259,9 +224,9 @@
       <div class="cap">Why this is an instrument, not a psychic app</div>
       <div class="in">
         <ul class="points">
-          <li><b>You declare the target before the shot.</b> The oldest trick in prophecy is the vague dream stretched afterwards to fit whatever happened. AUGUR forbids it: the success condition is committed up front and sealed.</li>
+          <li><b>You declare the target before the shot.</b> The oldest trick in prophecy is the vague dream stretched afterwards to fit whatever happened. Oneiratory forbids it: the success condition is committed up front and sealed.</li>
           <li><b>The misses are public.</b> A ledger that only shows hits is advertising. The Registry shows the failures next to the successes, because the failures are what make the successes mean anything.</li>
-          <li><b>A stranger can check it.</b> Every proof stands on a recomputable hash and a fixed timestamp. You never have to trust AUGUR, or the dreamer. You can verify it yourself, offline.</li>
+          <li><b>A stranger can check it.</b> Every proof stands on a recomputable hash and a fixed timestamp. You never have to trust Oneiratory, or the dreamer. You can verify it yourself, offline.</li>
         </ul>
       </div>
     </section>
@@ -272,7 +237,7 @@
       <div class="in">
         <p class="lead">Scattered anecdotes have never been able to settle whether dreams can reach into what is coming. The evidence was always unprovable: a story retold after the fact, with no way to date it and no way to count the times it failed.</p>
         <p>A sealed registry changes what is possible to study. Every entry is a <span class="em">pre-registered prediction</span> with a declared condition, a fixed timestamp, and a recorded outcome, hit or miss. Kept at scale, that stops being a pile of stories and becomes a dataset: falsifiable, time-anchored, and open to anyone who wants to measure it.</p>
-        <p>For researchers of dreams, memory, and cognition, that opens real questions. How often do pre-registered dream predictions actually resolve as hits, against what chance alone would give? Do certain kinds of dream, or certain dreamers, resolve more often than others? How much of memory&rsquo;s certainty about a dream is built only after the event? AUGUR cannot answer these on its own, but it can supply the one thing this question has always lacked: honest, dated, verifiable data. Anonymised submissions may be used in research and cited in scholarly work.</p>
+        <p>For researchers of dreams, memory, and cognition, that opens real questions. How often do pre-registered dream predictions actually resolve as hits, against what chance alone would give? Do certain kinds of dream, or certain dreamers, resolve more often than others? How much of memory&rsquo;s certainty about a dream is built only after the event? Oneiratory cannot answer these on its own, but it can supply the one thing this question has always lacked: honest, dated, verifiable data. Anonymised submissions may be used in research and cited in scholarly work.</p>
       </div>
     </section>
 
@@ -297,38 +262,51 @@
       </div>
     </section>
 
+    <!-- THE RECORD SO FAR (the tool's track record, kept near the foot) -->
+    <div class="record">
+      <div class="rlab">The record so far<span class="rt">example figures for now, mirrored from the Registry</span></div>
+      <div class="rgrid">
+        <div class="stat"><b id="recSealed">9</b><span>dreams sealed</span></div>
+        <div class="stat"><b class="hit" id="recHits">5</b><span>resolved as hits</span></div>
+        <div class="stat"><b class="miss" id="recMiss">2</b><span>honest misses</span></div>
+        <div class="stat"><b id="recOpen">2</b><span>still sealed, awaiting</span></div>
+      </div>
+      <div class="rfoot">
+        <span class="rate"><b id="recRate">71%</b> hit rate on resolved</span>
+        <a href="augur-registry.html">Read the full ledger, hits and misses alike &rarr;</a>
+      </div>
+    </div>
+
     <!-- CTA -->
-    <section>
-      <div class="in" style="text-align:center">
-        <h2 style="margin-bottom:6px">Seal one tonight.</h2>
-        <p style="color:var(--muted);max-width:48ch;margin:0 auto 14px">The next dream you cannot shake might be worth proving. It takes a minute, and the proof lasts as long as you keep it.</p>
-        <div class="actions" style="justify-content:center">
-          <a class="oldbtn" href="augur-seal-prototype.html">Seal a dream</a>
-          <a class="oldbtn q" href="augur-verifier.html">Check a proof yourself</a>
+    <section class="cta-band">
+      <div class="in">
+        <h2>Seal one tonight.</h2>
+        <p>The next dream you cannot shake might be worth proving. It takes a minute, and the proof lasts as long as you keep it.</p>
+        <div class="row">
+          <a class="btn btn-primary" href="augur-seal-prototype.html">Seal a dream</a>
+          <a class="btn btn-ghost" href="augur-verifier.html">Check a proof yourself</a>
         </div>
       </div>
     </section>
 
     <div class="epigraph">&ldquo;The instrument does not tell you what a dream means. It only refuses to let the question of whether it came true stay unanswerable.&rdquo;</div>
+  </main>
 
-    <div class="sitefoot">
-      AUGUR &middot; the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps (confirms over hours)<br>
-      <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="terms.html#copyright">Copyright</a> &middot; contact@augur.app
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps</p>
+      <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="terms.html#copyright">Copyright</a> &middot; <a href="support.html">Support Oneiratory</a> &middot; contact@oneiratory.com
     </div>
+  </footer>
 
-  </div>
   <script>
-  /* keep "the record so far" in step with the live Registry when served from the backend.
-     Falls back to the static seed figures if the API is not reachable (e.g. opened as a plain file). */
+  /* keep "the record so far" in step with the live Registry when served from the backend. */
   (function(){
     fetch("/api/registry/stats").then(function(r){return r.ok?r.json():null;}).then(function(s){
       if(!s) return;
       var set=function(id,v){var el=document.getElementById(id);if(el&&v!=null)el.textContent=v;};
-      set("recSealed", s.sealed);
-      set("recHits", s.hits);
-      set("recMiss", s.misses);
-      set("recRate", s.hit_rate!=null? s.hit_rate+"%" : "–");
-      set("recOpen", s.pending);
+      set("recSealed", s.sealed); set("recHits", s.hits); set("recMiss", s.misses);
+      set("recRate", s.hit_rate!=null? s.hit_rate+"%" : "–"); set("recOpen", s.pending);
     }).catch(function(){});
   })();
   </script>

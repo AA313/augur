@@ -1,113 +1,944 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-16T00:00:00Z",
-  "title": "Design System: AUGUR",
+  "generatedAt": "2026-08-04T02:56:54.878Z",
+  "title": "Design System: Oneiratory",
   "extensions": {
     "colorMeta": {
-      "bar":          { "role": "primary",  "displayName": "Dusty Indigo",     "canonical": "#655d84", "tonalRamp": ["#191627", "#26223a", "#33304a", "#494367", "#655d84", "#8880a4", "#b1aac6", "#dcd8e6"] },
-      "link":         { "role": "primary",  "displayName": "Muted Violet Link", "canonical": "#5a4b9c", "tonalRamp": ["#171232", "#241c4c", "#332866", "#463a86", "#5a4b9c", "#7d6fb6", "#a99fd0", "#d7d0ea"] },
-      "commons-name": { "role": "secondary","displayName": "Faded Teal",        "canonical": "#5f8a80", "tonalRamp": ["#182421", "#243631", "#324a43", "#456359", "#5f8a80", "#83a89f", "#aac6bf", "#d3e3df"] },
-      "commons-green":{ "role": "secondary","displayName": "Dusty Sage (greentext)", "canonical": "#79895f", "tonalRamp": ["#20241a", "#313827", "#424c34", "#5b6746", "#79895f", "#9aa885", "#bfc9ac", "#e0e6d5"] },
-      "hit":          { "role": "tertiary", "displayName": "Faded Sage (hit)",  "canonical": "#5c7a54", "tonalRamp": ["#161e14", "#22301f", "#2f412a", "#42593a", "#5c7a54", "#7f9a78", "#a7bca2", "#d2ddce"] },
-      "miss":         { "role": "tertiary", "displayName": "Faded Mauve (miss)", "canonical": "#9a6d7c", "tonalRamp": ["#281920", "#3d2831", "#523743", "#744d5c", "#9a6d7c", "#b58f9b", "#cfb4bd", "#e8dae0"] },
-      "seal":         { "role": "tertiary", "displayName": "Seal Indigo",       "canonical": "#5f5896", "tonalRamp": ["#171531", "#24214c", "#322e66", "#454087", "#5f5896", "#827bb2", "#aca6cd", "#d8d5e8"] },
-      "ink":          { "role": "neutral",  "displayName": "Ink",              "canonical": "#2f2a44", "tonalRamp": ["#171528", "#211d33", "#2f2a44", "#453e60", "#635b82", "#8b84a4", "#b6b1c8", "#e2dfea"] },
-      "muted":        { "role": "neutral",  "displayName": "Muted",            "canonical": "#6f688c", "tonalRamp": ["#221f2c", "#332f41", "#453f57", "#575070", "#6f688c", "#928bab", "#b8b2c9", "#e0dde8"] },
-      "faint":        { "role": "neutral",  "displayName": "Faint (chrome only)", "canonical": "#948dae", "tonalRamp": ["#2a2836", "#3d3a4e", "#524d68", "#6f6889", "#948dae", "#aca6c2", "#c6c1d6", "#e6e3ee"] },
-      "paper":        { "role": "neutral",  "displayName": "Dusk Paper",       "canonical": "#eeecf4", "tonalRamp": ["#2c2940", "#453f63", "#6a6293", "#9c94c3", "#cbc5e5", "#eeecf4", "#f6f5fa", "#ffffff"] },
-      "commons-mist": { "role": "neutral",  "displayName": "Commons Mist",     "canonical": "#e8e4ec", "tonalRamp": ["#2a2732", "#41394b", "#63586f", "#93889f", "#c6bccf", "#e8e4ec", "#f2eef4", "#ffffff"] }
+      "bar": {
+        "role": "primary",
+        "displayName": "Header Indigo",
+        "canonical": "#544d7c",
+        "tonalRamp": [
+          "#201d2f",
+          "#373352",
+          "#4f4874",
+          "#6b629d",
+          "#918bb7",
+          "#b2adcc",
+          "#d2d0e2",
+          "#edecf3"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Structural Violet",
+        "canonical": "#574896",
+        "tonalRamp": [
+          "#1e1934",
+          "#342b5a",
+          "#4a3d80",
+          "#6453ac",
+          "#8c80c2",
+          "#aea5d4",
+          "#d0cbe6",
+          "#eceaf5"
+        ]
+      },
+      "link": {
+        "role": "primary",
+        "displayName": "Structural Violet (link)",
+        "canonical": "#574896",
+        "tonalRamp": [
+          "#1e1934",
+          "#342b5a",
+          "#4a3d80",
+          "#6453ac",
+          "#8c80c2",
+          "#aea5d4",
+          "#d0cbe6",
+          "#eceaf5"
+        ]
+      },
+      "warm": {
+        "role": "secondary",
+        "displayName": "Terracotta",
+        "canonical": "#bb6647",
+        "tonalRamp": [
+          "#381e15",
+          "#613424",
+          "#8a4a33",
+          "#ba6445",
+          "#cc8c75",
+          "#dbae9e",
+          "#ead1c7",
+          "#f7ece9"
+        ]
+      },
+      "warm-soft": {
+        "role": "secondary",
+        "displayName": "Terracotta Soft",
+        "canonical": "#f4e6df",
+        "tonalRamp": [
+          "#392014",
+          "#633822",
+          "#8c4f30",
+          "#be6b41",
+          "#cf9173",
+          "#ddb29c",
+          "#ebd3c6",
+          "#f7ede8"
+        ]
+      },
+      "hit": {
+        "role": "tertiary",
+        "displayName": "Sage (hit / greentext)",
+        "canonical": "#587552",
+        "tonalRamp": [
+          "#222d20",
+          "#3b4e37",
+          "#536f4e",
+          "#719669",
+          "#96b190",
+          "#b5c8b1",
+          "#d4dfd2",
+          "#eef2ed"
+        ]
+      },
+      "miss": {
+        "role": "tertiary",
+        "displayName": "Mauve (miss)",
+        "canonical": "#95687a",
+        "tonalRamp": [
+          "#2d1f25",
+          "#4e3740",
+          "#6f4e5b",
+          "#96697b",
+          "#b1909d",
+          "#c8b1ba",
+          "#e0d2d7",
+          "#f2edef"
+        ]
+      },
+      "seal": {
+        "role": "tertiary",
+        "displayName": "Seal Indigo",
+        "canonical": "#5f5896",
+        "tonalRamp": [
+          "#1f1c30",
+          "#353154",
+          "#4b4677",
+          "#665ea1",
+          "#8e88b9",
+          "#afabce",
+          "#d1cfe3",
+          "#edecf4"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#282440",
+        "tonalRamp": [
+          "#1f1c31",
+          "#353055",
+          "#4b4479",
+          "#665ca3",
+          "#8e86bb",
+          "#afaacf",
+          "#d1cee3",
+          "#edebf4"
+        ]
+      },
+      "ink-strong": {
+        "role": "neutral",
+        "displayName": "Ink Strong",
+        "canonical": "#1f1b30",
+        "tonalRamp": [
+          "#201c31",
+          "#373055",
+          "#4e4479",
+          "#695ca3",
+          "#9086bb",
+          "#b1aacf",
+          "#d2cee3",
+          "#edebf4"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#5c567c",
+        "tonalRamp": [
+          "#221f2d",
+          "#3a364e",
+          "#534d6f",
+          "#706897",
+          "#9590b2",
+          "#b4b1c9",
+          "#d4d2e0",
+          "#eeedf2"
+        ]
+      },
+      "faint": {
+        "role": "neutral",
+        "displayName": "Faint (chrome only)",
+        "canonical": "#948dae",
+        "tonalRamp": [
+          "#23202d",
+          "#3c374e",
+          "#554e6e",
+          "#736a95",
+          "#9791b1",
+          "#b6b1c8",
+          "#d5d2df",
+          "#eeedf2"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Dusk Paper",
+        "canonical": "#edecf4",
+        "tonalRamp": [
+          "#1f1c30",
+          "#353154",
+          "#4b4578",
+          "#665da2",
+          "#8e87ba",
+          "#afabce",
+          "#d1cfe3",
+          "#edecf4"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "#f8f7fc",
+        "tonalRamp": [
+          "#1c1538",
+          "#302460",
+          "#453389",
+          "#5d46b9",
+          "#8776cc",
+          "#ab9fdb",
+          "#cec7ea",
+          "#ece9f7"
+        ]
+      },
+      "panel-2": {
+        "role": "neutral",
+        "displayName": "Panel Alt",
+        "canonical": "#efedf7",
+        "tonalRamp": [
+          "#1d1835",
+          "#33295c",
+          "#493a83",
+          "#624eb1",
+          "#8b7cc5",
+          "#ada3d6",
+          "#d0cae7",
+          "#eceaf6"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#dad5e7",
+        "tonalRamp": [
+          "#221c31",
+          "#3a3054",
+          "#534578",
+          "#705da2",
+          "#9587ba",
+          "#b5abcf",
+          "#d4cee3",
+          "#eeecf4"
+        ]
+      },
+      "line-soft": {
+        "role": "neutral",
+        "displayName": "Line Soft",
+        "canonical": "#e7e3f1",
+        "tonalRamp": [
+          "#211a33",
+          "#392c58",
+          "#513f7e",
+          "#6d55aa",
+          "#9381c0",
+          "#b3a7d3",
+          "#d3cce6",
+          "#eeebf5"
+        ]
+      },
+      "bar-ink": {
+        "role": "neutral",
+        "displayName": "Bar Ink",
+        "canonical": "#f1eff9",
+        "tonalRamp": [
+          "#1c1538",
+          "#302460",
+          "#453389",
+          "#5d46b9",
+          "#8776cc",
+          "#ab9fdb",
+          "#cec7ea",
+          "#ece9f7"
+        ]
+      },
+      "ink-tint": {
+        "role": "neutral",
+        "displayName": "Ink Tint",
+        "canonical": "#3a3352",
+        "tonalRamp": [
+          "#211d2f",
+          "#3a3352",
+          "#524874",
+          "#6f629d",
+          "#958bb7",
+          "#b4adcc",
+          "#d4d0e2",
+          "#eeecf3"
+        ]
+      },
+      "ink-tint-cool": {
+        "role": "neutral",
+        "displayName": "Ink Tint (cool)",
+        "canonical": "#3a3556",
+        "tonalRamp": [
+          "#201d2f",
+          "#373352",
+          "#4f4875",
+          "#6a619e",
+          "#918ab7",
+          "#b2adcc",
+          "#d2d0e2",
+          "#edecf3"
+        ]
+      },
+      "warm-ink": {
+        "role": "neutral",
+        "displayName": "Warm Ink",
+        "canonical": "#5a4636",
+        "tonalRamp": [
+          "#30251d",
+          "#534032",
+          "#765c47",
+          "#9f7c60",
+          "#b89e89",
+          "#cdbbac",
+          "#e2d8cf",
+          "#f4efec"
+        ]
+      },
+      "link-visited": {
+        "role": "primary",
+        "displayName": "Visited Violet",
+        "canonical": "#84739f",
+        "tonalRamp": [
+          "#251f2d",
+          "#3f364f",
+          "#5a4d70",
+          "#7a6897",
+          "#9d8fb2",
+          "#bab0c9",
+          "#d7d2e0",
+          "#efedf3"
+        ]
+      },
+      "warm-border": {
+        "role": "secondary",
+        "displayName": "Terracotta Border",
+        "canonical": "#a5583b",
+        "tonalRamp": [
+          "#381e14",
+          "#623423",
+          "#8b4a32",
+          "#bc6443",
+          "#cd8c74",
+          "#dcae9d",
+          "#ebd1c7",
+          "#f7ece8"
+        ]
+      },
+      "warm-hover": {
+        "role": "secondary",
+        "displayName": "Terracotta Hover",
+        "canonical": "#a95a3d",
+        "tonalRamp": [
+          "#381e14",
+          "#613423",
+          "#8b4a32",
+          "#bb6444",
+          "#cd8c74",
+          "#dcae9e",
+          "#ebd0c7",
+          "#f7ece9"
+        ]
+      },
+      "board-came-true": {
+        "role": "tertiary",
+        "displayName": "Board · Came True",
+        "canonical": "#4b6b45",
+        "tonalRamp": [
+          "#212f1e",
+          "#395134",
+          "#50734a",
+          "#6d9b64",
+          "#93b58c",
+          "#b3cbae",
+          "#d3e1d0",
+          "#edf3ec"
+        ]
+      },
+      "board-recurring": {
+        "role": "tertiary",
+        "displayName": "Board · Recurring",
+        "canonical": "#54579a",
+        "tonalRamp": [
+          "#1b1c31",
+          "#2f3056",
+          "#43457a",
+          "#5a5da5",
+          "#8587bc",
+          "#a9abd0",
+          "#cecee4",
+          "#ebecf4"
+        ]
+      },
+      "board-lucid": {
+        "role": "tertiary",
+        "displayName": "Board · Lucid",
+        "canonical": "#6b5aa0",
+        "tonalRamp": [
+          "#211c31",
+          "#393055",
+          "#514479",
+          "#6d5ca3",
+          "#9386bb",
+          "#b3aacf",
+          "#d3cee3",
+          "#edebf4"
+        ]
+      },
+      "board-discussion": {
+        "role": "tertiary",
+        "displayName": "Board · Discussion",
+        "canonical": "#3f7d6e",
+        "tonalRamp": [
+          "#1a332d",
+          "#2c584e",
+          "#3f7d6e",
+          "#55aa95",
+          "#82c0b1",
+          "#a7d3c8",
+          "#cce5df",
+          "#ebf5f2"
+        ]
+      },
+      "board-nightmares": {
+        "role": "tertiary",
+        "displayName": "Board · Nightmares",
+        "canonical": "#8a4f62",
+        "tonalRamp": [
+          "#311c23",
+          "#54303c",
+          "#784555",
+          "#a25d73",
+          "#ba8798",
+          "#cfabb6",
+          "#e3ced5",
+          "#f4ecee"
+        ]
+      },
+      "board-altered-line": {
+        "role": "tertiary",
+        "displayName": "Board · Altered line",
+        "canonical": "#eed8c9",
+        "tonalRamp": [
+          "#3a2212",
+          "#653c20",
+          "#90552d",
+          "#c2733d",
+          "#d2976f",
+          "#dfb69a",
+          "#edd5c5",
+          "#f8eee8"
+        ]
+      },
+      "mic-recording": {
+        "role": "tertiary",
+        "displayName": "Mic Recording",
+        "canonical": "#834a5a",
+        "tonalRamp": [
+          "#311c22",
+          "#55303a",
+          "#794453",
+          "#a35c70",
+          "#bb8695",
+          "#cfaab5",
+          "#e3ced4",
+          "#f4ebee"
+        ]
+      },
+      "ok-tint": {
+        "role": "tertiary",
+        "displayName": "Verified Tint",
+        "canonical": "#eef3ec",
+        "tonalRamp": [
+          "#232f1e",
+          "#3c5133",
+          "#557449",
+          "#739c63",
+          "#98b68b",
+          "#b6ccae",
+          "#d5e1d0",
+          "#eef3ec"
+        ]
+      },
+      "error-wash": {
+        "role": "neutral",
+        "displayName": "Error Wash",
+        "canonical": "#fdeeee",
+        "tonalRamp": [
+          "#440808",
+          "#770e0e",
+          "#a91414",
+          "#e41b1b",
+          "#eb5656",
+          "#f18888",
+          "#f7bbbb",
+          "#fce4e4"
+        ]
+      },
+      "error-line": {
+        "role": "neutral",
+        "displayName": "Error Line",
+        "canonical": "#f0cccc",
+        "tonalRamp": [
+          "#3b1111",
+          "#661e1e",
+          "#922b2b",
+          "#c53a3a",
+          "#d46d6d",
+          "#e19999",
+          "#eec4c4",
+          "#f8e7e7"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#808080",
+          "#a1a1a1",
+          "#bdbdbd",
+          "#d9d9d9",
+          "#f0f0f0"
+        ]
+      },
+      "header-line": {
+        "role": "primary",
+        "displayName": "Header Divider",
+        "canonical": "#443e68",
+        "tonalRamp": [
+          "#1f1d30",
+          "#363253",
+          "#4d4676",
+          "#685fa0",
+          "#9089b9",
+          "#b1accd",
+          "#d2cfe2",
+          "#edecf4"
+        ]
+      },
+      "selection": {
+        "role": "primary",
+        "displayName": "Selection Wash",
+        "canonical": "#dcd2f0",
+        "tonalRamp": [
+          "#201339",
+          "#372163",
+          "#4f2f8e",
+          "#6a40bf",
+          "#9171d0",
+          "#b29cde",
+          "#d2c6ec",
+          "#ede8f7"
+        ]
+      },
+      "caption-note": {
+        "role": "primary",
+        "displayName": "Caption Note Violet",
+        "canonical": "#c9c3e2",
+        "tonalRamp": [
+          "#1e1934",
+          "#342b59",
+          "#4a3d7f",
+          "#6453ac",
+          "#8d80c2",
+          "#afa6d4",
+          "#d1cbe6",
+          "#eceaf5"
+        ]
+      },
+      "lead-ink": {
+        "role": "neutral",
+        "displayName": "Lead Ink Violet",
+        "canonical": "#41395c",
+        "tonalRamp": [
+          "#211d2f",
+          "#3a3352",
+          "#524875",
+          "#6f629d",
+          "#958ab7",
+          "#b4adcc",
+          "#d4d0e2",
+          "#eeecf3"
+        ]
+      },
+      "board-line-sage": {
+        "role": "tertiary",
+        "displayName": "Board head line · sage",
+        "canonical": "#d3e6df",
+        "tonalRamp": [
+          "#1c3129",
+          "#305547",
+          "#447865",
+          "#5ca389",
+          "#87bba7",
+          "#aacfc2",
+          "#cee3dc",
+          "#ebf4f1"
+        ]
+      },
+      "board-line-violet": {
+        "role": "tertiary",
+        "displayName": "Board head line · violet",
+        "canonical": "#dcd6ef",
+        "tonalRamp": [
+          "#1e1537",
+          "#33255f",
+          "#493588",
+          "#6248b7",
+          "#8b77ca",
+          "#aea0da",
+          "#d0c8ea",
+          "#ece9f6"
+        ]
+      },
+      "board-line-indigo": {
+        "role": "tertiary",
+        "displayName": "Board head line · indigo",
+        "canonical": "#dcd9ee",
+        "tonalRamp": [
+          "#1c1835",
+          "#30295c",
+          "#453a82",
+          "#5d4fb0",
+          "#877dc5",
+          "#aba3d6",
+          "#cecae7",
+          "#eceaf6"
+        ]
+      },
+      "board-line-lilac": {
+        "role": "tertiary",
+        "displayName": "Board head line · lilac",
+        "canonical": "#ddd6ee",
+        "tonalRamp": [
+          "#201636",
+          "#37275e",
+          "#4e3785",
+          "#6a4bb4",
+          "#907ac8",
+          "#b1a1d8",
+          "#d2c9e9",
+          "#ede9f6"
+        ]
+      },
+      "board-line-lucid": {
+        "role": "tertiary",
+        "displayName": "Board head line · lucid",
+        "canonical": "#e2d9f0",
+        "tonalRamp": [
+          "#231637",
+          "#3c265f",
+          "#553587",
+          "#7348b7",
+          "#9878ca",
+          "#b6a0d9",
+          "#d5c8e9",
+          "#eee9f6"
+        ]
+      },
+      "board-line-mauve": {
+        "role": "tertiary",
+        "displayName": "Board head line · mauve",
+        "canonical": "#e8d6de",
+        "tonalRamp": [
+          "#311b25",
+          "#553040",
+          "#79445b",
+          "#a35c7c",
+          "#bb869e",
+          "#cfaabb",
+          "#e4ced8",
+          "#f4ebef"
+        ]
+      },
+      "pay-stripe": {
+        "role": "brand",
+        "displayName": "Stripe wordmark (brand)",
+        "canonical": "#635bff",
+        "tonalRamp": [
+          "#04004d",
+          "#060085",
+          "#0900bd",
+          "#0c00ff",
+          "#4c42ff",
+          "#817aff",
+          "#b6b3ff",
+          "#e2e0ff"
+        ]
+      },
+      "pay-paypal-dark": {
+        "role": "brand",
+        "displayName": "PayPal dark (brand)",
+        "canonical": "#253b80",
+        "tonalRamp": [
+          "#111b3b",
+          "#1e2f67",
+          "#2a4392",
+          "#395bc6",
+          "#6d86d5",
+          "#98aae1",
+          "#c4ceee",
+          "#e7ebf8"
+        ]
+      },
+      "pay-paypal-light": {
+        "role": "brand",
+        "displayName": "PayPal light (brand)",
+        "canonical": "#179bd7",
+        "tonalRamp": [
+          "#073245",
+          "#0d5678",
+          "#127baa",
+          "#19a6e6",
+          "#55bded",
+          "#87d1f2",
+          "#bae4f8",
+          "#e3f4fc"
+        ]
+      },
+      "pay-kofi": {
+        "role": "brand",
+        "displayName": "Ko-fi wordmark (brand)",
+        "canonical": "#4b5563",
+        "tonalRamp": [
+          "#21252c",
+          "#39414b",
+          "#515c6b",
+          "#6e7d91",
+          "#949eae",
+          "#b4bbc6",
+          "#d3d8de",
+          "#eeeff2"
+        ]
+      }
     },
     "typographyMeta": {
-      "display":  { "displayName": "Display",  "purpose": "AUGUR wordmark and page mastheads only; Georgia, wide-tracked." },
-      "headline": { "displayName": "Headline", "purpose": "Section titles inside panels; Georgia." },
-      "lead":     { "displayName": "Lead",     "purpose": "Opening lines, epigraphs, mystical asides; Georgia, italic-capable." },
-      "body":     { "displayName": "Body",     "purpose": "Prose and UI; Verdana, small, capped at 64ch." },
-      "label":    { "displayName": "Label",    "purpose": "Caption bars, kickers, form labels; Courier, uppercase." },
-      "data":     { "displayName": "Data",     "purpose": "Hashes, timestamps, seal IDs, post numbers, greentext; Courier." }
+      "hero": {
+        "displayName": "Hero",
+        "purpose": "The homepage headline only; Georgia, balanced."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "The Oneiratory brand in the header; Georgia, tracked."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles inside panels; Georgia."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Opening lines, leads, epigraphs, awed asides; Georgia."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prose and UI; system-sans, ~66ch measure."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Section-cap captions and form labels; monospace, uppercase."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Hashes, timestamps, seal IDs, post numbers, stats, greentext; monospace."
+      },
+      "scale": {
+        "displayName": "Scale",
+        "purpose": "Enumerated discrete steps the pages use beyond the named roles (10-30px)."
+      }
     },
-    "registers": [
-      { "name": "instrument", "appliesTo": ["index.html", "about.html", "augur-registry.html", "augur-verifier.html", "augur-vault.html", "augur-seal-prototype.html"], "idiom": "faded phpBB-era forum", "paper": "#eeecf4", "bar": "#655d84", "ink": "#2f2a44", "link": "#5a4b9c", "purpose": "Everything serious and evidentiary. Must read as an instrument, never a psychic app or an AI product." },
-      { "name": "commons", "appliesTo": ["augur-commons.html"], "idiom": "anonymous imageboard", "paper": "#e8e4ec", "name": "#5f8a80", "green": "#79895f", "link": "#6a5aa6", "boards": ["/came-true/", "/recurring/", "/lucid/", "/astral/", "/nightmares/", "/discussion/"], "purpose": "The anonymous community board only. Hushed and welcoming, earnest not crude." }
-    ],
+    "roundedMeta": {
+      "xxs": {
+        "value": "3px"
+      },
+      "xs": {
+        "value": "4px"
+      },
+      "sm": {
+        "value": "6px"
+      },
+      "md": {
+        "value": "9px"
+      }
+    },
     "shadows": [
-      { "name": "none", "value": "none", "purpose": "The system is flat. No shadows, no glass, no glow. Depth is 1px lines and flat fills only." }
-    ],
-    "effects": [
-      { "name": "button-bevel", "value": "1px light top+left border against darker bottom+right", "purpose": "The single skeuomorphic touch: a faint Windows-9x control bevel on buttons." },
-      { "name": "starfield", "value": "five 1px radial-gradient dots at ~0.10-0.20 alpha, on the body background only", "purpose": "Faint dusk texture. Never above content, never over ~0.2 alpha." }
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "The system is flat. Depth is 1px hairlines and flat panel fills; no shadows, glass, or glow."
+      }
     ],
     "motion": [
-      { "name": "seal-ring", "value": "slow rotation on the seal emblem only", "purpose": "The one residual animation. Honor prefers-reduced-motion." }
+      {
+        "name": "state",
+        "value": "0.15s ease",
+        "purpose": "Default easing for hover/focus state on buttons, nav, and inputs. Honour prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-nav",
+        "value": "720px"
+      },
+      {
+        "name": "cards",
+        "value": "600px"
+      },
+      {
+        "name": "stats",
+        "value": "560px"
+      }
     ]
   },
   "components": [
     {
+      "name": "Site Header + Nav",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Full-width sticky dusk-indigo bar: Georgia wordmark left, small nav links right; collapses to a hamburger menu under 720px.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"#\">Oneiratory</a><nav class=\"ds-nav\"><a class=\"on\" href=\"#\">The instrument</a><a href=\"#\">Registry</a><a href=\"#\">Commons</a></nav></header>",
+      "css": ".ds-header{background:var(--bar);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 24px;min-height:58px;border-bottom:1px solid #443e68}.ds-brand{font-family:var(--serif);font-size:21px;letter-spacing:.16em;color:#fff;text-decoration:none;padding:9px 0}.ds-nav{display:flex;gap:2px}.ds-nav a{font-family:var(--sans);font-size:13px;color:#cfcae6;text-decoration:none;padding:8px 12px;border-radius:var(--r-sm);transition:background .15s,color .15s}.ds-nav a:hover{background:rgba(255,255,255,.09);color:#fff}.ds-nav a.on{background:rgba(255,255,255,.15);color:#fff}"
+    },
+    {
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Flat dusty-indigo commit button with an old-web bevel. Square, no gradient.",
-      "html": "<button class=\"ds-btn\">Seal a dream</button>",
-      "css": ".ds-btn { font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 13px; letter-spacing: .03em; color: #fff; background: #655d84; border: 1px solid #4f486c; border-top-color: #8279a0; border-left-color: #8279a0; border-radius: 0; padding: 11px 22px; cursor: pointer; } .ds-btn:hover { background: #5a5279; } .ds-btn:focus-visible { outline: 2px solid #5a4b9c; outline-offset: 1px; }"
+      "description": "Terracotta commit button. Primary actions only (Seal a dream, Sign in).",
+      "html": "<button class=\"ds-btn-primary\">Seal a dream</button>",
+      "css": ".ds-btn-primary{font-family:var(--sans);font-size:14px;font-weight:600;color:#fff;background:var(--warm);border:1px solid #a5583b;border-radius:var(--r-sm);padding:11px 20px;cursor:pointer;transition:.15s}.ds-btn-primary:hover{background:#a95a3d}.ds-btn-primary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary outline button; hovers to accent violet on white.",
+      "html": "<button class=\"ds-btn-ghost\">Verify a proof yourself</button>",
+      "css": ".ds-btn-ghost{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink-strong);background:transparent;border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 20px;cursor:pointer;transition:.15s}.ds-btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:#fff}"
     },
     {
       "name": "Section Panel",
       "kind": "card",
       "refersTo": "card",
-      "description": "Flat 1px-bordered panel opening with a dusty-indigo Courier caption bar.",
+      "description": "Flat 1px-bordered panel, 9px corners, opening with a mono violet caption bar.",
       "html": "<section class=\"ds-panel\"><div class=\"ds-cap\">How the seal works</div><div class=\"ds-in\"><p>Write the dream, declare the target, lock it.</p></div></section>",
-      "css": ".ds-panel { border: 1px solid #d1cbe0; background: #f6f5fa; border-radius: 0; } .ds-cap { font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #efecf6; background: #655d84; padding: 6px 13px; border-bottom: 1px solid #524a70; } .ds-in { padding: 16px 18px; font-family: Verdana, sans-serif; font-size: 12.5px; color: #2f2a44; line-height: 1.6; }"
+      "css": ".ds-panel{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);overflow:hidden}.ds-cap{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--panel-2);padding:10px 18px;border-bottom:1px solid var(--line)}.ds-in{padding:24px;font-family:var(--sans);font-size:15px;color:var(--ink);line-height:1.65}"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Flat off-white field, 6px corners; focus deepens the border to accent violet, no glow.",
+      "html": "<input class=\"ds-input\" placeholder=\"you@example.com\">",
+      "css": ".ds-input{font-family:var(--sans);font-size:13px;color:var(--ink);background:#fbfafd;border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 10px}.ds-input:focus{outline:none;border-color:var(--accent)}"
     },
     {
       "name": "Evidence Card",
       "kind": "custom",
       "refersTo": "card",
-      "description": "The signature Instrument component: a mono panel adjudicating a sealed dream as hit / miss / sealed.",
-      "html": "<div class=\"ds-proof\"><div class=\"ds-ph\">DREAM #0412 &mdash; sealed</div><div class=\"ds-pin\"><div><span class=\"k\">counts if</span> <span class=\"cond\">&ldquo;a passenger plane lands safely, within 30 days&rdquo;</span></div><div><span class=\"k\">sha-256</span> fa936c...c6a5fa43</div></div><div class=\"ds-status\">&#9679; RESOLVED &mdash; HIT</div></div>",
-      "css": ".ds-proof { border: 1px solid #d1cbe0; background: #fbfafd; border-radius: 0; font-family: 'Courier New', monospace; font-size: 11.5px; color: #2f2a44; } .ds-ph { color: #6f688c; padding: 7px 11px; border-bottom: 1px solid #e1dcec; background: #eae7f1; } .ds-pin { padding: 11px 12px; line-height: 1.9; } .ds-pin .k { color: #948dae; } .ds-pin .cond { font-family: Georgia, serif; font-style: italic; color: #3a3352; } .ds-status { padding: 9px 12px; border-top: 1px solid #e1dcec; background: #eef1ea; color: #5c7a54; font-family: Verdana, sans-serif; font-size: 11.5px; font-weight: bold; }"
+      "description": "Signature Instrument component: a mono panel adjudicating a sealed dream as HIT (sage) / MISS (mauve) / SEALED (seal indigo).",
+      "html": "<div class=\"ds-proof\"><div class=\"ds-ph\">DREAM #0412 — sealed</div><div class=\"ds-pin\"><span class=\"k\">counts if</span> <span class=\"cond\">“a passenger plane lands safely, within 30 days”</span><br><span class=\"k\">sha-256</span> fa936c…c6a5fa43</div><div class=\"ds-status\">● RESOLVED — HIT</div></div>",
+      "css": ".ds-proof{border:1px solid var(--line);background:#fbfafd;border-radius:var(--r-sm);overflow:hidden;font-family:var(--mono);font-size:12px;color:var(--ink)}.ds-ph{color:var(--muted);padding:9px 13px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}.ds-pin{padding:13px;line-height:1.95}.ds-pin .k{color:var(--faint)}.ds-pin .cond{font-family:var(--serif);font-style:italic;color:#3a3352}.ds-status{padding:11px 13px;border-top:1px solid var(--line-soft);background:#eef3ec;color:var(--hit);font-weight:700;letter-spacing:.04em}"
     },
     {
       "name": "Board Post",
       "kind": "custom",
       "refersTo": "body",
-      "description": "The signature Commons component: an imageboard post with greentext and quote-links.",
-      "html": "<div class=\"ds-post\"><div class=\"ds-ptop\"><span class=\"name\">Anonymous</span> <span class=\"meta\">5h ago No.4021301 ID:qk3m9r</span></div><div class=\"ds-pbody\"><span class=\"gt\">&gt;phone buzzes at 8:12</span><p>felt like the dream handed it to me.</p></div></div>",
-      "css": ".ds-post { border: 1px solid #d7d0e0; background: #f2eef4; border-radius: 0; padding: 11px 13px; font-family: 'Courier New', monospace; font-size: 13px; color: #332e46; } .ds-ptop .name { color: #5f8a80; } .ds-ptop .meta { color: #a49cba; font-size: 12px; } .ds-pbody .gt { color: #79895f; display: block; } .ds-pbody p { margin: 6px 0 0; }"
+      "description": "Signature Commons component: an imageboard post with sage greentext, coloured Anonymous ID, and violet quote-links. Replies use a return-arrow + tint, no side-stripe.",
+      "html": "<div class=\"ds-post\"><div class=\"ds-ptop\"><span class=\"name\">Anonymous</span> 5h ago No.4021301 <span class=\"id\">ID:qk3m9r</span></div><div class=\"ds-pbody\"><span class=\"gt\">&gt;phone buzzes at 8:12</span><p>felt like the dream handed it to me.</p></div></div>",
+      "css": ".ds-post{border:1px solid var(--line);background:var(--panel-2);border-radius:0 0 var(--r) var(--r);padding:14px 16px;font-family:var(--sans);font-size:13.5px;color:var(--ink)}.ds-ptop{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:9px}.ds-ptop .name{color:#3f7d6e;font-weight:600}.ds-ptop .id{font-weight:bold;color:#8a4f62}.ds-pbody .gt{color:var(--hit);display:block;font-weight:500}.ds-pbody p{margin:6px 0 0}"
     }
   ],
   "narrative": {
     "northStar": "The Small-Hours Observatory",
-    "overview": "AUGUR looks like a serious, faintly mystical corner of the old web: a nocturnal observatory for dreams, kept by someone rigorous. Dusk-lavender paper under a barely-there starfield, thin square-cornered panels, muted dusty-indigo header bars, small system type. It runs in two registers split by purpose: the Instrument (faded phpBB-era forum) for everything evidentiary and serious (homepage, Registry, Verifier, Vault, About), and the Commons (anonymous imageboard) for the community board only. Above all it rejects the AI look: no gradients, no glass, no rounded pills. It reads as an instrument someone quietly runs in the small hours, not a product being marketed.",
+    "overview": "Oneiratory looks like a serious, faintly mystical corner of the web, kept by someone rigorous: a nocturnal observatory for dreams. Dusk-lavender paper under a barely-there starfield, thin panels with softly rounded corners, a full-width dusty-indigo header, serif headings, and calm system-sans prose. It reads as an instrument someone has been quietly running in the small hours, keeping an honest record; the wonder is real, the presentation disciplined. One unified system across every page (shared augur.css), with two moods split by purpose: the serious Instrument and the looser Commons board, sharing one palette and chrome.",
     "keyCharacteristics": [
-      "Faded nocturnal old-web: dusk-lavender paper, faint starfield, 1px square borders, small system type.",
-      "Two registers by purpose: the serious Instrument, and the anonymous Commons board.",
-      "Faintness lives in chrome; reading text and hit/miss labels stay legible.",
+      "One shared system across all pages: dusk-lavender paper, faint starfield, softly-rounded (9px) panels, a full-width sticky indigo header, calm system-sans prose.",
+      "Two moods by purpose: the serious Instrument and the looser Commons board, sharing one palette and chrome.",
+      "'Faint' lives in the chrome (borders, counts, meta); reading text and hit/miss labels stay fully legible.",
       "Evidence over persuasion: the homepage demonstrates the seal and shows hits beside honest misses.",
-      "Verdana + Georgia + Courier. No gradients, no glass, no rounded pills."
+      "Georgia (headings) + system-sans (prose) + monospace (exact values). One restrained terracotta accent. No gradients, no glass, no glow."
     ],
     "rules": [
-      { "name": "The No-Glow Rule", "body": "No gradients, no backdrop-filter, no glass, no rounded pills, no drop-shadow glows. Flat fills, square corners, 1px borders. The instant something looks glossy it reads as AI, the one thing this system may never do.", "section": "colors" },
-      { "name": "The Two-Register Rule", "body": "A page is Instrument (serious, evidentiary) or Commons (anonymous board). Pick by purpose, load the matching idiom, never blur them.", "section": "colors" },
-      { "name": "The Truth-Signal Rule", "body": "Faded sage means hit, faded mauve means miss, seal indigo means sealed-and-waiting. Never decorative.", "section": "colors" },
-      { "name": "The Machine-Voice Rule", "body": "Anything literally exact (hash, timestamp, seal ID, declared condition, post number) is Courier.", "section": "typography" },
-      { "name": "The Serif-For-Wonder Rule", "body": "Georgia is reserved for the wordmark, headings, and awed/mystical lines; never UI chrome or dense body text.", "section": "typography" },
-      { "name": "The Flat Rule", "body": "Depth is a 1px line and a flat fill, never a shadow. The only raised affordance is the button bevel.", "section": "elevation" }
+      {
+        "name": "The No-Glow Rule",
+        "body": "No gradients, no backdrop-filter, no glass, no pill buttons, no drop-shadow glows. Flat fills, softly rounded corners (6-9px), 1px borders. The instant something looks glossy it reads as AI, the one thing this system may never do.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Accent Rule",
+        "body": "Terracotta (--warm) is the only warm colour and appears only on primary actions and small leading marks. Structure is violet/indigo; warmth is the accent. Do not introduce a second accent hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Truth-Signal Rule",
+        "body": "Sage means hit, mauve means miss, seal indigo means sealed-and-waiting. Never decorative (sage doubles only as Commons greentext).",
+        "section": "colors"
+      },
+      {
+        "name": "The Machine-Voice Rule",
+        "body": "Anything literally exact (a hash, timestamp, seal ID, declared condition, post number, stat) is monospace.",
+        "section": "typography"
+      },
+      {
+        "name": "The Serif-For-Wonder Rule",
+        "body": "Georgia is reserved for the wordmark, hero, headings, leads, and awed lines; never UI chrome or dense body text.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Rule",
+        "body": "Depth is a 1px line and a flat fill, never a shadow. Corners are softly rounded (6-9px), not sharp and not fully round.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Starfield-Is-Background Rule",
+        "body": "The faint dot texture lives in the fixed body background only. It never overlaps or dims content, and stays under ~0.2 alpha so it reads as dusk, not decoration.",
+        "section": "elevation"
+      }
     ],
     "dos": [
-      "Do keep every surface flat: 1px hairlines, flat fills, square corners, the one permitted button bevel.",
-      "Do pick a page's register by purpose (Instrument vs Commons) and keep the idioms separate.",
-      "Do set every exact value in Courier and reserve Georgia for the wordmark, headings, and awed asides.",
-      "Do reserve sage/mauve/seal-indigo for hit/miss/sealed only.",
-      "Do spend 'faint' on chrome; keep reading text at ink and hit/miss labels legible. Target AAA where feasible.",
-      "Do let the homepage demonstrate the mechanism and show honest misses beside hits."
+      "Do keep everything on the one shared system: link augur.css, use the .site-header, .cap/.in panels, .btn/.btn-primary/.btn-ghost, and .site-footer.",
+      "Do keep every surface flat: 1px hairlines, flat fills, 6-9px corners.",
+      "Do reserve terracotta for primary actions and small leading marks only.",
+      "Do set every exact value in monospace and reserve Georgia for the wordmark, hero, headings, leads, and awed asides.",
+      "Do reserve sage/mauve/seal-indigo for hit/miss/sealed.",
+      "Do spend 'faint' on chrome; keep reading text at --ink and hit/miss labels fully legible.",
+      "Do let the Commons keep its board character while sharing the site's header, type, tokens, and footer."
     ],
     "donts": [
-      "Don't ever reintroduce the AI look: no gradient pills, no backdrop-filter/glass, no pastel radial-gradient hero washes, no glossy dreamcore, no rounded-22px buttons. The single most important prohibition.",
-      "Don't drift into psychic or occult woo: no crystal balls, tarot, moon-and-stars mysticism, fortune-teller framing.",
-      "Don't reach for crypto/web3 hype: no neon, no 'blockchain-verified' badges.",
+      "Don't ever reintroduce the AI look: no gradient-filled pills, no backdrop-filter/glass, no pastel radial-gradient washes, no glossy dreamcore, no uppercase eyebrow on every section.",
+      "Don't give a page its own palette or its own header/footer. If it looks like a different site, it is wrong.",
+      "Don't use a coloured side-stripe (border-left/right > 1px as an accent) on cards, replies, or callouts.",
+      "Don't bring back Verdana or the Windows-9x button bevel.",
+      "Don't drift into psychic/occult woo or crypto/web3 hype.",
       "Don't use drop-shadows or glows for depth; use a 1px line.",
-      "Don't let Commons greentext go to the harsh #789922; keep it dusty sage. Don't let the board's looseness leak into the Instrument.",
-      "Don't lowercase or restyle the wordmark; it is Georgia, wide-tracked.",
-      "Don't use an em dash anywhere in user-facing copy."
+      "Don't lowercase or restyle the wordmark, and never use an em dash in user-facing copy."
     ]
   }
 }

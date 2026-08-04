@@ -3,121 +3,77 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AUGUR · About</title>
+<title>Oneiratory · About</title>
+<meta name="description" content="Why Oneiratory exists: a founder's note on childhood nightmares, dreams that later came true, and building an honest, timestamped home for dreamers.">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Social share preview. Set absolute og:url and og:image URLs once the site is deployed. -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Oneiratory">
+<meta property="og:title" content="Oneiratory · About">
+<meta property="og:description" content="A founder's note: nightmares, dreams that came true, and building an honest, timestamped home for dreamers.">
+<meta property="og:image" content="share.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oneiratory · About">
+<meta name="twitter:description" content="A founder's note: nightmares, dreams that came true, and building an honest home for dreamers.">
+<meta name="twitter:image" content="share.svg">
+<link rel="stylesheet" href="augur.css">
 <style>
-  :root{
-    --paper:#eeecf4;
-    --panel:#f6f5fa;
-    --panel-alt:#eae7f1;
-    --bar:#655d84;
-    --bar-ink:#efecf6;
-    --ink:#2f2a44;
-    --ink-strong:#26213a;
-    --muted:#5f5878;
-    --faint:#948dae;
-    --line:#d1cbe0;
-    --line-soft:#e1dcec;
-    --link:#443a7a;
-    --sans:Verdana, Geneva, Tahoma, sans-serif;
-    --serif:Georgia, "Times New Roman", serif;
-    --mono:"Courier New", Courier, monospace;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    background:var(--paper);
-    background-image:
-      radial-gradient(1px 1px at 18% 24%, rgba(110,100,150,.18), transparent 60%),
-      radial-gradient(1px 1px at 72% 16%, rgba(110,100,150,.14), transparent 60%),
-      radial-gradient(1px 1px at 40% 70%, rgba(110,100,150,.12), transparent 60%),
-      radial-gradient(1px 1px at 86% 64%, rgba(110,100,150,.14), transparent 60%),
-      radial-gradient(1px 1px at 10% 82%, rgba(110,100,150,.10), transparent 60%);
-    color:var(--ink);
-    font-family:var(--sans);
-    font-size:12.5px;
-    line-height:1.6;
-  }
-  .wrap{max-width:760px;margin:0 auto;padding:22px 16px 64px}
-  a{color:var(--link)}
+  /* ---------- about-specific ---------- */
+  .opener{font-family:var(--serif);font-size:clamp(21px,3.6vw,26px);line-height:1.32;color:var(--ink-strong);margin:0 0 12px;text-wrap:balance}
+  .opener .em{color:var(--accent);font-style:italic}
+  .stand{color:var(--muted);font-size:14px;margin:0}
 
-  .mast{text-align:center;padding:16px 0 8px}
-  .mast .word{font-family:var(--serif);font-size:38px;letter-spacing:.44em;color:#443c62;text-indent:.44em}
-  .mast .tag{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px;margin-top:3px}
-  .mast .sub{color:var(--faint);font-size:11px;margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
-  nav{margin:14px 0 18px;border:1px solid var(--line);background:var(--panel);
-    display:flex;flex-wrap:wrap;justify-content:center}
-  nav a{font-size:11px;color:var(--link);text-decoration:none;padding:7px 13px;letter-spacing:.03em}
-  nav a:hover{text-decoration:underline}
-  nav a.on{color:#3a2f70;background:var(--panel-alt)}
+  .byline{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--faint);text-align:center;padding:14px 0 2px}
 
-  section{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
-  .cap{background:var(--bar);color:var(--bar-ink);font-size:11px;letter-spacing:.14em;
-    text-transform:uppercase;padding:6px 13px;border-bottom:1px solid #524a70}
-  .cap .rt{float:right;color:#cbc4e0;letter-spacing:.05em;text-transform:none;font-style:italic}
-  .in{padding:18px 20px}
+  .cwnote{border:1px solid var(--line);background:var(--panel-2);border-radius:var(--r-sm);
+    padding:13px 16px;margin:16px 0 2px;color:var(--muted);font-size:13px;line-height:1.65}
+  .cwnote b{color:var(--ink-strong);font-weight:600}
 
-  .opener{font-family:var(--serif);font-size:22px;line-height:1.35;color:var(--ink-strong);margin:0 0 12px}
-  .opener .em{color:#4c3f8e;font-style:italic}
-  .stand{color:var(--muted);font-size:13px;margin:0}
-
-  .byline{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--faint);text-align:center;padding:8px 0 2px}
-
-  .cwnote{border:1px solid var(--line);background:var(--panel-alt);padding:11px 14px;margin:14px 0 2px;
-    color:var(--muted);font-size:12px;line-height:1.65}
-  .cwnote b{color:var(--ink-strong);font-weight:normal;font-family:var(--serif);font-size:12.5px}
-  .cwnote a{color:var(--link)}
-
-  .clause{padding:20px 0;border-top:1px solid var(--line-soft)}
-  .clause:first-of-type{border-top:none;padding-top:4px}
-  .clause h3{font-family:var(--serif);font-weight:normal;font-size:18px;color:var(--ink-strong);margin:0 0 9px}
-  .clause p{font-size:13px;line-height:1.78;color:#3a3450;margin:0 0 11px;max-width:64ch}
+  .clause{padding:22px 0;border-top:1px solid var(--line-soft)}
+  .clause:first-of-type{border-top:none;padding-top:6px}
+  .clause h3{font-family:var(--serif);font-weight:400;font-size:clamp(17px,2.4vw,20px);color:var(--ink-strong);margin:0 0 9px}
+  .clause p{font-size:14.5px;line-height:1.78;color:#3a3450;margin:0 0 12px;max-width:66ch}
   .clause p:last-child{margin:0}
-  .clause .em{color:#4c3f8e;font-style:italic}
+  .clause .em{color:var(--accent);font-style:italic}
 
-  .pull{font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.5;color:#4a3f80;
-    border-left:2px solid var(--line);padding:4px 0 4px 16px;margin:16px 0}
+  /* pull quote: a tinted inset, no side-stripe */
+  .pull{font-family:var(--serif);font-style:italic;font-size:clamp(16px,2.2vw,19px);line-height:1.5;
+    color:var(--accent);background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--r-sm);
+    padding:16px 20px;margin:18px 0;text-wrap:pretty}
 
-  .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
-  .oldbtn{font-family:var(--sans);font-size:12px;color:#39306b;text-decoration:none;
-    border:1px solid var(--line);border-top-color:#fff;border-left-color:#fff;background:#e7e2f1;padding:8px 16px}
-  .oldbtn:hover{background:#efeaf8;color:#2b2258}
-  .oldbtn.q{background:#f2f0f7}
-
-  .epigraph{font-family:var(--serif);font-style:italic;color:var(--faint);text-align:center;font-size:13px;margin:24px auto 8px;max-width:54ch;line-height:1.7}
-  .sitefoot{text-align:center;color:var(--faint);font-size:10.5px;letter-spacing:.03em;margin-top:14px;line-height:1.9}
-  .sitefoot a{color:var(--muted)}
-  .mast .word a{color:inherit;text-decoration:none}
+  .actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:16px}
 </style>
 </head>
 <body>
-  <div class="wrap">
-
-    <div class="mast">
-      <div class="word"><a href="index.html">AUGUR</a></div>
-      <div class="tag">an instrument for dreams that arrive early</div>
-      <div class="sub">a way to prove anteriority &middot; not an oracle</div>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">The instrument</a>
+        <a class="on" href="about.html">About</a>
+        <a href="augur-registry.html">Registry</a>
+        <a href="augur-commons.html">Commons</a>
+        <a href="augur-vault.html">Vault</a>
+        <a href="augur-verifier.html">Verify</a>
+        <a href="augur-seal-prototype.html">Seal a dream</a>
+      </nav>
     </div>
+  </header>
 
-    <nav>
-      <a href="index.html">The instrument</a>
-      <a class="on" href="about.html">About</a>
-      <a href="augur-registry.html">The Registry</a>
-      <a href="augur-commons.html">The Commons</a>
-      <a href="augur-vault.html">The Vault</a>
-      <a href="augur-verifier.html">Verify a proof</a>
-      <a href="augur-seal-prototype.html">Seal a dream</a>
-    </nav>
-
-    <section>
+  <main>
+    <section style="margin-top:26px">
       <div class="cap">About<span class="rt">a founder&rsquo;s note</span></div>
       <div class="in">
-        <p class="opener">AUGUR began with a child who was <span class="em">afraid to sleep</span>.</p>
+        <p class="opener">Oneiratory began with a child who was <span class="em">afraid to sleep</span>.</p>
         <p class="stand">It did not start as a product. It started as fear, then a diary, then a mystery I still cannot fully explain. This is how it happened.</p>
         <div class="byline">one dreamer among many</div>
 
         <div class="cwnote">
-          <b>A note before you read.</b> This account describes childhood nightmares and trauma, including a violent dream from early childhood, and later experiences with substance use, and some readers may find it distressing. If you would rather not read it, you can skip ahead to <a href="#why-augur">why AUGUR exists</a>.
+          <b>A note before you read.</b> This account describes childhood nightmares and trauma, including a violent dream from early childhood, and later experiences with substance use, and some readers may find it distressing. If you would rather not read it, you can skip ahead to <a href="#why-augur">why Oneiratory exists</a>.
         </div>
 
         <div class="clause">
@@ -150,30 +106,31 @@
         </div>
 
         <div class="clause">
-          <h3 id="why-augur">Why AUGUR</h3>
-          <p>Every claim about a dream foretelling something collapses in the same place. You can never prove the dream came first, because memory softens and quietly rewrites itself once the event arrives. AUGUR closes that gap. You record a dream and seal it, fixing its exact words to a moment in time that cannot be moved, so that if the event comes, it meets a record that was already waiting.</p>
+          <h3 id="why-augur">Why Oneiratory</h3>
+          <p>Every claim about a dream foretelling something collapses in the same place. You can never prove the dream came first, because memory softens and quietly rewrites itself once the event arrives. Oneiratory closes that gap. You record a dream and seal it, fixing its exact words to a moment in time that cannot be moved, so that if the event comes, it meets a record that was already waiting.</p>
           <p class="pull">Not proof that dreams predict the future. A way to find out honestly, one sealed dream at a time. An instrument, not an oracle.</p>
         </div>
 
         <div class="clause">
           <h3>A place for dreamers, and maybe for research</h3>
-          <p>I did not want to keep asking this question alone. AUGUR is meant to be a community: a place for people who have had dreams like mine, the nightmares that will not let go and the ordinary dreams that quietly came true, to record them, share them, and see that they are not the only one.</p>
+          <p>I did not want to keep asking this question alone. Oneiratory is meant to be a community: a place for people who have had dreams like mine, the nightmares that will not let go and the ordinary dreams that quietly came true, to record them, share them, and see that they are not the only one.</p>
           <p>And if enough of us keep an honest, timestamped record, it could grow into something larger than any one person. A body of evidence that helps us understand dreams, and whether they can genuinely reach into what is coming, in a way scattered anecdotes never could. Keep the wonder. Keep the rigour. Let the record speak.</p>
           <div class="actions">
-            <a class="oldbtn" href="augur-seal-prototype.html">Seal a dream</a>
-            <a class="oldbtn q" href="augur-vault.html">Open the Vault</a>
+            <a class="btn btn-primary" href="augur-seal-prototype.html">Seal a dream</a>
+            <a class="btn btn-ghost" href="augur-vault.html">Open the Vault</a>
           </div>
         </div>
       </div>
     </section>
 
     <div class="epigraph">&ldquo;What had haunted me became something I could look at, hold, and compare.&rdquo;</div>
+  </main>
 
-    <div class="sitefoot">
-      AUGUR &middot; the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps (confirms over hours)<br>
-      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; contact@augur.app
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps</p>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="support.html">Support Oneiratory</a> &middot; contact@oneiratory.com
     </div>
-
-  </div>
+  </footer>
 </body>
 </html>
