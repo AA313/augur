@@ -133,7 +133,7 @@
         <div class="field">
           <div class="fl">3 &middot; SEAL</div>
           <button id="sealBtn" class="btn btn-primary">&#9679; Seal this dream</button>
-          <div class="sealnote">On seal, your browser computes SHA-256 over the dream, the condition, a random nonce, and the timestamp. Only that fingerprint is ever made public. The dream text is saved privately to your account so you can reveal it later; if you would rather the server could never read it at all, capture the dream in the end-to-end encrypted <a href="augur-vault.html">Vault</a> instead.</div>
+          <div class="sealnote">On seal, your browser computes SHA-256 over the dream, the condition, a random nonce, and the timestamp. Only that fingerprint is ever made public. The dream text is <b>end-to-end encrypted in your browser with your passphrase</b> before it is saved, so the server stores only ciphertext until you choose to reveal it.</div>
         </div>
       </div>
     </section>
@@ -210,6 +210,26 @@
     function b64enc(s){return btoa(unescape(encodeURIComponent(s)));}
     function b64dec(s){return decodeURIComponent(escape(atob(s)));}
 
+    // ---------- end-to-end encryption (AES-GCM; key from the account passphrase; server sees only ciphertext until reveal) ----------
+    var key=null;                        // derived key; kept in memory only, never sent anywhere
+    var CHECK_TOKEN="augur-vault-key-ok";
+    function b64e(bytes){var s="";for(var i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s);}
+    function b64d(str){var bin=atob(str);var a=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+    async function deriveKey(passphrase, saltB64){
+      var base=await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), "PBKDF2", false, ["deriveKey"]);
+      return crypto.subtle.deriveKey({name:"PBKDF2", salt:b64d(saltB64), iterations:200000, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]);
+    }
+    async function encryptText(text){
+      var iv=crypto.getRandomValues(new Uint8Array(12));
+      var ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM", iv:iv}, key, new TextEncoder().encode(text)));
+      var out=new Uint8Array(iv.length+ct.length); out.set(iv,0); out.set(ct,iv.length);
+      return b64e(out);
+    }
+    async function decryptText(b64){
+      var raw=b64d(b64), iv=raw.slice(0,12), ct=raw.slice(12);
+      return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM", iv:iv}, key, ct));
+    }
+
     async function api(path, opts){
       opts=opts||{};
       var headers=Object.assign({"content-type":"application/json"}, opts.headers||{});
@@ -225,16 +245,29 @@
     // ---------- auth ----------
     function renderAuth(){
       var bar=$("authbar");
-      if(user){
-        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email)+'</span><span class="signout">Sign out</span></div>';
-        bar.querySelector(".signout").addEventListener("click", signOut);
-      } else {
+      if(!user){
         bar.innerHTML='<div class="signedout"><span class="al">Sign in to seal and keep your seals</span>'+
           '<input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">'+
           '<button type="button" class="signin" id="authGo">Sign in</button>'+
           '<span class="anote">No password. We email you a one-time link that signs you in.</span></div>';
         bar.querySelector("#authGo").addEventListener("click", function(){ signIn($("authEmail").value.trim()); });
         bar.querySelector("#authEmail").addEventListener("keydown", function(e){ if(e.key==="Enter") signIn(this.value.trim()); });
+      } else if(!key){
+        var creating=!user.vault_ready;
+        bar.innerHTML='<div class="signedout"><span class="al">'+(creating?"Set an encryption passphrase":"Unlock to seal")+'</span>'+
+          '<input type="password" id="passIn" placeholder="'+(creating?"choose a passphrase":"your passphrase")+'" autocomplete="off">'+
+          '<button type="button" class="signin" id="passGo">'+(creating?"Set &amp; unlock":"Unlock")+'</button>'+
+          '<span class="anote">'+(creating
+            ? "Your dreams are encrypted in this browser with this passphrase; the server only ever stores ciphertext until you reveal one. <b>If you forget it, sealed dreams cannot be recovered, not even by us.</b> The same passphrase unlocks your Vault."
+            : "Signed in as "+esc(user.email)+". Enter your passphrase to seal and to reveal your dreams.")+
+          ' <span class="signout" id="soLink">sign out</span></span></div>';
+        bar.querySelector("#passGo").addEventListener("click", function(){ creating?setupPassphrase($("passIn").value):unlockPassphrase($("passIn").value); });
+        bar.querySelector("#passIn").addEventListener("keydown", function(e){ if(e.key==="Enter") bar.querySelector("#passGo").click(); });
+        bar.querySelector("#soLink").addEventListener("click", signOut);
+      } else {
+        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email)+'</span> &middot; <span title="encrypted, unlocked">&#128275; unlocked</span> &nbsp;<span class="signout" id="lockLink">lock</span> &middot; <span class="signout" id="soLink2">sign out</span></div>';
+        bar.querySelector("#lockLink").addEventListener("click", function(){ key=null; renderAuth(); });
+        bar.querySelector("#soLink2").addEventListener("click", signOut);
       }
     }
     async function signIn(email){
@@ -254,9 +287,30 @@
     }
     async function signOut(){
       try{ await api("/api/auth/logout",{method:"POST"}); }catch(e){}
-      setToken(""); user=null; seals=[]; renderAuth(); render();
+      setToken(""); user=null; key=null; seals=[]; renderAuth(); render();
     }
     function focusAuth(){ var i=$("authEmail"); if(i){ i.focus(); i.scrollIntoView({behavior:"smooth",block:"center"}); } }
+    function focusPass(){ var p=$("passIn"); if(p){ p.focus(); p.scrollIntoView({behavior:"smooth",block:"center"}); } }
+    async function setupPassphrase(pass){
+      if(!pass || pass.length<6){ alert("Choose a passphrase of at least 6 characters."); return; }
+      var salt=b64e(crypto.getRandomValues(new Uint8Array(16)));
+      key=await deriveKey(pass, salt);
+      var check=await encryptText(CHECK_TOKEN);
+      try{
+        await api("/api/vault/setup",{method:"POST",body:JSON.stringify({kdf_salt:salt, kdf_check:check})});
+        user.vault_ready=true; user.kdf_salt=salt; user.kdf_check=check;
+        renderAuth(); await loadSeals();
+      }catch(e){ key=null; alert("Could not set passphrase: "+e.message); }
+    }
+    async function unlockPassphrase(pass){
+      if(!pass) return;
+      try{
+        key=await deriveKey(pass, user.kdf_salt);
+        var v=await decryptText(user.kdf_check);      // AES-GCM throws on a wrong key
+        if(v!==CHECK_TOKEN) throw new Error("mismatch");
+      }catch(e){ key=null; alert("Wrong passphrase. Try again."); return; }
+      renderAuth(); await loadSeals();
+    }
 
     // ---------- your seals ----------
     async function loadSeals(){
@@ -299,9 +353,13 @@
       host.innerHTML=seals.map(sealItem).join("");
     }
     function findSeal(id){ for(var i=0;i<seals.length;i++){ if(seals[i].id===id) return seals[i]; } return null; }
-    function decodePayload(s){ return JSON.parse(b64dec(s.ciphertext)); }
-    function saveProof(s){
-      var p=decodePayload(s);
+    async function decodePayload(s){
+      try{ return JSON.parse(await decryptText(s.ciphertext)); }
+      catch(e){ try{ return JSON.parse(b64dec(s.ciphertext)); }   // legacy base64 seals from before E2E
+        catch(e2){ throw new Error("Could not decrypt this seal. Unlock with the correct passphrase and try again."); } }
+    }
+    async function saveProof(s){
+      var p=await decodePayload(s);
       var bundle={ content:p.content, claim:p.claim, nonce:p.nonce, created_at:p.created_at, sha256:s.commitment_hash };
       if(s.tsa_token || s.ots_proof){
         bundle.anchor={};
@@ -318,8 +376,8 @@
       var item=el.closest(".seal-item"); var id=item.getAttribute("data-id"); var act=el.getAttribute("data-act");
       var s=findSeal(id); if(!s) return;
       try{
-        if(act==="proof"){ return saveProof(s); }
-        if(act==="reveal"){ await api("/api/seals/"+id+"/reveal",{method:"POST",body:JSON.stringify({revealed_payload:decodePayload(s)})}); }
+        if(act==="proof"){ return await saveProof(s); }
+        if(act==="reveal"){ await api("/api/seals/"+id+"/reveal",{method:"POST",body:JSON.stringify({revealed_payload:await decodePayload(s)})}); }
         else if(act==="resolve-hit"){ await api("/api/seals/"+id+"/resolve",{method:"PATCH",body:JSON.stringify({outcome:"hit"})}); }
         else if(act==="resolve-miss"){ await api("/api/seals/"+id+"/resolve",{method:"PATCH",body:JSON.stringify({outcome:"miss"})}); }
         else if(act==="publish"){
@@ -343,6 +401,7 @@
     // ---------- seal a new dream ----------
     $("sealBtn").addEventListener("click", async function(){
       if(!user){ focusAuth(); return; }
+      if(!key){ focusPass(); return; }
       var content=$("dream").value.trim();
       if(!content){ $("dream").focus(); return; }
       var claim={ resolution_by:$("resolveBy").value, domain:$("domain").value, specificity:$("condition").value.trim() };
@@ -352,7 +411,8 @@
       var hash=await sha256(canon(payload));
       var btnEl=this; btnEl.disabled=true;
       try{
-        var res=await api("/api/seals",{method:"POST",body:JSON.stringify({commitment_hash:hash, ciphertext:b64enc(JSON.stringify(payload)), claim:claim, created_at:created_at})});
+        var ciphertext=await encryptText(JSON.stringify(payload));
+        var res=await api("/api/seals",{method:"POST",body:JSON.stringify({commitment_hash:hash, ciphertext:ciphertext, claim:claim, created_at:created_at})});
         var an=res.anchor||{};
         lastBundle={ content:content, claim:claim, nonce:nonce, created_at:created_at, sha256:hash };
         if(an.receipt || an.ots_proof){
