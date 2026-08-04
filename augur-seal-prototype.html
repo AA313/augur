@@ -259,7 +259,7 @@
           '<button type="button" class="signin" id="passGo">'+(creating?"Set &amp; unlock":"Unlock")+'</button>'+
           '<span class="anote">'+(creating
             ? "Your dreams are encrypted in this browser with this passphrase; the server only ever stores ciphertext until you reveal one. <b>If you forget it, sealed dreams cannot be recovered, not even by us.</b> The same passphrase unlocks your Vault."
-            : "Signed in as "+esc(user.email)+". Enter your passphrase to seal and to reveal your dreams.")+
+            : "Signed in as "+esc(user.email)+". Enter your passphrase to seal and to reveal your dreams. <b>Forget it and your sealed dreams cannot be recovered, not even by us.</b>")+
           ' <span class="signout" id="soLink">sign out</span></span></div>';
         bar.querySelector("#passGo").addEventListener("click", function(){ creating?setupPassphrase($("passIn").value):unlockPassphrase($("passIn").value); });
         bar.querySelector("#passIn").addEventListener("keydown", function(e){ if(e.key==="Enter") bar.querySelector("#passGo").click(); });
