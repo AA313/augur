@@ -3,15 +3,15 @@
 > **Naming (2026-08-04):** the project and site were renamed from the prototype name **AUGUR** to
 > **Oneiratory** (chosen for uniqueness; several sites already use "Augur", incl. the Ethereum
 > prediction market). The change is **user-facing only**. Internal identifiers deliberately keep the
-> `augur` token so the backend does not break: the stylesheet (`augur.css`), the env vars
-> (`AUGUR_ADMIN_TOKEN`, `AUGUR_SECRET`, `AUGUR_SCAN_URL`, `AUGUR_SCAN_KEY`), the localStorage keys
-> (`augur_session` / `augur_admin`), and the SQLite store all stay as-is. **The page files WERE
-> renamed on 2026-08-05** so the URLs read cleanly: `augur-registry.html`->`registry.html`,
+> `augur` token so the backend does not break: the env vars (`AUGUR_ADMIN_TOKEN`, `AUGUR_SECRET`,
+> `AUGUR_SCAN_URL`, `AUGUR_SCAN_KEY`), the localStorage keys (`augur_session` / `augur_admin`), and
+> the SQLite store all stay as-is. **The page files AND the stylesheet WERE renamed on 2026-08-05**
+> so nothing visitor-facing carries the old token: `augur-registry.html`->`registry.html`,
 > `augur-commons.html`->`commons.html`, `augur-vault.html`->`vault.html`,
 > `augur-verifier.html`->`verify.html`, `augur-seal-prototype.html`->`seal.html`,
-> `augur-admin.html`->`admin.html`. Contact email is `contact@oneiratory.com`. Where prose below
-> still says "AUGUR", read "Oneiratory"; where it names an `AUGUR_*` env var, that is a literal
-> identifier and must not change.
+> `augur-admin.html`->`admin.html`, and `augur.css`->`oneiratory.css`. Contact email is
+> `contact@oneiratory.com`. Where prose below still says "AUGUR", read "Oneiratory"; where it names
+> an `AUGUR_*` env var, that is a literal identifier and must not change.
 
 A registry for dreams and the rare moments they seem to arrive early. Oneiratory lets a person
 record a dream, "seal" it so its exact wording is cryptographically fixed to a point in time,
@@ -90,9 +90,9 @@ are local state: do not snapshot or deploy them.
 - `terms.html` ........... Terms, Privacy, Copyright, and Research & scholarly use
 - `support.html` ......... "Support AUGUR" donation page (linked from every public footer). Honest, no-obligation founder note; the "Donate to AUGUR" button href is a placeholder pending a real payment provider (see the TODO comment in the file).
 - `admin.html` ..... moderator page (not in nav): admin-token gate, reports queue, remove/restore
-- `augur.css` ............ THE shared design system (tokens, starfield body, full-width header/nav, container, buttons, panel/caption chrome, footer, epigraph). Every page links it; see DESIGN.md.
-- `augur-theme.css` ...... LEGACY, no longer linked (the retired bright-blue Commons theme). Superseded by `augur.css`.
-- `augur-footer.js` ...... LEGACY, no longer used (footer is now markup + `.site-footer` in `augur.css`).
+- `oneiratory.css` ............ THE shared design system (tokens, starfield body, full-width header/nav, container, buttons, panel/caption chrome, footer, epigraph). Every page links it; see DESIGN.md.
+- `augur-theme.css` ...... LEGACY, no longer linked (the retired bright-blue Commons theme). Superseded by `oneiratory.css`.
+- `augur-footer.js` ...... LEGACY, no longer used (footer is now markup + `.site-footer` in `oneiratory.css`).
 - `server/server.mjs` .... zero-dep Node backend (node:http + node:sqlite); serves site + /api
 - `server/db.mjs` ........ SQLite data layer + shared helpers (canon, poster ids, counters)
 - `server/schema.sql` .... the data model (maps 1:1 to augur-api-spec.md)
@@ -101,7 +101,7 @@ are local state: do not snapshot or deploy them.
 
 ## Conventions
 - Vanilla HTML/CSS/JS. No framework, no build step.
-- **One shared stylesheet: `augur.css`.** Every page links it (`<link rel="stylesheet" href="augur.css">`)
+- **One shared stylesheet: `oneiratory.css`.** Every page links it (`<link rel="stylesheet" href="oneiratory.css">`)
   and it owns the design system: the `:root` tokens, the starfield body, the full-width sticky
   `.site-header` + `.site-nav`, the `main` container, `.btn`/`.btn-primary`/`.btn-ghost`, the generic
   `section`/`.cap`/`.in` panel chrome, `.intro`, `.epigraph`, and `.site-footer`. Page-specific styles
@@ -183,7 +183,7 @@ the impeccable design skill. Read them before UI work.
 Migration note (2026-08-02): the faded "Small-Hours Observatory" look was **evolved into one
 unified system** to shed the last "2010 web" tells (retired Verdana + the boxed centered nav +
 the Windows-9x bevel; added a full-width sticky indigo header, softly-rounded panels, a terracotta
-primary accent, and a fluid type ramp), and **extracted into the shared `augur.css`**. ALL pages
+primary accent, and a fluid type ramp), and **extracted into the shared `oneiratory.css`**. ALL pages
 now link it and share one identity: index, about, terms, augur-registry, augur-verifier,
 augur-seal-prototype, augur-vault, augur-commons, and augur-admin. The Commons was brought into the
 same system (shared header/type/tokens/containers/footer) while keeping its board character

@@ -133,7 +133,7 @@ components:
 
 Oneiratory looks like a serious, faintly mystical corner of the web, kept by someone rigorous: a nocturnal observatory for dreams. Dusk-lavender paper under a barely-there starfield, thin panels with softly rounded corners, a full-width dusty-indigo header, serif headings, and calm system-sans prose. It is hushed and a little uncanny, but it never reads as fashionable, toy-like, or *generated*. It reads as an *instrument* someone has been quietly running in the small hours, keeping an honest record. The wonder is real; the presentation is disciplined.
 
-**This is one unified system.** Every page links a single shared stylesheet (`augur.css`) that owns the tokens, the starfield body, the full-width header/nav, the container, the buttons, the generic panel/caption chrome, and the footer. Page-specific styles layer on top. There is one identity across the whole site; you should never be able to tell you have "left" Oneiratory by moving between pages.
+**This is one unified system.** Every page links a single shared stylesheet (`oneiratory.css`) that owns the tokens, the starfield body, the full-width header/nav, the container, the buttons, the generic panel/caption chrome, and the footer. Page-specific styles layer on top. There is one identity across the whole site; you should never be able to tell you have "left" Oneiratory by moving between pages.
 
 Within that one system there are **two moods, split by purpose, not by palette**:
 
@@ -213,7 +213,7 @@ This system is **flat**. There are no shadows, no glass, no glow. Depth is conve
 ## 5. Components
 
 ### Site header (shared)
-- A full-width sticky bar in header-indigo (`--bar`), inner content capped at 1060px. The Georgia wordmark sits left; the nav sits right as small sans links that highlight on hover and mark the active page with a translucent white fill. On narrow screens the nav scrolls horizontally rather than wrapping or breaking the bar. There is exactly one of these, defined once in `augur.css`.
+- A full-width sticky bar in header-indigo (`--bar`), inner content capped at 1060px. The Georgia wordmark sits left; the nav sits right as small sans links that highlight on hover and mark the active page with a translucent white fill. On narrow screens the nav scrolls horizontally rather than wrapping or breaking the bar. There is exactly one of these, defined once in `oneiratory.css`.
 
 ### Buttons
 - **Primary:** flat terracotta (`--warm`) fill, white text, 6px radius, 1px darker terracotta border. For Seal and other commits.
@@ -236,12 +236,12 @@ This system is **flat**. There are no shadows, no glass, no glow. Depth is conve
 - An imageboard post: a mono meta line (subject, teal-sage Anonymous, time, `No.`, colour-hashed `ID:`), then the body with sage greentext (leading `>`) and violet `>>` quote-links. Replies are marked by a return-arrow (↳) and a `--panel-2` tint, **not** a coloured side-stripe.
 
 ### Footer (shared)
-- A full-width `--panel-2` band with a mono note line (the real-anchor disclaimer) and small centred links. Defined once in `augur.css`.
+- A full-width `--panel-2` band with a mono note line (the real-anchor disclaimer) and small centred links. Defined once in `oneiratory.css`.
 
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** keep everything on the one shared system: link `augur.css`, use the `.site-header`, `.cap`/`.in` panels, `.btn`/`.btn-primary`/`.btn-ghost`, and `.site-footer`. Put only page-specific rules inline.
+- **Do** keep everything on the one shared system: link `oneiratory.css`, use the `.site-header`, `.cap`/`.in` panels, `.btn`/`.btn-primary`/`.btn-ghost`, and `.site-footer`. Put only page-specific rules inline.
 - **Do** keep every surface flat: 1px hairlines, flat fills, 6-9px corners (The Flat Rule, The No-Glow Rule).
 - **Do** reserve terracotta for primary actions and small leading marks only (The One-Accent Rule).
 - **Do** set every exact value in monospace (The Machine-Voice Rule) and reserve Georgia for the wordmark, hero, headings, leads, and awed asides (The Serif-For-Wonder Rule).

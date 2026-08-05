@@ -877,7 +877,7 @@
   ],
   "narrative": {
     "northStar": "The Small-Hours Observatory",
-    "overview": "Oneiratory looks like a serious, faintly mystical corner of the web, kept by someone rigorous: a nocturnal observatory for dreams. Dusk-lavender paper under a barely-there starfield, thin panels with softly rounded corners, a full-width dusty-indigo header, serif headings, and calm system-sans prose. It reads as an instrument someone has been quietly running in the small hours, keeping an honest record; the wonder is real, the presentation disciplined. One unified system across every page (shared augur.css), with two moods split by purpose: the serious Instrument and the looser Commons board, sharing one palette and chrome.",
+    "overview": "Oneiratory looks like a serious, faintly mystical corner of the web, kept by someone rigorous: a nocturnal observatory for dreams. Dusk-lavender paper under a barely-there starfield, thin panels with softly rounded corners, a full-width dusty-indigo header, serif headings, and calm system-sans prose. It reads as an instrument someone has been quietly running in the small hours, keeping an honest record; the wonder is real, the presentation disciplined. One unified system across every page (shared oneiratory.css), with two moods split by purpose: the serious Instrument and the looser Commons board, sharing one palette and chrome.",
     "keyCharacteristics": [
       "One shared system across all pages: dusk-lavender paper, faint starfield, softly-rounded (9px) panels, a full-width sticky indigo header, calm system-sans prose.",
       "Two moods by purpose: the serious Instrument and the looser Commons board, sharing one palette and chrome.",
@@ -923,7 +923,7 @@
       }
     ],
     "dos": [
-      "Do keep everything on the one shared system: link augur.css, use the .site-header, .cap/.in panels, .btn/.btn-primary/.btn-ghost, and .site-footer.",
+      "Do keep everything on the one shared system: link oneiratory.css, use the .site-header, .cap/.in panels, .btn/.btn-primary/.btn-ghost, and .site-footer.",
       "Do keep every surface flat: 1px hairlines, flat fills, 6-9px corners.",
       "Do reserve terracotta for primary actions and small leading marks only.",
       "Do set every exact value in monospace and reserve Georgia for the wordmark, hero, headings, leads, and awed asides.",
