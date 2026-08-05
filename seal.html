@@ -97,11 +97,11 @@
       <nav class="site-nav" aria-label="Primary">
         <a href="index.html">The instrument</a>
         <a href="about.html">About</a>
-        <a href="augur-registry.html">Registry</a>
-        <a href="augur-commons.html">Commons</a>
-        <a href="augur-vault.html">Vault</a>
-        <a href="augur-verifier.html">Verify</a>
-        <a class="on" href="augur-seal-prototype.html">Seal a dream</a>
+        <a href="registry.html">Registry</a>
+        <a href="commons.html">Commons</a>
+        <a href="vault.html">Vault</a>
+        <a href="verify.html">Verify</a>
+        <a class="on" href="seal.html">Seal a dream</a>
       </nav>
     </div>
   </header>
@@ -156,7 +156,7 @@
             <span class="lab" id="pStatus">&#9675; awaiting your dream</span>
             <span class="why">Write a dream above and seal it. Its exact words get locked to this moment; reveal only when the condition is met, or let it lapse honestly as a miss.</span>
           </div>
-          <div class="pacts"><a href="#" id="dlBundle">Download proof bundle</a> &nbsp;&middot;&nbsp; <a href="augur-verifier.html">Verify it yourself</a> &nbsp;&middot;&nbsp; <a href="augur-vault.html">Keep it in the Vault</a></div>
+          <div class="pacts"><a href="#" id="dlBundle">Download proof bundle</a> &nbsp;&middot;&nbsp; <a href="verify.html">Verify it yourself</a> &nbsp;&middot;&nbsp; <a href="vault.html">Keep it in the Vault</a></div>
         </div>
       </div>
     </section>
@@ -274,7 +274,7 @@
       if(!email || email.indexOf("@")<0){ var i=$("authEmail"); if(i) i.focus(); return; }
       var go=$("authGo"); if(go){ go.disabled=true; go.textContent="Sending…"; }
       try{
-        var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email, next:"augur-seal-prototype.html"})});
+        var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email, next:"seal.html"})});
         if(req && req.dev_login_token){
           // mail not configured (local dev): sign in immediately
           var ver=await api("/api/auth/verify",{method:"POST",body:JSON.stringify({token:req.dev_login_token})});

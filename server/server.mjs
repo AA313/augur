@@ -113,7 +113,7 @@ add('POST', '/api/auth/request', async ({ res, req, body }) => {
   const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
   db.prepare(`INSERT INTO login_tokens (token, email, created_at, expires_at, used) VALUES (?,?,?,?,0)`).run(token, email, created, expires);
   const base = (process.env.PUBLIC_BASE_URL || baseUrlFromReq(req)).replace(/\/+$/, '');
-  const next = (typeof body.next === 'string' && /^[\w.-]+\.html$/.test(body.next)) ? body.next : 'augur-vault.html';
+  const next = (typeof body.next === 'string' && /^[\w.-]+\.html$/.test(body.next)) ? body.next : 'vault.html';
   const link = `${base}/auth.html?token=${encodeURIComponent(token)}&next=${encodeURIComponent(next)}`;
   if (mailConfigured()) {
     // Real sign-in: email the one-time magic link, and NEVER return the token to the browser.

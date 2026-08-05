@@ -33,11 +33,11 @@
       <nav class="site-nav" aria-label="Primary">
         <a href="index.html">The instrument</a>
         <a href="about.html">About</a>
-        <a href="augur-registry.html">Registry</a>
-        <a href="augur-commons.html">Commons</a>
-        <a href="augur-vault.html">Vault</a>
-        <a href="augur-verifier.html">Verify</a>
-        <a href="augur-seal-prototype.html">Seal a dream</a>
+        <a href="registry.html">Registry</a>
+        <a href="commons.html">Commons</a>
+        <a href="vault.html">Vault</a>
+        <a href="verify.html">Verify</a>
+        <a href="seal.html">Seal a dream</a>
       </nav>
     </div>
   </header>
@@ -67,15 +67,15 @@
     var $=function(id){return document.getElementById(id);};
     var q=new URLSearchParams(location.search);
     var token=(q.get("token")||"").trim();
-    var next=q.get("next")||"augur-vault.html";
-    if(!/^[\w.-]+\.html$/.test(next)) next="augur-vault.html";   // only same-site page names
+    var next=q.get("next")||"vault.html";
+    if(!/^[\w.-]+\.html$/.test(next)) next="vault.html";   // only same-site page names
 
     function setMsg(cls,html){ var el=$("aMsg"); el.className="msg"+(cls?" "+cls:""); el.innerHTML=html; }
 
     if(!token){
       $("aTitle").textContent="Sign-in link incomplete";
       $("aLede").textContent="This link is missing its token. Request a fresh sign-in link and try again.";
-      $("aAct").innerHTML='<a class="btn btn-ghost" href="augur-vault.html">Back to sign in</a>';
+      $("aAct").innerHTML='<a class="btn btn-ghost" href="vault.html">Back to sign in</a>';
       return;
     }
 
@@ -95,7 +95,7 @@
         setTimeout(function(){ location.replace(next); }, 900);
       }catch(e){
         btn.disabled=false;
-        setMsg("err", String(e.message||"Could not sign in.")+' <a href="augur-vault.html">Request a new link</a>');
+        setMsg("err", String(e.message||"Could not sign in.")+' <a href="vault.html">Request a new link</a>');
       }
     });
   })();

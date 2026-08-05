@@ -102,11 +102,11 @@
       <nav class="site-nav" aria-label="Primary">
         <a href="index.html">The instrument</a>
         <a href="about.html">About</a>
-        <a href="augur-registry.html">Registry</a>
-        <a href="augur-commons.html">Commons</a>
-        <a class="on" href="augur-vault.html">Vault</a>
-        <a href="augur-verifier.html">Verify</a>
-        <a href="augur-seal-prototype.html">Seal a dream</a>
+        <a href="registry.html">Registry</a>
+        <a href="commons.html">Commons</a>
+        <a class="on" href="vault.html">Vault</a>
+        <a href="verify.html">Verify</a>
+        <a href="seal.html">Seal a dream</a>
       </nav>
     </div>
   </header>
@@ -134,7 +134,7 @@
             <button class="mic" id="micBtn" type="button">&#9679; capture by voice</button>
             <button class="btn btn-primary" id="sealRawBtn" type="button">&#9679; Seal this first version</button>
           </div>
-          <p class="capnote">The first words matter most. A seal fixes them to a moment in time and cannot be moved. It proves what you wrote and when, not that the words match the dream: nothing can prove that. Capturing early is how you keep that gap small. You can add a clearer version later; this raw one stays locked. Want to turn a dream into a testable prediction instead? <a href="augur-seal-prototype.html">Seal it with a condition &rarr;</a></p>
+          <p class="capnote">The first words matter most. A seal fixes them to a moment in time and cannot be moved. It proves what you wrote and when, not that the words match the dream: nothing can prove that. Capturing early is how you keep that gap small. You can add a clearer version later; this raw one stays locked. Want to turn a dream into a testable prediction instead? <a href="seal.html">Seal it with a condition &rarr;</a></p>
         </div>
       </div>
     </section>
@@ -143,7 +143,7 @@
       <div class="cap">Your captures<span class="rt">raw first, refined later, each one sealed</span></div>
       <div class="in">
         <div id="captures"></div>
-        <p class="capnote" style="margin-top:13px">Saved to your account, encrypted in your browser and kept across reloads and devices. Each version still carries a real SHA-256 proof you can save and check in the <a href="augur-verifier.html">Verifier</a>: the anteriority holds even though the text stays private.</p>
+        <p class="capnote" style="margin-top:13px">Saved to your account, encrypted in your browser and kept across reloads and devices. Each version still carries a real SHA-256 proof you can save and check in the <a href="verify.html">Verifier</a>: the anteriority holds even though the text stays private.</p>
       </div>
     </section>
 
@@ -262,7 +262,7 @@
       if(!email || email.indexOf("@")<0){ var i=$("authEmail"); if(i) i.focus(); return; }
       var go=$("authGo"); if(go){ go.disabled=true; go.textContent="Sending…"; }
       try{
-        var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email, next:"augur-vault.html"})});
+        var req=await api("/api/auth/request",{method:"POST",body:JSON.stringify({email:email, next:"vault.html"})});
         if(req && req.dev_login_token){
           // mail not configured (local dev): sign in immediately
           var ver=await api("/api/auth/verify",{method:"POST",body:JSON.stringify({token:req.dev_login_token})});

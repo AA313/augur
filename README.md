@@ -17,8 +17,8 @@ Everything is currently in-memory and resets on reload. The cryptographic seal i
 timestamp anchor is simulated.
 
 ## Pages
-index.html, augur-vault.html, augur-seal-prototype.html, augur-verifier.html,
-augur-registry.html, augur-commons.html, terms.html
+index.html, vault.html, seal.html, verify.html,
+registry.html, commons.html, terms.html
 
 ## What's next
 See CLAUDE.md for architecture and the roadmap: real persistence, a live OpenTimestamps anchor,

@@ -3,11 +3,14 @@
 > **Naming (2026-08-04):** the project and site were renamed from the prototype name **AUGUR** to
 > **Oneiratory** (chosen for uniqueness; several sites already use "Augur", incl. the Ethereum
 > prediction market). The change is **user-facing only**. Internal identifiers deliberately keep the
-> `augur` token so the backend does not break: the page files (`augur-*.html`), the stylesheet
-> (`augur.css`), the env vars (`AUGUR_ADMIN_TOKEN`, `AUGUR_SCAN_URL`, `AUGUR_SCAN_KEY`), the
-> localStorage keys (`augur_session` / `augur_admin`), and the SQLite store all stay as-is. Contact
-> email placeholder is now `contact@oneiratory.com`. Where prose below still says "AUGUR", read
-> "Oneiratory"; where it names an `AUGUR_*` env var or an `augur-*` path, that is the literal
+> `augur` token so the backend does not break: the stylesheet (`augur.css`), the env vars
+> (`AUGUR_ADMIN_TOKEN`, `AUGUR_SECRET`, `AUGUR_SCAN_URL`, `AUGUR_SCAN_KEY`), the localStorage keys
+> (`augur_session` / `augur_admin`), and the SQLite store all stay as-is. **The page files WERE
+> renamed on 2026-08-05** so the URLs read cleanly: `augur-registry.html`->`registry.html`,
+> `augur-commons.html`->`commons.html`, `augur-vault.html`->`vault.html`,
+> `augur-verifier.html`->`verify.html`, `augur-seal-prototype.html`->`seal.html`,
+> `augur-admin.html`->`admin.html`. Contact email is `contact@oneiratory.com`. Where prose below
+> still says "AUGUR", read "Oneiratory"; where it names an `AUGUR_*` env var, that is a literal
 > identifier and must not change.
 
 A registry for dreams and the rare moments they seem to arrive early. Oneiratory lets a person
@@ -79,14 +82,14 @@ are local state: do not snapshot or deploy them.
 
 ## File map
 - `index.html` ............ landing page (front door)
-- `augur-vault.html` ...... private capture journal (voice-to-text, tags, motif detection)
-- `augur-seal-prototype.html` seal flow: compose -> seal -> reveal -> verify, exports a proof bundle
-- `augur-verifier.html` ... standalone offline verifier (recomputes the hash locally)
-- `augur-registry.html` ... public ledger of resolved predictions + leaderboard + voting
-- `augur-commons.html` .... anonymous imageboard (boards, threads, greentext, quote-links, IDs)
+- `vault.html` ...... private capture journal (voice-to-text, tags, motif detection)
+- `seal.html` seal flow: compose -> seal -> reveal -> verify, exports a proof bundle
+- `verify.html` ... standalone offline verifier (recomputes the hash locally)
+- `registry.html` ... public ledger of resolved predictions + leaderboard + voting
+- `commons.html` .... anonymous imageboard (boards, threads, greentext, quote-links, IDs)
 - `terms.html` ........... Terms, Privacy, Copyright, and Research & scholarly use
 - `support.html` ......... "Support AUGUR" donation page (linked from every public footer). Honest, no-obligation founder note; the "Donate to AUGUR" button href is a placeholder pending a real payment provider (see the TODO comment in the file).
-- `augur-admin.html` ..... moderator page (not in nav): admin-token gate, reports queue, remove/restore
+- `admin.html` ..... moderator page (not in nav): admin-token gate, reports queue, remove/restore
 - `augur.css` ............ THE shared design system (tokens, starfield body, full-width header/nav, container, buttons, panel/caption chrome, footer, epigraph). Every page links it; see DESIGN.md.
 - `augur-theme.css` ...... LEGACY, no longer linked (the retired bright-blue Commons theme). Superseded by `augur.css`.
 - `augur-footer.js` ...... LEGACY, no longer used (footer is now markup + `.site-footer` in `augur.css`).
@@ -125,12 +128,12 @@ without updating every page together.
 - **Admin:** token-gated (`x-augur-admin` header == `AUGUR_ADMIN_TOKEN`, default `augur-admin-dev`
   for local; SET IT IN PRODUCTION). Endpoints: `GET /api/admin/reports` (queue + reported content),
   `POST /api/admin/commons/remove|restore` (soft hide via `removed` flag; existing queries already
-  filter `removed=0`), `POST /api/admin/reports/:id/resolve`. UI is `augur-admin.html`.
+  filter `removed=0`), `POST /api/admin/reports/:id/resolve`. UI is `admin.html`.
 - **Image attachments (pre-moderated):** posts/replies can carry one image. The browser re-encodes
   it through a `<canvas>` first (strips ALL EXIF/GPS metadata, caps to 1200px, JPEG q0.82), so no
   location leaks and no huge files. Stored `pending` in `commons_attachments`; **never shown on the
   board until a moderator approves it** (`GET /api/admin/attachments` queue + approve/reject in
-  `augur-admin.html`). `GET /api/commons/attachments/:id` serves bytes only when approved; pending
+  `admin.html`). `GET /api/commons/attachments/:id` serves bytes only when approved; pending
   posts show an "awaiting review" placeholder.
 - **Image safety scanning (`server/scan.mjs`):** two layers before pre-moderation. (1) A local
   perceptual-hash blocklist: the client computes a 64-bit dHash; when a moderator REJECTS an image

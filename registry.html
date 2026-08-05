@@ -80,11 +80,11 @@
       <nav class="site-nav" aria-label="Primary">
         <a href="index.html">The instrument</a>
         <a href="about.html">About</a>
-        <a class="on" href="augur-registry.html">Registry</a>
-        <a href="augur-commons.html">Commons</a>
-        <a href="augur-vault.html">Vault</a>
-        <a href="augur-verifier.html">Verify</a>
-        <a href="augur-seal-prototype.html">Seal a dream</a>
+        <a class="on" href="registry.html">Registry</a>
+        <a href="commons.html">Commons</a>
+        <a href="vault.html">Vault</a>
+        <a href="verify.html">Verify</a>
+        <a href="seal.html">Seal a dream</a>
       </nav>
     </div>
   </header>
@@ -96,8 +96,8 @@
         <p class="lead-line">Calls made before the world caught up.</p>
         <p>Every entry below was <span class="em">sealed</span> before its outcome was known, and unsealed only after. The proofs are real: open any one and your own browser recomputes its fingerprint. The honest misses sit next to the hits, because a ledger that only shows its wins is advertising.</p>
         <div class="intro-actions">
-          <a class="btn btn-primary" href="augur-seal-prototype.html">Seal a dream</a>
-          <a class="btn btn-ghost" href="augur-verifier.html">Verify a proof yourself</a>
+          <a class="btn btn-primary" href="seal.html">Seal a dream</a>
+          <a class="btn btn-ghost" href="verify.html">Verify a proof yourself</a>
         </div>
       </div>
     </section>
@@ -174,7 +174,7 @@
         '<td><span class="q" style="font-size:13px">&ldquo;'+esc(x.claim&&x.claim.specificity||"(no condition set)")+'&rdquo;</span>'+dream+
         '<div class="fdesc">by @'+esc(x.handle||"anonymous")+' &middot; sha-256 <span class="hash" title="'+esc(x.hash)+'">'+shortHash(x.hash)+'</span>'+anchorTag(x)+' &middot; '+votesHTML(x)+'</div></td>'+
         '<td class="stat">'+fmtDate(x.sealed_at)+'</td>'+
-        '<td class="last"><b style="color:'+c+'">'+(hit?"HIT":"MISS")+'</b><br><span class="by">'+(hit?"met":"unmet")+' &middot; <a href="augur-verifier.html">verify</a></span></td></tr>';
+        '<td class="last"><b style="color:'+c+'">'+(hit?"HIT":"MISS")+'</b><br><span class="by">'+(hit?"met":"unmet")+' &middot; <a href="verify.html">verify</a></span></td></tr>';
     }
     function sealedRow(x, alt){
       var revealed=!!x.content;

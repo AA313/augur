@@ -25,7 +25,7 @@ Render builds the `Dockerfile` (Node 24, required by `node:sqlite`) and, after a
 you a URL like `https://oneiratory.onrender.com`. That is the link to share.
 
 The blueprint auto-generates `AUGUR_ADMIN_TOKEN` and `AUGUR_SECRET` as strong random values (never
-the dev defaults). To sign in to the moderator page `/augur-admin.html`, read `AUGUR_ADMIN_TOKEN`
+the dev defaults). To sign in to the moderator page `/admin.html`, read `AUGUR_ADMIN_TOKEN`
 from the service's **Environment** tab. To update the live site later, just `git push` — Render
 redeploys automatically (`autoDeploy: true`).
 
@@ -63,7 +63,7 @@ The Commons accepts image attachments, and they are protected in layers:
 
 1. **Metadata is stripped** in the browser (canvas re-encode) before upload, so no EXIF/GPS leaks.
 2. **Pre-moderation:** every image is held and shown only after a moderator approves it in
-   `/augur-admin.html` (set `AUGUR_ADMIN_TOKEN`).
+   `/admin.html` (set `AUGUR_ADMIN_TOKEN`).
 3. **Perceptual-hash blocklist:** when a moderator rejects an image, its dHash is remembered and
    near-duplicate re-uploads are auto-blocked. This only blocks content already removed here.
 4. **External scanner hook (you must configure it for real CSAM detection):** set
