@@ -46,6 +46,15 @@
   .welcome{border:1px solid var(--line);background:var(--panel-2);border-radius:var(--r);padding:13px 16px;margin:0 0 18px;color:var(--ink);font-size:13.5px;line-height:1.65}
   .welcome b{color:var(--accent)}
   .welcome code{font-family:var(--mono);font-size:12px;background:#e2ddef;padding:0 4px;border-radius:3px;color:var(--accent)}
+  /* board guidelines (imageboard-style rules list) */
+  .rules{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:0 0 18px}
+  .rules .rh{background:var(--accent-soft);color:var(--accent);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+  .rules .rh .rn{color:var(--faint);font-weight:400;letter-spacing:0;text-transform:none}
+  .rules ol{list-style:none;counter-reset:r;margin:0;padding:4px 0}
+  .rules li{position:relative;padding:8px 16px 8px 44px;font-size:13.5px;line-height:1.6;color:var(--ink);border-top:1px solid var(--line-soft)}
+  .rules li:first-child{border-top:none}
+  .rules li::before{counter-increment:r;content:counter(r);position:absolute;left:16px;top:8px;font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700}
+  .rules b{color:var(--ink-strong);font-weight:600}
 
   /* board directory */
   .dir{border:1px solid var(--line);background:var(--card);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
@@ -181,21 +190,37 @@
     <hr class="brule">
 
     <div class="welcome">
-      <b>New here?</b> The Commons is a place to share dreams anonymously, with no account and no names. Pick a board, post a dream, and reply to others. Start a line with <code>&gt;</code> for greentext, and type <code>&gt;&gt;</code> plus a post number to quote it. A few example threads are already here to show how it works; add yours to any board. Above all, be kind: these are people&rsquo;s real dreams.
+      <b>New here?</b> The Commons is a place to share dreams anonymously, with no account and no names. Pick a board, post a dream, and reply to others. Start a line with <code>&gt;</code> for greentext, and type <code>&gt;&gt;</code> plus a post number to quote it. Above all, be kind: these are people&rsquo;s real dreams.
+    </div>
+
+    <div class="rules">
+      <div class="rh"><span>Guidelines</span><span class="rn">read before posting</span></div>
+      <ol>
+        <li><b>Be kind.</b> These are people&rsquo;s real dreams. Reply in good faith. No mocking, harassing, or targeting anyone.</li>
+        <li><b>Nothing illegal.</b> Do not post anything that breaks the laws of Australia. Unlawful content is removed, and any child sexual abuse material is reported to the authorities.</li>
+        <li><b>No doxxing.</b> Never post private or identifying information about anyone, yourself included. This place stays anonymous.</li>
+        <li><b>Do not impersonate staff.</b> No pretending to be an admin, a moderator, or another poster. Staff will never ask you for a password or payment.</li>
+        <li><b>No hate or incitement.</b> No racist, sexist, or otherwise bigoted remarks. Nothing that incites hatred or violence, or that encourages self-harm, against any person or group.</li>
+        <li><b>No spam or gibberish.</b> No advertising, scams, referral links, flooding, or nonsense text. One dream per thread, written to be read.</li>
+        <li><b>Keep images safe.</b> Attachments are stripped of metadata, scanned, and held for a moderator&rsquo;s approval before they appear. No sexual, graphic, or shock images.</li>
+        <li><b>Do not attack the site.</b> No attempts to break, overload, scrape, or probe the Service.</li>
+        <li><b>Post honestly.</b> Record the misses beside the hits. Do not fabricate a dream to game the Registry.</li>
+        <li><b>Moderators have the final say.</b> Posts and threads may be removed, and access restricted, to keep the Commons safe and usable. See the <a href="terms.html#conduct">Terms</a> for the full policy.</li>
+      </ol>
     </div>
 
     <!-- BOARD DIRECTORY -->
     <div class="dir">
       <div class="dh">Boards</div>
       <table>
-        <tr class="allrow"><td class="slug"><a data-board="all" href="#all">All boards</a></td><td class="bd">every dream, newest first</td><td class="ct">1,903 threads</td></tr>
-        <tr><td class="slug"><a data-board="came-true" href="#came-true">/came-true/</a></td><td class="bd">dreams that arrived early</td><td class="ct">412 threads</td></tr>
-        <tr><td class="slug"><a data-board="recurring" href="#recurring">/recurring/</a></td><td class="bd">the ones that keep returning</td><td class="ct">288 threads</td></tr>
-        <tr><td class="slug"><a data-board="lucid" href="#lucid">/lucid/</a></td><td class="bd">waking up inside the dream</td><td class="ct">507 threads</td></tr>
-        <tr><td class="slug"><a data-board="astral" href="#astral">/astral/</a></td><td class="bd">projection, onset, the drift</td><td class="ct">193 threads</td></tr>
-        <tr><td class="slug"><a data-board="altered" href="#altered">/altered/</a></td><td class="bd">tripping in the dream, on a known substance or something nameless</td><td class="ct">106 threads</td></tr>
-        <tr><td class="slug"><a data-board="nightmares" href="#nightmares">/nightmares/</a></td><td class="bd">the dark ones</td><td class="ct">339 threads</td></tr>
-        <tr><td class="slug"><a data-board="discussion" href="#discussion">/discussion/</a></td><td class="bd">is any of this real</td><td class="ct">164 threads</td></tr>
+        <tr class="allrow"><td class="slug"><a data-board="all" href="#all">All boards</a></td><td class="bd">every dream, newest first</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="came-true" href="#came-true">/came-true/</a></td><td class="bd">dreams that arrived early</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="recurring" href="#recurring">/recurring/</a></td><td class="bd">the ones that keep returning</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="lucid" href="#lucid">/lucid/</a></td><td class="bd">waking up inside the dream</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="astral" href="#astral">/astral/</a></td><td class="bd">projection, onset, the drift</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="altered" href="#altered">/altered/</a></td><td class="bd">tripping in the dream, on a known substance or something nameless</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="nightmares" href="#nightmares">/nightmares/</a></td><td class="bd">the dark ones</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="discussion" href="#discussion">/discussion/</a></td><td class="bd">is any of this real</td><td class="ct">&hellip;</td></tr>
       </table>
     </div>
 

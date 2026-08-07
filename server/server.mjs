@@ -616,8 +616,12 @@ const server = createServer(async (req, res) => {
   }
 });
 
-const seeded = seedCommonsIfEmpty();
-const seededReg = seedRegistryIfEmpty();
+// Seed example content only in development. Production launches with an empty Commons and
+// Registry so real visitors are not shown fabricated threads. Set AUGUR_SEED=1 to force-seed
+// a production instance (e.g. for a demo build).
+const wantSeed = DEV || process.env.AUGUR_SEED === '1';
+const seeded = wantSeed ? seedCommonsIfEmpty() : { seeded: false, threads: 0 };
+const seededReg = wantSeed ? seedRegistryIfEmpty() : { seeded: false, entries: 0 };
 server.listen(PORT, () => {
   console.log(`Oneiratory backend + site listening on port ${PORT}  (${DEV ? 'dev' : 'production'})`);
   if (seeded.seeded) console.log(`seeded Commons with ${seeded.threads} starter threads`);
