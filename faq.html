@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oneiratory · Questions and answers</title>
+<meta name="description" content="Plain answers about Oneiratory: what sealing a dream proves, whether it is a psychic app, how the timestamp works, privacy and anonymity, the rules, and how to start.">
+<meta name="theme-color" content="#544d7c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Social share preview. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Oneiratory">
+<meta property="og:title" content="Oneiratory · Questions and answers">
+<meta property="og:description" content="What a seal proves, why it is not a psychic app, how the timestamp works, privacy, anonymity, and how to start.">
+<meta property="og:image" content="https://oneiratory.com/share.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oneiratory · Questions and answers">
+<meta name="twitter:description" content="What a seal proves, why it is not a psychic app, how the timestamp works, privacy, and how to start.">
+<meta name="twitter:image" content="https://oneiratory.com/share.svg">
+<link rel="stylesheet" href="oneiratory.css">
+<style>
+  /* ---------- faq-specific ---------- */
+  .lede{padding:26px 2px 16px;text-align:center}
+  .lede h1{font-family:var(--serif);font-weight:400;color:var(--ink-strong);
+    font-size:clamp(30px,6vw,48px);line-height:1.12;letter-spacing:-.01em;margin:0 0 12px;text-wrap:balance}
+  .lede p{color:var(--muted);font-size:clamp(15px,2vw,17px);font-family:var(--serif);font-style:italic;max-width:50ch;margin:0 auto;line-height:1.6}
+
+  /* jump links to the four groups */
+  .jump{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 6px}
+  .jump a{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    text-decoration:none;border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;transition:border-color .15s,background .15s}
+  .jump a:hover{border-color:var(--accent);background:var(--panel-2);text-decoration:none}
+
+  /* a single question + answer, no side-stripe, flat */
+  .qa{padding:20px 0;border-top:1px solid var(--line-soft)}
+  .qa:first-of-type{border-top:none;padding-top:6px}
+  .qa h3{font-family:var(--serif);font-weight:400;font-size:clamp(16px,2.3vw,19px);color:var(--ink-strong);
+    margin:0 0 9px;line-height:1.35;text-wrap:balance}
+  .qa h3::before{content:"Q";font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;
+    margin-right:9px;vertical-align:2px}
+  .qa p{font-size:14.5px;line-height:1.78;color:#3a3450;margin:0 0 11px;max-width:66ch}
+  .qa p:last-child{margin:0}
+  .qa .em{color:var(--accent);font-style:italic}
+  .qa a{color:var(--accent)}
+
+  .actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:16px}
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">Oneiratory</a>
+      <input class="nav-toggle" type="checkbox" id="navtoggle" aria-label="Toggle navigation menu">
+      <label class="nav-burger" for="navtoggle"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="#cfcae6" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></label>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">The instrument</a>
+        <a href="about.html">About</a>
+        <a class="on" href="faq.html">FAQ</a>
+        <a href="registry.html">Registry</a>
+        <a href="commons.html">Commons</a>
+        <a href="vault.html">Vault</a>
+        <a href="verify.html">Verify</a>
+        <a href="seal.html">Seal a dream</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="lede">
+      <h1>Questions and answers</h1>
+      <p>Plain answers to what people ask first. Every claim here is meant to be checked.</p>
+    </div>
+
+    <div class="jump">
+      <a href="#basics">The basics</a>
+      <a href="#proof">How the proof works</a>
+      <a href="#privacy">Privacy and anonymity</a>
+      <a href="#community">Community and getting started</a>
+    </div>
+
+    <section>
+      <div class="cap" id="basics">The basics<span class="rt">start here</span></div>
+      <div class="in">
+        <div class="qa">
+          <h3>What is Oneiratory?</h3>
+          <p>Oneiratory is a registry for dreams and the rare moments they seem to arrive early. You record a dream, seal it so its exact wording is fixed to a moment in time, and later prove it was written before the event it seemed to foretell. Around that sit a private journal (the <a href="vault.html">Vault</a>), a public ledger of resolved predictions (the <a href="registry.html">Registry</a>), an anonymous board (the <a href="commons.html">Commons</a>), and a proof <a href="verify.html">verifier</a>.</p>
+        </div>
+        <div class="qa">
+          <h3>Is this a psychic or fortune-telling app?</h3>
+          <p>No. Oneiratory takes no position on whether dreams foresee anything. A seal proves only <span class="em">anteriority</span>: that a specific text existed, unchanged, before a moment in time. It is an instrument, not an oracle, and it shows its misses beside its hits.</p>
+        </div>
+        <div class="qa">
+          <h3>Is it free?</h3>
+          <p>Yes, completely. There is no advertising, and nothing is locked behind a payment. If the project comes to mean something to you, a <a href="support.html">donation</a> helps cover the running costs, but it is never required and changes nothing about what you can do here.</p>
+        </div>
+        <div class="qa">
+          <h3>Do I need an account?</h3>
+          <p>The Commons needs no sign-up at all. The Vault and sealing a dream use a simple email sign-in: we send a one-time link, so there is no password to remember.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cap" id="proof">How the proof works<span class="rt">the mechanism</span></div>
+      <div class="in">
+        <div class="qa">
+          <h3>What does sealing a dream actually do?</h3>
+          <p>When you seal, your browser calculates a SHA-256 hash, a short fingerprint, of your dream&rsquo;s exact words together with the outcome you say would count as it coming true. That fingerprint is then timestamped. The wording is locked: change a single character and the fingerprint no longer matches.</p>
+        </div>
+        <div class="qa">
+          <h3>What is a timestamp anchor?</h3>
+          <p>The fingerprint is stamped by an independent timestamp authority (the RFC-3161 standard) and also submitted to the Bitcoin blockchain through OpenTimestamps. Both are real, and both can be checked by anyone, even if Oneiratory no longer exists.</p>
+        </div>
+        <div class="qa">
+          <h3>Can I check a proof without trusting Oneiratory?</h3>
+          <p>Yes, and you are meant to. The standalone <a href="verify.html">Verifier</a> recomputes the hash and checks the timestamp entirely in your own browser, from a proof bundle you can download. It keeps working even if this site is offline.</p>
+        </div>
+        <div class="qa">
+          <h3>What stops someone editing a dream after the fact?</h3>
+          <p>The hash. The seal fixes the exact words, so any later edit produces a different fingerprint that will not match the timestamped one. Tampering does not slip through; it simply fails to verify.</p>
+        </div>
+        <div class="qa">
+          <h3>Do I have to make the dream public to seal it?</h3>
+          <p>No. You can seal privately, so that only the fingerprint is recorded while the words stay hidden. That already proves the dream existed at a given time. You choose if and when to reveal it and add it to the public Registry.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cap" id="privacy">Privacy and anonymity<span class="rt">trust is the product</span></div>
+      <div class="in">
+        <div class="qa">
+          <h3>Are my dreams private?</h3>
+          <p>Yes. Vault entries and sealed content are end-to-end encrypted in your browser using a passphrase only you hold. The server stores only the encrypted text, so <span class="em">we cannot read your dreams</span>.</p>
+        </div>
+        <div class="qa">
+          <h3>What happens if I forget my passphrase?</h3>
+          <p>It cannot be recovered, by design, not even by us. Your encrypted dreams would stay locked. Please keep your passphrase somewhere safe, because there is no reset.</p>
+        </div>
+        <div class="qa">
+          <h3>Is the Commons really anonymous?</h3>
+          <p>Yes. There are no accounts and no names. A post is given a temporary ID within its own thread so a conversation holds together, but it cannot be followed from one thread to another, and raw IP addresses are not stored.</p>
+        </div>
+        <div class="qa">
+          <h3>Do you sell or share my data?</h3>
+          <p>Never. There is no advertising and no data selling. Public Registry and Commons content may be used, anonymised, for research (explained in the <a href="terms.html#research">Terms</a>). Private Vault entries are only ever used with your explicit opt-in.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cap" id="community">Community and getting started<span class="rt">the last few</span></div>
+      <div class="in">
+        <div class="qa">
+          <h3>What are the rules for posting?</h3>
+          <p>Be kind, post nothing illegal, do not reveal anyone&rsquo;s private information, do not impersonate staff, and keep hate and spam out. The full guidelines sit at the top of the <a href="commons.html">Commons</a>, and the complete policy is in the <a href="terms.html#conduct">Terms</a>.</p>
+        </div>
+        <div class="qa">
+          <h3>Can I delete a dream or a post?</h3>
+          <p>You can remove entries from your Vault at any time. A seal&rsquo;s timestamp is meant to be permanent, but you decide whether it is ever revealed or published; anything you do not publish stays private to you. Commons content can be reported, and moderators can remove it.</p>
+        </div>
+        <div class="qa">
+          <h3>Who is behind Oneiratory?</h3>
+          <p>One dreamer, who prefers to stay in the background. The story of why it exists, the nightmares and the dreams that later came true, is on the <a href="about.html">About</a> page.</p>
+        </div>
+        <div class="qa">
+          <h3>How do I start?</h3>
+          <p>Seal the next dream you cannot shake, or open the Vault to begin a private journal. If you are not ready to sign in, you can read and post on the Commons with no account at all.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="seal.html">Seal a dream</a>
+            <a class="btn btn-ghost" href="verify.html">Verify a proof yourself</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="epigraph">&ldquo;Ask anything. Every claim here is meant to be checked.&rdquo;</div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <p class="note">the seal and its RFC-3161 timestamp anchor are real, and each seal is also submitted to Bitcoin via OpenTimestamps</p>
+      <a href="index.html">The instrument</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="terms.html#research">Research use</a> &middot; <a href="support.html">Support Oneiratory</a> &middot; contact@oneiratory.com
+    </div>
+  </footer>
+</body>
+</html>
