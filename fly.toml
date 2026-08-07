@@ -1,0 +1,35 @@
+# Fly.io config for Oneiratory (zero-dependency Node backend + static site).
+# Builds the repo Dockerfile (Node 24, built-in node:sqlite). The SQLite database
+# lives on a persistent volume mounted at /app/data, so real dreams, seals, Vault
+# entries and Commons posts survive restarts and redeploys.
+#
+# App name must be globally unique on Fly. If "oneiratory" is taken, change it here
+# and in the `fly apps create` / volume commands. The public *.fly.dev name does not
+# matter once your Cloudflare domain points at the app.
+
+app = "oneiratory"
+primary_region = "syd"   # Sydney: closest region to an Australia-based operator and users
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"           # matches the Dockerfile default; the server reads process.env.PORT
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"   # stop the machine when idle to keep cost near-zero
+  auto_start_machines = true    # start again on the next request (data persists on the volume)
+  min_machines_running = 0      # set to 1 for always-on (no cold start, ~a couple $/mo more)
+
+# Persistent storage for the SQLite database. Create it once with:
+#   fly volumes create oneiratory_data --region syd --size 1
+[mounts]
+  source = "oneiratory_data"
+  destination = "/app/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
