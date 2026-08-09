@@ -56,7 +56,11 @@ a{color:var(--link)}
 .site-header{position:sticky;top:0;z-index:var(--z-header);background:var(--bar);border-bottom:1px solid #443e68}
 .site-header .inner{max-width:1060px;margin:0 auto;padding:0 clamp(16px,4vw,28px);
   min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.brand{font-family:var(--serif);font-size:21px;letter-spacing:.16em;color:#fff;text-indent:.16em;text-decoration:none;padding:9px 0;white-space:nowrap}
+.brand{display:inline-flex;align-items:center;gap:10px;font-family:var(--serif);font-size:21px;color:#fff;text-decoration:none;padding:7px 0;white-space:nowrap}
+.brand-mark{display:block;flex:none}
+.brand-wm{letter-spacing:.03em}
+.brand-wm .i{position:relative}
+.brand-wm .i .tit{position:absolute;left:50%;top:0;width:.32em;height:.32em;transform:translate(-50%,-52%);display:block}
 .site-nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;max-width:100%}
 .site-nav::-webkit-scrollbar{display:none}
 .site-nav a{font-family:var(--sans);font-size:13px;color:#cfcae6;text-decoration:none;
