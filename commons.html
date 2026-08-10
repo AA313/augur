@@ -214,14 +214,13 @@
     <div class="dir">
       <div class="dh">Boards</div>
       <table>
-        <tr class="allrow"><td class="slug"><a data-board="all" href="#all">All boards</a></td><td class="bd">every dream, newest first</td><td class="ct">&hellip;</td></tr>
-        <tr><td class="slug"><a data-board="came-true" href="#came-true">/came-true/</a></td><td class="bd">dreams that arrived early</td><td class="ct">&hellip;</td></tr>
-        <tr><td class="slug"><a data-board="recurring" href="#recurring">/recurring/</a></td><td class="bd">the ones that keep returning</td><td class="ct">&hellip;</td></tr>
-        <tr><td class="slug"><a data-board="lucid" href="#lucid">/lucid/</a></td><td class="bd">waking up inside the dream</td><td class="ct">&hellip;</td></tr>
-        <tr><td class="slug"><a data-board="astral" href="#astral">/astral/</a></td><td class="bd">projection, onset, the drift</td><td class="ct">&hellip;</td></tr>
-        <tr><td class="slug"><a data-board="altered" href="#altered">/altered/</a></td><td class="bd">tripping in the dream, on a known substance or something nameless</td><td class="ct">&hellip;</td></tr>
-        <tr><td class="slug"><a data-board="nightmares" href="#nightmares">/nightmares/</a></td><td class="bd">the dark ones</td><td class="ct">&hellip;</td></tr>
-        <tr><td class="slug"><a data-board="discussion" href="#discussion">/discussion/</a></td><td class="bd">is any of this real</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="came-true" href="?board=came-true">/came-true/</a></td><td class="bd">dreams that arrived early</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="recurring" href="?board=recurring">/recurring/</a></td><td class="bd">the ones that keep returning</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="lucid" href="?board=lucid">/lucid/</a></td><td class="bd">waking up inside the dream</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="astral" href="?board=astral">/astral/</a></td><td class="bd">projection, onset, the drift</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="altered" href="?board=altered">/altered/</a></td><td class="bd">tripping in the dream, on a known substance or something nameless</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="nightmares" href="?board=nightmares">/nightmares/</a></td><td class="bd">the dark ones</td><td class="ct">&hellip;</td></tr>
+        <tr><td class="slug"><a data-board="discussion" href="?board=discussion">/discussion/</a></td><td class="bd">is any of this real</td><td class="ct">&hellip;</td></tr>
       </table>
     </div>
 
@@ -417,27 +416,31 @@
     try{updateStats(await api("/api/commons/stats"));updateDirectory((await api("/api/commons/threads")).items);}catch(e){}
   }
 
-  // ---- board filter (hash based) ----
+  // ---- board navigation: each board is its own page (?board=slug), like an imageboard ----
   var sel=document.querySelector(".composer select");
-  var ind=document.getElementById("viewing");
-  function show(board){
-    [].forEach.call(boardsEl.querySelectorAll(".group"),function(g){g.style.display=(board==="all"||g.id===board)?"":"none";});
-    [].forEach.call(document.querySelectorAll(".dir a[data-board]"),function(a){
-      var tr=a.parentNode.parentNode;
-      if(a.getAttribute("data-board")===board)tr.classList.add("active");else tr.classList.remove("active");
-    });
-    if(ind){
-      ind.innerHTML=(board==="all")?"showing <b>all boards</b>"
-        :"showing <b>/"+board+"/</b> only &nbsp;&middot;&nbsp; <span style='font-style:italic;font-family:Georgia,serif'>"+esc(DESC[board]||"")+"</span> &nbsp;&middot;&nbsp; <a href='#all'>show all boards</a>";
+  var viewing=document.getElementById("viewing");
+  var CURRENT=(function(){
+    var b=(new URLSearchParams(location.search).get("board")||"").toLowerCase();
+    return ORDER.indexOf(b)>=0 ? b : null;   // null = the board index (the menu of boards)
+  })();
+  function elShow(target,shown){var el=(typeof target==="string")?document.querySelector(target):target;if(el)el.style.display=shown?"":"none";}
+  function applyMode(){
+    var onBoard=!!CURRENT;
+    // index-only elements (the welcome, the guidelines, the board menu)
+    elShow(".welcome",!onBoard); elShow(".rules",!onBoard); elShow(".dir",!onBoard);
+    // board-page-only elements (the composer and the thread list)
+    elShow(".composer",onBoard); elShow(boardsEl,onBoard);
+    if(viewing){
+      if(onBoard){
+        viewing.style.display=""; viewing.style.padding="2px 2px 12px";
+        viewing.innerHTML='<a href="commons.html" style="font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--accent);text-decoration:none">&larr; all boards</a>';
+      } else { viewing.style.display="none"; }
     }
-    if(sel&&board!=="all"){for(var k=0;k<sel.options.length;k++){if(sel.options[k].text==="/"+board+"/")sel.selectedIndex=k;}}
+    if(onBoard&&sel){
+      for(var k=0;k<sel.options.length;k++){if(sel.options[k].text==="/"+CURRENT+"/")sel.selectedIndex=k;}
+      sel.disabled=true;   // you post to the board you are on
+    }
   }
-  function fromHash(){
-    var h=(location.hash||"#all").slice(1);
-    if(/^p\d+$/.test(h))return;              // a post anchor, not a board filter
-    show(VALID.indexOf(h)>=0?h:"all");
-  }
-  window.addEventListener("hashchange",fromHash);
 
   // quote-links scroll without disturbing the board filter
   boardsEl.addEventListener("click",function(e){
@@ -546,8 +549,6 @@
       }
       ta.value="";if(subjectEl)subjectEl.value="";
       composerImage=null; if(capImage)capImage.value=""; if(capImgInfo)capImgInfo.textContent="";
-      var cur=(location.hash||"").slice(1);
-      if(cur&&cur!=="all"&&cur!==board&&VALID.indexOf(cur)>=0)location.hash="#"+board;
       if(g)g.querySelector(".post.op").scrollIntoView({behavior:"smooth",block:"center"});
       refreshMeta();
     }catch(err){alert("Could not post the dream: "+err.message);}
@@ -556,22 +557,26 @@
 
   // ---- boot ----
   (async function load(){
-    var cat,fulls,stats;
-    try{
-      cat=(await api("/api/commons/threads")).items;
-      fulls=await Promise.all(cat.map(function(t){return api("/api/commons/threads/"+t.no);}));
-      stats=await api("/api/commons/stats").catch(function(){return null;});
-    }catch(e){
-      boardsEl.innerHTML='<div class="welcome" style="background:#fdeeee;border-color:#f0cccc">The board could not be reached. Start the Oneiratory server with <code>npm start</code> and open this page from <b>http://127.0.0.1:8787</b>.</div>';
+    applyMode();
+    if(!CURRENT){
+      // BOARD INDEX: the menu of boards. Show per-board counts and stats, but no threads.
+      try{ updateDirectory((await api("/api/commons/threads")).items); }catch(e){}
+      try{ updateStats(await api("/api/commons/stats")); }catch(e){}
+      boardsEl.innerHTML="";
       return;
     }
-    var byBoard={};ORDER.forEach(function(b){byBoard[b]=[];});
-    fulls.forEach(function(f){if(byBoard[f.op.board])byBoard[f.op.board].push(f);});
+    // BOARD PAGE: only this board's threads.
+    var cat,fulls;
+    try{
+      cat=(await api("/api/commons/threads?board="+encodeURIComponent(CURRENT))).items;
+      fulls=await Promise.all(cat.map(function(t){return api("/api/commons/threads/"+t.no);}));
+    }catch(e){
+      boardsEl.innerHTML='<div class="welcome" style="background:#fdeeee;border-color:#f0cccc">This board could not be reached just now. Please try again shortly.</div>';
+      return;
+    }
     boardsEl.innerHTML="";
-    ORDER.forEach(function(slug){boardsEl.appendChild(boardGroup(slug,byBoard[slug]));});
-    updateDirectory(cat);
-    if(stats)updateStats(stats);
-    fromHash();
+    boardsEl.appendChild(boardGroup(CURRENT,fulls));
+    try{ updateStats(await api("/api/commons/stats")); }catch(e){}
   })();
 })();
 </script>
