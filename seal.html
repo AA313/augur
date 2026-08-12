@@ -260,13 +260,13 @@
           '<button type="button" class="signin" id="passGo">'+(creating?"Set &amp; unlock":"Unlock")+'</button>'+
           '<span class="anote">'+(creating
             ? "Your dreams are encrypted in this browser with this passphrase; the server only ever stores ciphertext until you reveal one. <b>If you forget it, sealed dreams cannot be recovered, not even by us.</b> The same passphrase unlocks your Vault."
-            : "Signed in as "+esc(user.email)+". Enter your passphrase to seal and to reveal your dreams. <b>Forget it and your sealed dreams cannot be recovered, not even by us.</b>")+
+            : "Signed in as "+esc(user.email).replace(/^(.).*(@.*)$/,"$1•••$2")+". Enter your passphrase to seal and to reveal your dreams. <b>Forget it and your sealed dreams cannot be recovered, not even by us.</b>")+
           ' <span class="signout" id="soLink">sign out</span></span></div>';
         bar.querySelector("#passGo").addEventListener("click", function(){ creating?setupPassphrase($("passIn").value):unlockPassphrase($("passIn").value); });
         bar.querySelector("#passIn").addEventListener("keydown", function(e){ if(e.key==="Enter") bar.querySelector("#passGo").click(); });
         bar.querySelector("#soLink").addEventListener("click", signOut);
       } else {
-        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email)+'</span> &middot; <span title="encrypted, unlocked">&#128275; unlocked</span> &nbsp;<span class="signout" id="lockLink">lock</span> &middot; <span class="signout" id="soLink2">sign out</span></div>';
+        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email).replace(/^(.).*(@.*)$/,"$1•••$2")+'</span> &middot; <span title="encrypted, unlocked">&#128275; unlocked</span> &nbsp;<span class="signout" id="lockLink">lock</span> &middot; <span class="signout" id="soLink2">sign out</span></div>';
         bar.querySelector("#lockLink").addEventListener("click", function(){ key=null; renderAuth(); });
         bar.querySelector("#soLink2").addEventListener("click", signOut);
       }

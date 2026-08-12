@@ -90,7 +90,7 @@
         if(!r.ok || !b || !b.session_token) throw new Error((b&&b.error&&b.error.message)||"This link is invalid or has expired.");
         localStorage.setItem(SKEY, b.session_token);
         $("aTitle").textContent="You're signed in";
-        $("aLede").innerHTML='Signed in as <span class="em">'+String((b.user&&b.user.email)||"").replace(/[&<>"]/g,"")+'</span>. Taking you in&hellip;';
+        $("aLede").innerHTML='Signed in as <span class="em">'+String((b.user&&b.user.email)||"").replace(/[&<>"]/g,"").replace(/^(.).*(@.*)$/,"$1•••$2")+'</span>. Taking you in&hellip;';
         $("aAct").innerHTML='<a class="btn btn-primary" href="'+next+'">Continue</a>';
         setMsg("ok","");
         setTimeout(function(){ location.replace(next); }, 900);

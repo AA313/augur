@@ -248,13 +248,13 @@
           '<button type="button" class="signin" id="passGo">'+(creating?"Set &amp; unlock":"Unlock")+'</button>'+
           '<div class="anote">'+(creating
             ? "This encrypts your dreams in this browser; we store only ciphertext and never see this passphrase. <b>If you forget it, your sealed dreams cannot be recovered, not even by us.</b>"
-            : "Signed in as "+esc(user.email)+". Enter your encryption passphrase to decrypt your dreams. <b>Forget it and they cannot be recovered, not even by us.</b>")+
+            : "Signed in as "+esc(user.email).replace(/^(.).*(@.*)$/,"$1•••$2")+". Enter your encryption passphrase to decrypt your dreams. <b>Forget it and they cannot be recovered, not even by us.</b>")+
           ' <span class="signout" id="soLink">sign out</span></div></div>';
         bar.querySelector("#passGo").addEventListener("click", function(){ creating?setupPassphrase($("passIn").value):unlockPassphrase($("passIn").value); });
         bar.querySelector("#passIn").addEventListener("keydown", function(e){ if(e.key==="Enter") bar.querySelector("#passGo").click(); });
         bar.querySelector("#soLink").addEventListener("click", signOut);
       } else {
-        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email)+'</span> &middot; <span title="encrypted, unlocked">&#128275; unlocked</span><br><span class="signout" id="lockLink">lock</span> &middot; <span class="signout" id="soLink2">sign out</span></div>';
+        bar.innerHTML='<div class="signedin">Signed in as <span class="em">'+esc(user.email).replace(/^(.).*(@.*)$/,"$1•••$2")+'</span> &middot; <span title="encrypted, unlocked">&#128275; unlocked</span><br><span class="signout" id="lockLink">lock</span> &middot; <span class="signout" id="soLink2">sign out</span></div>';
         bar.querySelector("#lockLink").addEventListener("click", function(){ key=null; renderAuth(); render(); });
         bar.querySelector("#soLink2").addEventListener("click", signOut);
       }
