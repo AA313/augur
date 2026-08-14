@@ -1,0 +1,15 @@
+{
+  "name": "Oneiratory",
+  "short_name": "Oneiratory",
+  "description": "Prove you dreamed it first. Record a dream, seal it to a moment in time, and later prove it came first.",
+  "id": "/",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#edecf4",
+  "theme_color": "#544d7c",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/apple-touch-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
