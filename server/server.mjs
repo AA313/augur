@@ -295,13 +295,36 @@ add('POST', '/api/seals/:id/publish', async ({ res, user, params, body }) => {
   json(res, 200, sealOut(db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id), true));
 });
 
+// Domains whose outcome is checkable against the public record. A "hit" on one of these
+// must carry a dated source; personal dreams (private life) can't be externally verified,
+// so evidence is optional there. This keeps the Registry a research-credible dataset
+// without lecturing users that public events are "worth more".
+const VERIFIABLE_DOMAINS = new Set(['public event', 'news', 'weather']);
+
 add('PATCH', '/api/seals/:id/resolve', async ({ res, user, params, body }) => {
   if (!user) return fail(res, 401, 'unauth', 'Sign in required.');
   const row = db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id);
   if (!row || row.user_id !== user.id) return fail(res, 404, 'not_found', 'Seal not found.');
   const outcome = body.outcome;
   if (outcome !== 'hit' && outcome !== 'miss') return fail(res, 400, 'bad_outcome', 'outcome must be "hit" or "miss".');
-  db.prepare(`UPDATE seals SET outcome = ?, status = 'resolved' WHERE id = ?`).run(outcome, params.id);
+
+  let domain = '';
+  try { domain = (JSON.parse(row.claim).domain || '').toLowerCase(); } catch { /* claim may be '{}' */ }
+
+  let evidence = typeof body.evidence === 'string' ? body.evidence.trim() : '';
+  let evidenceDate = typeof body.evidence_date === 'string' ? body.evidence_date.trim() : '';
+  if (evidence.length > 2000) return fail(res, 400, 'evidence_too_long', 'Keep the evidence link or note under 2000 characters.');
+  if (evidenceDate && !/^\d{4}-\d{2}-\d{2}$/.test(evidenceDate)) return fail(res, 400, 'bad_date', 'evidence_date must be YYYY-MM-DD.');
+
+  // A public-verifiable hit needs a source. Misses need nothing; personal hits, evidence optional.
+  if (outcome === 'hit' && VERIFIABLE_DOMAINS.has(domain) && !evidence) {
+    return fail(res, 400, 'evidence_required', 'A hit on a public event, news, or weather claim needs a dated source (a link or citation) so others can check it.');
+  }
+  // Never store evidence on a miss; it only describes a hit.
+  if (outcome === 'miss') { evidence = ''; evidenceDate = ''; }
+
+  db.prepare(`UPDATE seals SET outcome = ?, status = 'resolved', resolved_at = ?, evidence = ?, evidence_date = ?, auto_resolved = 0 WHERE id = ?`)
+    .run(outcome, nowISO(), evidence || null, evidenceDate || null, params.id);
   json(res, 200, sealOut(db.prepare(`SELECT * FROM seals WHERE id = ?`).get(params.id), true));
 });
 
@@ -324,7 +347,8 @@ function sealOut(r, full = false) {
     id: r.id, commitment_hash: r.commitment_hash, claim: JSON.parse(r.claim),
     created_at: r.created_at, sealed_at: r.sealed_at, ots_status: r.ots_status,
     anchor_time: r.anchor_time, tsa_name: r.tsa_name, status: r.status, is_public: !!r.is_public,
-    handle: r.handle, outcome: r.outcome, revealed_at: r.revealed_at,
+    handle: r.handle, outcome: r.outcome, revealed_at: r.revealed_at, resolved_at: r.resolved_at,
+    evidence: r.evidence || null, evidence_date: r.evidence_date || null, auto_resolved: !!r.auto_resolved,
     ots_block: r.ots_status === 'complete' && r.ots_proof ? otsBlock(r.ots_proof) : null,
   };
   if (full) {
@@ -408,6 +432,8 @@ function registryOut(r) {
   const p = r.revealed_payload ? JSON.parse(r.revealed_payload) : {};
   return { id: r.id, handle: r.handle, claim: JSON.parse(r.claim), content: p.content ?? null,
     status: r.status, sealed_at: r.sealed_at, revealed_at: r.revealed_at, outcome: r.outcome || 'pending',
+    resolved_at: r.resolved_at, evidence: r.evidence || null, evidence_date: r.evidence_date || null,
+    auto_resolved: !!r.auto_resolved,
     hash: r.commitment_hash, votes: voteCounts(r.id), anchor_time: r.anchor_time, tsa_name: r.tsa_name,
     ots_status: r.ots_status, ots_block: r.ots_status === 'complete' && r.ots_proof ? otsBlock(r.ots_proof) : null };
 }
@@ -639,6 +665,34 @@ setTimeout(async () => {
   }
   if (rfc || btc) console.log(`anchored public seals: ${rfc} via RFC-3161, ${btc} via OpenTimestamps`);
 }, 600);
+
+// Auto-resolve overdue public seals as misses. If a published prediction's own resolution_by
+// date has fully passed and the owner never marked it, the honest default is "miss" — otherwise
+// the Registry's hit-rate would silently exclude every quiet failure. Only touches PUBLIC,
+// revealed, still-unresolved seals; private and unrevealed seals stay the owner's business.
+function runAutoMiss() {
+  const today = nowISO().slice(0, 10);   // UTC yyyy-mm-dd
+  // Covers both revealed (status 'unsealed') and still-sealed public seals: publishing is allowed
+  // while sealed, so "publish many hidden predictions, only ever reveal the hits" would otherwise
+  // dodge the count. Anything already 'resolved' is left alone. The curated Registry examples
+  // (owned by record@augur.seed) are excluded so their authored "awaiting the event" state stays
+  // as written rather than flipping to miss once their showcase deadline drifts into the past.
+  const pend = db.prepare(`SELECT id, claim FROM seals
+    WHERE is_public = 1 AND outcome IS NULL AND status != 'resolved'
+      AND user_id NOT IN (SELECT id FROM users WHERE email = 'record@augur.seed')`).all();
+  let missed = 0;
+  for (const s of pend) {
+    let by = '';
+    try { by = (JSON.parse(s.claim).resolution_by || '').trim(); } catch { continue; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(by)) continue;   // no dated deadline -> can't call it overdue
+    if (by >= today) continue;                        // deadline day itself gets a full grace day
+    db.prepare(`UPDATE seals SET outcome = 'miss', status = 'resolved', resolved_at = ?, auto_resolved = 1 WHERE id = ?`).run(nowISO(), s.id);
+    missed++;
+  }
+  if (missed) console.log(`auto-resolved ${missed} overdue public seal(s) as miss`);
+}
+setTimeout(runAutoMiss, 30 * 1000);          // shortly after a restart
+setInterval(runAutoMiss, 6 * 60 * 60 * 1000); // then every 6 hours (a date deadline needs no finer granularity)
 
 // Periodically fold pending OpenTimestamps proofs into Bitcoin. The calendars confirm over hours,
 // so this quietly upgrades pending seals until each one carries a Bitcoin block attestation.

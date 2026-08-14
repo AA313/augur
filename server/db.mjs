@@ -12,6 +12,18 @@ mkdirSync(dataDir, { recursive: true });
 export const db = new DatabaseSync(join(dataDir, 'augur.db'));
 db.exec(readFileSync(join(here, 'schema.sql'), 'utf8'));
 
+// Idempotent migrations for DBs created before a column existed. CREATE TABLE IF NOT
+// EXISTS won't add columns to an existing table, so add them here; ALTER TABLE throws
+// "duplicate column name" once the column is present, which we swallow.
+for (const ddl of [
+  `ALTER TABLE seals ADD COLUMN resolved_at TEXT`,
+  `ALTER TABLE seals ADD COLUMN evidence TEXT`,
+  `ALTER TABLE seals ADD COLUMN evidence_date TEXT`,
+  `ALTER TABLE seals ADD COLUMN auto_resolved INTEGER NOT NULL DEFAULT 0`,
+]) {
+  try { db.exec(ddl); } catch { /* column already present */ }
+}
+
 // seed the shared post-number counter high, like a real imageboard, only once.
 const haveCounter = db.prepare(`SELECT 1 FROM counters WHERE name = 'post_no'`).get();
 if (!haveCounter) {

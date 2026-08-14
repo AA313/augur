@@ -87,7 +87,11 @@ CREATE TABLE IF NOT EXISTS seals (
   revealed_at      TEXT,
   is_public        INTEGER NOT NULL DEFAULT 0,
   handle           TEXT,                 -- public anon name, set at publish
-  outcome          TEXT                  -- hit | miss | pending, null until resolved
+  outcome          TEXT,                 -- hit | miss | pending, null until resolved
+  resolved_at      TEXT,                 -- server clock when outcome was set
+  evidence         TEXT,                 -- link/source proving a public-verifiable hit
+  evidence_date    TEXT,                 -- date the event actually occurred (client-supplied)
+  auto_resolved    INTEGER NOT NULL DEFAULT 0  -- 1 when the overdue-miss job resolved it, not the owner
 );
 CREATE INDEX IF NOT EXISTS idx_seals_user ON seals(user_id, sealed_at);
 CREATE INDEX IF NOT EXISTS idx_seals_public ON seals(is_public, revealed_at);

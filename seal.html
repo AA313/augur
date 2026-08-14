@@ -345,7 +345,17 @@
       if(s.status==="sealed"){ acts.push(btn("reveal","Reveal")); }
       if(s.status==="unsealed"){ acts.push(btn("resolve-hit","Mark hit","sa hit")); acts.push(btn("resolve-miss","Mark miss","sa miss")); }
       if(!s.is_public){ acts.push(btn("publish","Publish to Registry")); }
-      if(s.status==="resolved"){ acts.push('<span class="done">resolved as '+esc(s.outcome)+'</span>'); }
+      if(s.status==="resolved"){
+        var done='<span class="done">resolved as '+esc(s.outcome);
+        if(s.auto_resolved) done+=' (auto, deadline passed)';
+        done+='</span>';
+        if(s.evidence){
+          var isurl=/^https?:\/\//i.test(s.evidence);
+          var evdate=s.evidence_date?' ('+esc(s.evidence_date)+')':'';
+          done+=' <span class="done">evidence: '+(isurl?'<a href="'+esc(s.evidence)+'" target="_blank" rel="noopener nofollow">source'+evdate+'</a>':esc(s.evidence)+evdate)+'</span>';
+        }
+        acts.push(done);
+      }
       if(s.ots_status==="pending"){ acts.push(btn("upgrade","check bitcoin")); }
       acts.push('<span class="proof" data-act="proof">save proof</span>');
       return '<div class="seal-item" data-id="'+s.id+'">'+
@@ -386,7 +396,28 @@
       try{
         if(act==="proof"){ return await saveProof(s); }
         if(act==="reveal"){ await api("/api/seals/"+id+"/reveal",{method:"POST",body:JSON.stringify({revealed_payload:await decodePayload(s)})}); }
-        else if(act==="resolve-hit"){ await api("/api/seals/"+id+"/resolve",{method:"PATCH",body:JSON.stringify({outcome:"hit"})}); }
+        else if(act==="resolve-hit"){
+          var dom=(s.claim&&s.claim.domain||"").toLowerCase();
+          var needsEv=(dom==="public event"||dom==="news"||dom==="weather");
+          if(needsEv){
+            var fst="font-family:var(--sans);font-size:11px;padding:5px 7px;border:1px solid var(--line);vertical-align:middle";
+            el.outerHTML='<span class="evform">'+
+              '<input class="ev-url" placeholder="link or source proving it (news article, record)" style="'+fst+';width:min(280px,60vw)"> '+
+              '<input class="ev-date" type="date" title="date it actually happened" style="'+fst+'"> '+
+              '<span class="sa hit" data-act="resolve-hit-go">Confirm hit</span> '+
+              '<span class="sa" data-act="resolve-hit-cancel">cancel</span> '+
+              '<span class="ev-msg" style="color:var(--miss);font-size:11.5px"></span></span>';
+            var ui=item.querySelector(".ev-url"); if(ui) ui.focus(); return;
+          }
+          await api("/api/seals/"+id+"/resolve",{method:"PATCH",body:JSON.stringify({outcome:"hit"})});
+        }
+        else if(act==="resolve-hit-go"){
+          var uu=item.querySelector(".ev-url"), dd=item.querySelector(".ev-date");
+          var ev=uu?uu.value.trim():"", evd=dd?dd.value:"";
+          if(!ev){ var m=item.querySelector(".ev-msg"); if(m) m.textContent="a source is required for a public hit"; if(uu) uu.focus(); return; }
+          await api("/api/seals/"+id+"/resolve",{method:"PATCH",body:JSON.stringify({outcome:"hit",evidence:ev,evidence_date:evd})});
+        }
+        else if(act==="resolve-hit-cancel"){ render(); return; }
         else if(act==="resolve-miss"){ await api("/api/seals/"+id+"/resolve",{method:"PATCH",body:JSON.stringify({outcome:"miss"})}); }
         else if(act==="publish"){
           el.outerHTML='<input class="phandle" placeholder="handle (optional)" style="font-family:var(--sans);font-size:11px;padding:5px 7px;border:1px solid var(--line)"> <span class="sa" data-act="publish-go">Publish</span> <span class="sa" data-act="publish-cancel">cancel</span>';

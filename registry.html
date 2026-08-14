@@ -177,12 +177,19 @@
     function recordRow(x, alt){
       var hit=(x.outcome==="hit"); var c=hit?"#587552":"#95687a"; var mark=hit?"&#9679;":"&#9675;";
       var dream=x.content?'<div class="dreamline">the dream: <span>'+esc(x.content)+'</span></div>':"";
+      var ev="";
+      if(hit&&x.evidence){
+        var isurl=/^https?:\/\//i.test(x.evidence);
+        var evd=x.evidence_date?" &middot; "+esc(x.evidence_date):"";
+        ev=' &middot; evidence: '+(isurl?'<a href="'+esc(x.evidence)+'" target="_blank" rel="noopener nofollow">source</a>':esc(x.evidence))+evd;
+      }
+      var by=hit?"met":(x.auto_resolved?"unmet (deadline passed, unclaimed)":"unmet");
       return '<tr class="'+(alt?"alt":"")+'">'+
         '<td class="mark" style="color:'+c+';opacity:1">'+mark+'</td>'+
         '<td><span class="q" style="font-size:13px">&ldquo;'+esc(x.claim&&x.claim.specificity||"(no condition set)")+'&rdquo;</span>'+dream+
-        '<div class="fdesc">by @'+esc(x.handle||"anonymous")+' &middot; sha-256 <span class="hash" title="'+esc(x.hash)+'">'+shortHash(x.hash)+'</span>'+anchorTag(x)+' &middot; '+votesHTML(x)+'</div></td>'+
+        '<div class="fdesc">by @'+esc(x.handle||"anonymous")+' &middot; sha-256 <span class="hash" title="'+esc(x.hash)+'">'+shortHash(x.hash)+'</span>'+anchorTag(x)+' &middot; '+votesHTML(x)+ev+'</div></td>'+
         '<td class="stat">'+fmtDate(x.sealed_at)+'</td>'+
-        '<td class="last"><b style="color:'+c+'">'+(hit?"HIT":"MISS")+'</b><br><span class="by">'+(hit?"met":"unmet")+' &middot; <a href="verify.html">verify</a></span></td></tr>';
+        '<td class="last"><b style="color:'+c+'">'+(hit?"HIT":"MISS")+'</b><br><span class="by">'+by+' &middot; <a href="verify.html">verify</a></span></td></tr>';
     }
     function sealedRow(x, alt){
       var revealed=!!x.content;
