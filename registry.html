@@ -28,12 +28,47 @@
 <style>
   /* ---------- registry-specific ---------- */
   a:visited{color:#84739f}
-  .ex-note{border:1px solid var(--line-soft);background:var(--warm-soft);border-radius:var(--r-sm);
-    padding:11px 15px;margin:0 0 18px;color:#5a4636;font-size:13px;line-height:1.6}
-  .ex-note b{color:var(--warm);font-weight:600}
   .lead-line{font-family:var(--serif);font-size:clamp(16px,2vw,18px);color:#41395c;line-height:1.5;margin:0 0 10px}
   .lead-line + p{color:var(--muted)}
   .intro-actions{margin-top:16px;display:flex;gap:11px;flex-wrap:wrap}
+
+  /* how a prediction resolves: an illustration of the lifecycle, distinct from the live ledger below */
+  .flow-lead{color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 4px}
+  .flow{list-style:none;margin:18px 0 0;padding:0;display:flex;gap:0}
+  .fl-step{flex:1;position:relative;text-align:center;padding:0 12px}
+  .fl-step:not(:last-child)::after{content:"";position:absolute;top:15px;left:50%;width:100%;height:1px;background:var(--line);z-index:0}
+  .fl-node{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:50%;background:var(--panel);border:1px solid #cdc8e6}
+  .fl-node svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .fl-seal{color:#5f5896}.fl-pub{color:#574896}.fl-rev{color:#453c63}
+  .fl-step h3{font-family:var(--serif);font-weight:400;font-size:16px;color:var(--ink-strong);margin:11px 0 5px;letter-spacing:-.01em}
+  .fl-step p{color:var(--muted);font-size:12.5px;line-height:1.55;margin:0 auto;max-width:26ch}
+
+  .fork{margin-top:22px;border-top:1px dashed var(--line);padding-top:16px}
+  .fork-lead{font-family:var(--serif);font-style:italic;color:#443c60;font-size:14px;margin:0 0 12px;text-align:center}
+  .fork-rows{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .fk{display:flex;gap:11px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 15px}
+  .fk-mark{font-size:13px;line-height:1.55;flex:none}
+  .fk-hit .fk-mark{color:var(--hit)}.fk-miss .fk-mark{color:var(--miss)}
+  .fk b{font-family:var(--serif);font-weight:400;font-size:15px;display:block;margin-bottom:2px}
+  .fk-hit b{color:#4c6647}.fk-miss b{color:#7f5768}
+  .fk p{color:var(--muted);font-size:12.5px;line-height:1.55;margin:0}
+
+  @media(max-width:620px){
+    .flow{flex-direction:column;gap:20px}
+    .fl-step{flex:none;display:grid;grid-template-columns:30px 1fr;column-gap:14px;text-align:left;padding:0}
+    .fl-node{grid-column:1;grid-row:1/3}
+    .fl-step h3{grid-column:2;align-self:center;margin:0}
+    .fl-step p{grid-column:2;margin:3px 0 0;max-width:none}
+    .fl-step:not(:last-child)::after{top:30px;left:15px;width:1px;height:calc(100% + 20px)}
+    .fork-rows{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:no-preference){
+    .fl-step,.fk{animation:flrise .5s cubic-bezier(.22,1,.36,1) both}
+    .fl-step:nth-child(2){animation-delay:.06s}.fl-step:nth-child(3){animation-delay:.12s}
+    .fk-miss{animation-delay:.06s}
+    @keyframes flrise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  }
 
   /* board index */
   .cat{margin-bottom:22px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
@@ -102,7 +137,8 @@
       <div class="cap">The Registry<span class="rt">the public ledger</span></div>
       <div class="in">
         <p class="lead-line">Calls made before the world caught up.</p>
-        <p>Every entry below was <span class="em">sealed</span> before its outcome was known, and unsealed only after. The proofs are real: open any one and your own browser recomputes its fingerprint. The honest misses sit next to the hits, because a ledger that only shows its wins is advertising.</p>
+        <p id="introEmpty">This ledger is new, and empty for now. Every entry that appears here will have been <span class="em">sealed</span> before its outcome was known, and unsealed only after. The proofs are real: open any one and your own browser recomputes its fingerprint. And the honest misses will sit beside the hits, because a ledger that only shows its wins is advertising.</p>
+        <p id="introFull" hidden>Every entry below was <span class="em">sealed</span> before its outcome was known, and unsealed only after. The proofs are real: open any one and your own browser recomputes its fingerprint. The honest misses sit next to the hits, because a ledger that only shows its wins is advertising.</p>
         <div class="intro-actions">
           <a class="btn btn-primary" href="seal.html">Seal a dream</a>
           <a class="btn btn-ghost" href="verify.html">Verify a proof yourself</a>
@@ -110,7 +146,42 @@
       </div>
     </section>
 
-    <p class="ex-note"><b>Worked examples, for now.</b> The dreams below are illustrations, shown so you can see exactly how a sealed prediction resolves into a hit or an honest miss. As people seal and publish real dreams, those will appear here in their place.</p>
+    <section>
+      <div class="cap">How a prediction resolves<span class="rt">the shape of every entry below</span></div>
+      <div class="in">
+        <p class="flow-lead">This is the path each entry takes, and exactly what you can check at every step.</p>
+        <ol class="flow" aria-label="The lifecycle of a sealed prediction">
+          <li class="fl-step">
+            <span class="fl-node fl-seal" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+            <h3>Seal</h3>
+            <p>The dream's exact wording is fixed with a SHA-256 fingerprint and a timestamp. The text itself stays hidden.</p>
+          </li>
+          <li class="fl-step">
+            <span class="fl-node fl-pub" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V5"/><path d="M8 9l4-4 4 4"/><path d="M5 19h14"/></svg></span>
+            <h3>Publish</h3>
+            <p>The success condition and its deadline go on the public ledger while the dream stays sealed. The clock now runs in the open.</p>
+          </li>
+          <li class="fl-step">
+            <span class="fl-node fl-rev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.4"/></svg></span>
+            <h3>Reveal</h3>
+            <p>The original text is unsealed. Anyone can recompute its fingerprint and confirm it has not changed since the seal.</p>
+          </li>
+        </ol>
+        <div class="fork">
+          <p class="fork-lead">Then it resolves, in public, one of two ways.</p>
+          <div class="fork-rows">
+            <div class="fk fk-hit">
+              <span class="fk-mark" aria-hidden="true">&#9679;</span>
+              <div><b>Hit</b><p>The event happened. A hit on a public claim carries a dated source, so a stranger can check it too.</p></div>
+            </div>
+            <div class="fk fk-miss">
+              <span class="fk-mark" aria-hidden="true">&#9675;</span>
+              <div><b>Miss</b><p>The event did not happen, or the deadline passed unclaimed. Misses are recorded plainly, next to the hits.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <div class="cat">
       <div class="head"><span>The record</span><span class="rt">resolved, hits and honest misses</span></div>
@@ -217,13 +288,15 @@
       var reg, stats;
       try{ reg=(await api("/api/registry")).items; stats=await api("/api/registry/stats").catch(function(){return null;}); }
       catch(e){
-        recordBody.innerHTML='<tr><td></td><td class="rload">The registry could not be reached. Start the Oneiratory server (<code>npm start</code>) and open this page from http://127.0.0.1:8787.</td><td></td><td></td></tr>';
+        recordBody.innerHTML='<tr><td></td><td class="rload">The registry could not be reached just now. It may be waking from sleep; refresh in a moment.</td><td></td><td></td></tr>';
         return;
       }
+      // once real entries exist, drop the "empty for now" framing for the standing one.
+      if(reg.length){ var ie=document.getElementById("introEmpty"),fu=document.getElementById("introFull"); if(ie)ie.hidden=true; if(fu)fu.hidden=false; }
       var resolved=reg.filter(function(x){return x.outcome==="hit"||x.outcome==="miss";});
       var pending=reg.filter(function(x){return x.outcome!=="hit"&&x.outcome!=="miss";});
-      recordBody.innerHTML=resolved.length?resolved.map(function(x,i){return recordRow(x,i%2===1);}).join(""):'<tr><td></td><td class="rload">No resolved entries yet.</td><td></td><td></td></tr>';
-      sealedBody.innerHTML=pending.length?pending.map(function(x,i){return sealedRow(x,i%2===1);}).join(""):'<tr><td></td><td class="rload">Nothing awaiting just now.</td><td></td><td></td></tr>';
+      recordBody.innerHTML=resolved.length?resolved.map(function(x,i){return recordRow(x,i%2===1);}).join(""):'<tr><td></td><td class="rload">No dreams have resolved here yet. When a sealed dream reaches its declared outcome, it will appear here as a hit or an honest miss.</td><td></td><td></td></tr>';
+      sealedBody.innerHTML=pending.length?pending.map(function(x,i){return sealedRow(x,i%2===1);}).join(""):'<tr><td></td><td class="rload">No dreams are sealed and waiting yet. Publish a sealed dream while its outcome is still unknown and it will wait here, clock running.</td><td></td><td></td></tr>';
       if(stats){ setText("stSealed",stats.sealed); setText("stHits",stats.hits); setText("stRate",stats.hit_rate!=null?stats.hit_rate+"%":"—"); setText("stOpen",stats.pending); }
     })();
   })();
