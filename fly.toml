@@ -20,9 +20,9 @@ primary_region = "syd"   # Sydney: closest region to an Australia-based operator
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"   # stop the machine when idle to keep cost near-zero
-  auto_start_machines = true    # start again on the next request (data persists on the volume)
-  min_machines_running = 0      # set to 1 for always-on (no cold start, ~a couple $/mo more)
+  auto_stop_machines = "stop"   # stop any EXTRA machines when idle; min_machines_running keeps one up
+  auto_start_machines = true    # start more on demand under load (data persists on the volume)
+  min_machines_running = 1      # always-on: keep one machine warm so there is no cold-start delay
 
 # Persistent storage for the SQLite database. Create it once with:
 #   fly volumes create oneiratory_data --region syd --size 1
