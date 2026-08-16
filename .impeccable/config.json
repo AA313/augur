@@ -4,6 +4,19 @@
       "flat-type-hierarchy"
     ],
     "ignoreFiles": [],
-    "ignoreValues": []
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "#7a5f30",
+        "createdAt": "2026-08-16T11:10:46.759Z",
+        "reason": "User confirmed #7a5f30 is intentional (per-board tint for /synchronicity/, matching the other 7 boards)"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#e6ddc6",
+        "createdAt": "2026-08-16T11:10:46.994Z",
+        "reason": "User confirmed #e6ddc6 is intentional (per-board tint border for /synchronicity/)"
+      }
+    ]
   }
 }
