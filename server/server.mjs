@@ -19,6 +19,7 @@ const DEV = process.env.NODE_ENV !== 'production';
 
 const BOARDS = [
   { slug: 'came-true', label: 'dreams that arrived early' },
+  { slug: 'synchronicity', label: 'meaningful coincidence' },
   { slug: 'recurring', label: 'the ones that keep returning' },
   { slug: 'lucid', label: 'waking up inside the dream' },
   { slug: 'astral', label: 'projection, onset, the drift' },
