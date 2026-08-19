@@ -212,7 +212,7 @@
         <li><b>Do not impersonate staff.</b> No pretending to be an admin, a moderator, or another poster. Staff will never ask you for a password or payment.</li>
         <li><b>No hate or incitement.</b> No racist, sexist, or otherwise bigoted remarks. Nothing that incites hatred or violence, or that encourages self-harm, against any person or group.</li>
         <li><b>No spam or gibberish.</b> No advertising, scams, referral links, flooding, or nonsense text. One dream per thread, written to be read.</li>
-        <li><b>Keep images safe.</b> Attachments are stripped of metadata, scanned, and held for a moderator&rsquo;s approval before they appear. No sexual, graphic, or shock images.</li>
+        <li><b>Text only, for now.</b> Image uploads are switched off while we finish our safety checks, so keep it to words. Do not link out to sexual, graphic, or shock images either.</li>
         <li><b>Do not attack the site.</b> No attempts to break, overload, scrape, or probe the Service.</li>
         <li><b>Post honestly.</b> Record the misses beside the hits. Do not fabricate a dream to game the Registry.</li>
         <li><b>Moderators have the final say.</b> Posts and threads may be removed, and access restricted, to keep the Commons safe and usable. See the <a href="terms.html#conduct">Terms</a> for the full policy.</li>
@@ -250,11 +250,6 @@
         <input type="text" placeholder="Subject" aria-label="Subject" style="flex:1;min-width:160px">
       </div>
       <textarea placeholder="Write the dream while it is still fresh. Greentext with a leading &gt;, reply to a post with its number. It is sealed the moment you post."></textarea>
-      <div class="attachrow">
-        <label class="attachbtn" for="capImage">+ attach an image</label>
-        <input type="file" id="capImage" accept="image/png,image/jpeg,image/webp" style="display:none">
-        <span id="capImgInfo" class="attachinfo"></span>
-      </div>
       <div class="row" style="margin-top:10px;justify-content:space-between">
         <span style="color:var(--faint);font-size:11px">your words are hashed and locked. we never sell or leak a dream.</span>
         <button class="send">Seal &amp; post</button>
@@ -494,20 +489,10 @@
     if(last.classList.contains("replywrap")){last.querySelector("textarea").focus();return;}
     var wrap=document.createElement("div");wrap.className="replywrap";wrap.setAttribute("data-thread",threadNo);
     wrap.innerHTML='<textarea placeholder="Reply... (use &gt; for greentext, &gt;&gt;number to quote a post)"></textarea>'+
-      '<div class="attachrow"><label class="attachbtn">+ attach an image<input type="file" class="rimage" accept="image/png,image/jpeg,image/webp" style="display:none"></label> <span class="rimginfo attachinfo"></span></div>'+
       '<div class="rbrow"><input class="rname" type="text" value="Anonymous"> <button type="button" class="rsend">Post reply</button> <span class="rcancel">cancel</span></div>';
     last.parentNode.insertBefore(wrap,last.nextSibling);
     var ta=wrap.querySelector("textarea");ta.focus();
-    var replyImage=null, rimg=wrap.querySelector(".rimage"), rinfo=wrap.querySelector(".rimginfo");
-    rimg.addEventListener("change",function(){
-      var f=rimg.files&&rimg.files[0]; if(!f){ replyImage=null; rinfo.textContent=""; return; }
-      rinfo.textContent="processing…";
-      processImage(f,function(img,errmsg){
-        if(!img){ replyImage=null; rimg.value=""; rinfo.textContent=errmsg||"could not use that image"; return; }
-        replyImage=img; rinfo.innerHTML='image ready, it will be reviewed <span class="rmimg">remove</span>';
-        rinfo.querySelector(".rmimg").addEventListener("click",function(){ replyImage=null; rimg.value=""; rinfo.textContent=""; });
-      });
-    });
+    var replyImage=null;   // image uploads are disabled site-wide; always null
     wrap.querySelector(".rsend").addEventListener("click",async function(){
       var body=ta.value.trim();if(!body){ta.focus();return;}
       var btn=this;btn.disabled=true;

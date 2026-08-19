@@ -29,6 +29,12 @@ const BOARDS = [
 ];
 const BOARD_SLUGS = new Set(BOARDS.map((b) => b.slug));
 
+// Image uploads on the Commons are OFF until a real CSAM scanner (PhotoDNA) is wired to the
+// AUGUR_SCAN_URL hook. The board is text-only in the meantime. Flip to true to re-enable, but
+// only once scanning runs before an image is ever stored. Serving of already-approved images is
+// unaffected; this only blocks new uploads.
+const IMAGE_UPLOADS_ENABLED = false;
+
 // ---------- tiny helpers ----------
 const json = (res, status, obj) => {
   const body = JSON.stringify(obj);
@@ -478,7 +484,7 @@ add('POST', '/api/commons/threads', async ({ res, req, body }) => {
   const pid = posterId(no, clientOf(req));
   db.prepare(`INSERT INTO commons_threads (no, board, name, poster_id, subject, body, created_at, bumped_at) VALUES (?,?,?,?,?,?,?,?)`)
     .run(no, board, cleanName(body.name), pid, (body.subject || '').trim() || null, bodyText, now, now);
-  if (body.image) await attachImage(no, board, body.image, now);   // scanned, then held pending for a moderator
+  if (body.image && IMAGE_UPLOADS_ENABLED) await attachImage(no, board, body.image, now);   // uploads off until a real CSAM scanner is wired
   json(res, 201, threadOut(db.prepare(`SELECT * FROM commons_threads WHERE no = ?`).get(no)));
 });
 
@@ -492,7 +498,7 @@ add('POST', '/api/commons/threads/:no/posts', async ({ res, req, params, body })
   const pid = posterId(t.no, clientOf(req));   // stable within the thread
   db.prepare(`INSERT INTO commons_posts (no, thread_no, name, poster_id, body, created_at) VALUES (?,?,?,?,?,?)`)
     .run(no, t.no, cleanName(body.name), pid, bodyText, now);
-  if (body.image) await attachImage(no, t.board, body.image, now);   // scanned, then held pending for a moderator
+  if (body.image && IMAGE_UPLOADS_ENABLED) await attachImage(no, t.board, body.image, now);   // uploads off until a real CSAM scanner is wired
   db.prepare(`UPDATE commons_threads SET bumped_at = ?, reply_count = reply_count + 1 WHERE no = ?`).run(now, t.no);
   json(res, 201, postOut(db.prepare(`SELECT * FROM commons_posts WHERE no = ?`).get(no)));
 });
