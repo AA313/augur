@@ -99,6 +99,11 @@
   .composer textarea{width:100%;min-height:66px;resize:vertical}
   .composer .send{font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;background:var(--warm);border:1px solid #a5583b;border-radius:var(--r-sm);padding:9px 20px;cursor:pointer}
   .composer .send:hover{background:#a95a3d}
+  .consentrow{display:flex;gap:8px;align-items:flex-start;margin-top:11px;font-size:11.5px;color:var(--muted);line-height:1.5;cursor:pointer}
+  .consentrow input{margin:2px 0 0;flex:none}
+  .consentrow a,.rconsent a{color:var(--accent)}
+  .consentmsg{color:var(--warm)}
+  .rconsent{font-size:11px;color:var(--muted);line-height:1.5;margin:8px 0 4px}
   .attachrow{margin-top:9px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .attachbtn{font-family:var(--sans);font-size:11.5px;color:var(--accent);background:var(--accent-soft);border:1px solid #ddd6ee;border-radius:var(--r-sm);padding:7px 12px;cursor:pointer}
   .attachbtn:hover{background:#e4def2}
@@ -250,8 +255,9 @@
         <input type="text" placeholder="Subject" aria-label="Subject" style="flex:1;min-width:160px">
       </div>
       <textarea placeholder="Write the dream while it is still fresh. Greentext with a leading &gt;, reply to a post with its number. It is sealed the moment you post."></textarea>
+      <label class="consentrow"><input type="checkbox" class="consent"> I am 16 or older, I understand this dream may contain sensitive information, and I consent to it being shown publicly and used anonymously for research (see the <a href="terms.html#privacy">Terms</a>).</label>
       <div class="row" style="margin-top:10px;justify-content:space-between">
-        <span style="color:var(--faint);font-size:11px">your words are hashed and locked. we never sell or leak a dream.</span>
+        <span style="color:var(--faint);font-size:11px">your words are hashed and locked. we never sell or leak a dream. <span class="consentmsg"></span></span>
         <button class="send">Seal &amp; post</button>
       </div>
     </div>
@@ -489,6 +495,7 @@
     if(last.classList.contains("replywrap")){last.querySelector("textarea").focus();return;}
     var wrap=document.createElement("div");wrap.className="replywrap";wrap.setAttribute("data-thread",threadNo);
     wrap.innerHTML='<textarea placeholder="Reply... (use &gt; for greentext, &gt;&gt;number to quote a post)"></textarea>'+
+      '<div class="rconsent">By replying you agree to the <a href="terms.html#privacy" target="_blank">Terms</a>: replies are shown publicly and may be used anonymously for research.</div>'+
       '<div class="rbrow"><input class="rname" type="text" value="Anonymous"> <button type="button" class="rsend">Post reply</button> <span class="rcancel">cancel</span></div>';
     last.parentNode.insertBefore(wrap,last.nextSibling);
     var ta=wrap.querySelector("textarea");ta.focus();
@@ -533,6 +540,9 @@
     var ta=document.querySelector(".composer textarea");
     var body=ta.value.trim();
     if(!body){ta.focus();return;}
+    var consent=document.querySelector(".composer .consent"), cmsg=document.querySelector(".composer .consentmsg");
+    if(consent && !consent.checked){ if(cmsg)cmsg.textContent="please tick the box to post"; consent.focus(); return; }
+    if(cmsg)cmsg.textContent="";
     send.disabled=true;
     try{
       var thread=await api("/api/commons/threads",{method:"POST",body:JSON.stringify({board:board,name:name,subject:subjectEl?subjectEl.value.trim():"",body:body,image:composerImage||undefined})});
@@ -543,7 +553,7 @@
         g.insertBefore(op,g.querySelector(".ghead").nextSibling);
       }
       ta.value="";if(subjectEl)subjectEl.value="";
-      composerImage=null; if(capImage)capImage.value=""; if(capImgInfo)capImgInfo.textContent="";
+      composerImage=null; if(capImage)capImage.value=""; if(capImgInfo)capImgInfo.textContent=""; if(consent)consent.checked=false;
       if(g)g.querySelector(".post.op").scrollIntoView({behavior:"smooth",block:"center"});
       refreshMeta();
     }catch(err){alert("Could not post the dream: "+err.message);}
