@@ -18,7 +18,8 @@
   --line-soft:#e7e3f1;
   --link:#574896;
   --accent:#574896;       /* structural violet */
-  --warm:#bb6647;         /* one restrained warm accent */
+  --warm:#bb6647;         /* one restrained warm accent (for text/accents on light bg) */
+  --warm-btn:#a5583b;     /* deeper terracotta for button surfaces: white text clears WCAG AA */
   --warm-soft:#f4e6df;
   --hit:#587552;
   --miss:#95687a;
@@ -90,8 +91,10 @@ main{max-width:820px;margin:0 auto;padding:0 clamp(16px,4vw,28px) 72px}
 /* ---------- buttons ---------- */
 .btn{font-family:var(--sans);font-size:14px;font-weight:600;text-decoration:none;display:inline-block;
   border-radius:var(--r-sm);padding:11px 20px;border:1px solid transparent;cursor:pointer;transition:.15s;line-height:1.2}
-.btn-primary{background:var(--warm);color:#fff;border-color:#a5583b}
-.btn-primary:hover{background:#a95a3d}
+/* button surface uses the deeper terracotta (#a5583b) so white text clears WCAG AA (~5.2:1);
+   the lighter --warm stays for accents and text on light backgrounds */
+.btn-primary{background:#a5583b;color:#fff;border-color:#8f4a30}
+.btn-primary:hover{background:#96502f}
 .btn-ghost{background:transparent;color:var(--ink-strong);border-color:var(--line)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:#fff}
 

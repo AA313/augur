@@ -599,7 +599,7 @@ const threadOut = (t) => ({ no: t.no, board: t.board, subject: t.subject, name: 
 const postOut = (p) => ({ no: p.no, thread_no: p.thread_no, name: p.name, poster_id: p.poster_id, body: p.body, created_at: p.created_at, attachment: attachmentOf(p.no) });
 
 // ---------- static file serving ----------
-const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml; charset=utf-8' };
 
 async function serveStatic(req, res, pathname) {
   let rel = decodeURIComponent(pathname);
