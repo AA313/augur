@@ -131,7 +131,7 @@
           <div class="fl">2 &middot; COUNTS AS TRUE IF &middot; <b>declared now, before the event</b></div>
           <textarea id="condition" placeholder="A passenger train derails with no fatalities, reported in national news, within 30 days."></textarea>
           <div class="metarow">
-            <label><span class="ml">resolve by</span><input id="resolveBy" type="date" value="2026-08-15"></label>
+            <label><span class="ml">resolve by</span><input id="resolveBy" type="date"></label>
             <label><span class="ml">domain</span><select id="domain"><option>public event</option><option>personal</option><option>news</option><option>weather</option><option>other</option></select></label>
             <label><span class="ml">specificity</span><select id="spec"><option>high &middot; named, dated, checkable</option><option>medium</option><option>low</option></select></label>
           </div>
@@ -141,6 +141,7 @@
         <div class="field">
           <div class="fl">3 &middot; SEAL</div>
           <button id="sealBtn" class="btn btn-primary">&#9679; Seal this dream</button>
+          <div class="sealmsg" id="sealMsg" role="alert" style="color:var(--miss);font-size:12.5px;margin-top:9px;line-height:1.5"></div>
           <div class="sealnote">On seal, your browser computes SHA-256 over the dream, the condition, a random nonce, and the timestamp. Only that fingerprint is ever made public. The dream text is <b>end-to-end encrypted in your browser with your passphrase</b> before it is saved, so the server stores only ciphertext until you choose to reveal it.</div>
         </div>
       </div>
@@ -440,12 +441,25 @@
     });
 
     // ---------- seal a new dream ----------
+    // A prediction is about the future: default the resolve-by date a month out, and never allow a past one.
+    (function(){
+      var rb=$("resolveBy"); if(!rb) return;
+      var iso=function(t){ return new Date(t).toISOString().slice(0,10); };
+      var now=Date.now();
+      rb.min=iso(now+86400000);                 // tomorrow at the earliest
+      if(!rb.value) rb.value=iso(now+30*86400000);   // a sensible month-out default
+    })();
     $("sealBtn").addEventListener("click", async function(){
       if(!user){ focusAuth(); return; }
       if(!key){ focusPass(); return; }
+      var sm=$("sealMsg"); if(sm) sm.textContent="";
       var content=$("dream").value.trim();
-      if(!content){ $("dream").focus(); return; }
-      var claim={ resolution_by:$("resolveBy").value, domain:$("domain").value, specificity:$("condition").value.trim() };
+      if(!content){ if(sm)sm.textContent="Write the dream first, in your own words."; $("dream").focus(); return; }
+      var cond=$("condition").value.trim();
+      if(!cond){ if(sm)sm.textContent="Say what would count as this coming true. A vague condition is not a prediction."; $("condition").focus(); return; }
+      var by=$("resolveBy").value;
+      if(!by || by <= new Date().toISOString().slice(0,10)){ if(sm)sm.textContent="Set a resolve-by date in the future. A prediction is about what has not happened yet."; $("resolveBy").focus(); return; }
+      var claim={ resolution_by:by, domain:$("domain").value, specificity:cond };
       var nonce=(crypto.randomUUID?crypto.randomUUID().slice(0,18):(Date.now().toString(36)+Math.random().toString(36).slice(2,8)));
       var created_at=new Date().toISOString();
       var payload={ content:content, claim:claim, nonce:nonce, created_at:created_at };
